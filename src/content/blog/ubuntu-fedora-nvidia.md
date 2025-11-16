@@ -59,10 +59,6 @@ tags: ["Fedora", "Ubuntu", "Nvidia", "Nouveau"]
 
 5、完成 Fedara 安装，重启。
 
-![Fedora boot screen](/images/blog/ubuntu-fedora-nvidia/virtualbox-fedora-boot.png)
-
-![Fedora boot with nomodeset](/images/blog/ubuntu-fedora-nvidia/virtualbox-fedora-boot-nomodeset.png)
-
 ### 进入 Fedora 系统(同1)
 
 1、**在 grub 界面(启动页面)按下按键e (或者TAB键)**
@@ -103,8 +99,6 @@ sudo dnf remove xorg-x11-drv-nouveau
 sudo dnf install nvidia-driver nvidia-settings
 ```
 
-![Office Lens screenshot](/images/blog/ubuntu-fedora-nvidia/office-lens.jpg)
-
 *4、安装 CUDA tools (**可选，未尝试**)*
 
 参考 [这篇博客：https://blog.csdn.net/ZhangK9509/article/details/79260341](https://blog.csdn.net/ZhangK9509/article/details/79260341)
@@ -132,8 +126,6 @@ grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 ```bash
 sudo dnf install vdpauinfo libva-vdpau-driver libva-utils
 ```
-
-![Nvidia settings screenshot](/images/blog/ubuntu-fedora-nvidia/screenshot-nvidia-settings.png)
 
 7、重启
 

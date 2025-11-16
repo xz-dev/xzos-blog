@@ -6,15 +6,17 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://xzos.net',
-	integrations: [mdx(), sitemap()],
-	markdown: {
-		shikiConfig: {
-			theme: 'github-dark',
-		},
+  site: 'https://xzos.net',
+  integrations: [mdx(), sitemap()],
+
+  markdown: {
+      shikiConfig: {
+          theme: 'github-dark',
+      },
 	},
-	image: {
-		// Don't optimize images during development
-		service: { entrypoint: 'astro/assets/services/sharp' },
+
+  image: {
+      // Don't optimize images during development
+      service: { entrypoint: 'astro/assets/services/sharp' },
 	},
 });

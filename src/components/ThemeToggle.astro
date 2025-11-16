@@ -24,20 +24,18 @@
 		position: relative;
 		width: 40px;
 		height: 40px;
-		padding: 10px;
+		padding: 5px;
 		background: transparent;
-		border: 1px solid var(--border);
+		border: 2px solid var(--accent);
+		color: var(--accent);
 		cursor: pointer;
 		transition: all 0.2s ease;
+		font-weight: bold;
 	}
 
 	#theme-toggle:hover {
 		background: var(--accent);
-		border-color: var(--accent);
-	}
-
-	#theme-toggle:hover svg {
-		color: var(--bg-primary);
+		color: var(--background);
 	}
 
 	#theme-toggle svg {
@@ -46,7 +44,6 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		transition: opacity 0.2s ease;
-		color: var(--fg-primary);
 	}
 
 	/* Show/hide icons based on theme */

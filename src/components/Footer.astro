@@ -31,10 +31,10 @@ const today = new Date();
 <style>
 	footer {
 		padding: 3em 1em;
-		background: var(--bg-secondary);
-		color: var(--fg-secondary);
+		background: var(--background);
+		color: var(--secondary);
 		text-align: center;
-		border-top: 2px solid var(--border);
+		border-top: 2px solid var(--accent);
 		margin-top: 4em;
 	}
 
@@ -44,17 +44,17 @@ const today = new Date();
 	}
 
 	.copyright a {
-		color: var(--fg-secondary);
+		color: var(--accent);
 		text-decoration: none;
-		border-bottom: 1px solid transparent;
 		margin-left: 0.5em;
 		transition: all 0.2s ease;
 		padding: 0.2em 0.4em;
+		border: 2px solid transparent;
 	}
 
 	.copyright a:hover {
 		background: var(--accent);
-		color: var(--bg-primary);
+		color: var(--background);
 		border-color: var(--accent);
 	}
 
@@ -71,15 +71,14 @@ const today = new Date();
 		width: 40px;
 		height: 40px;
 		padding: 8px;
-		color: var(--fg-primary);
-		border: 1px solid var(--border);
+		color: var(--accent);
+		border: 2px solid var(--accent);
 		transition: all 0.2s ease;
 	}
 
 	.social-links a:hover {
 		background: var(--accent);
-		color: var(--bg-primary);
-		border-color: var(--accent);
+		color: var(--background);
 	}
 
 	.social-links a svg {

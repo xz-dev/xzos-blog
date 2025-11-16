@@ -52,7 +52,7 @@
 	/* CRT Effects */
 	--scanline-opacity: 0.03;
 	--glow-color: #33FF66;
-	--glow-size: 2px;
+	--glow-size: 1px;
 }
 
 /* Global Terminal Styles */

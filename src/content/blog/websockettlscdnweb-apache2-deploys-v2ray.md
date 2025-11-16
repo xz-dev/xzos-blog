@@ -113,9 +113,7 @@ SSLCertificateKeyFile /etc/letsencrypt/live/www.xzos.net/privkey.pem
 sudo systemctl restart apache2.service
 ```
 
-这时，你通过浏览器访问 https://<你的域名>/ray/ 应该是这样的
-
-![Bad Request 错误示意](/images/blog/websockettlscdnweb-apache2-deploys-v2ray/browser-bad-request.png)
+这时，你通过浏览器访问 `https://<你的域名>/ray/` 应该会显示 "Bad Request" 错误，这是正常的。
 
 ## 配置 V2Ray（参考白话文教程，但有所不同）
 

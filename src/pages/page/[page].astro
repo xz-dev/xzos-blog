@@ -175,23 +175,20 @@ const { posts, currentPage, totalPages } = Astro.props;
 			.pagination a,
 			.pagination span {
 				padding: 0.5rem 1rem;
-				border: 1px solid var(--border);
-					text-decoration: none;
-				color: var(--fg-primary);
-			background: var(--bg-secondary);
-			transition: all 0.2s ease;
+				border: 2px solid var(--accent);
+				text-decoration: none;
+				color: var(--accent);
+				background: transparent;
+				transition: all 0.2s ease;
 			}
 			.pagination a:hover {
-				background-color: var(--accent);
-				color: var(--bg-primary);
-			font-weight: 700;
-				border-color: var(--accent);
+				background: var(--accent);
+				color: var(--background);
 			}
 			.pagination .current {
-				background-color: var(--accent);
-				color: var(--bg-primary);
-			font-weight: 700;
-				border-color: var(--accent);
+				background: var(--accent);
+				color: var(--background);
+				font-weight: 700;
 			}
 		</style>
 	</head>

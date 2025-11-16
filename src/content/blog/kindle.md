@@ -21,23 +21,17 @@ tags: ["日常", "Kindle"]
 
 **kindle在待机情况下耗电量极低，故不需要关机**
 
-![](/images/blog/kindle/kindle-image-1.jpg)
-
-![](/images/blog/kindle/kindle-image-2.jpg)
-
 锁屏密码：
 
 "1031"
 
 ## 2.kindle的屏幕分区
 
-![](/images/blog/kindle/kindle-image-3.jpg)
+Kindle 屏幕分为以下区域：
 
-上部：菜单
-
-左边：上一页
-
-右边：下一页
+- 上部：菜单
+- 左边：上一页
+- 右边：下一页
 
 ## 3.导入书籍
 
@@ -57,9 +51,7 @@ tags: ["日常", "Kindle"]
 
 #### **5.公众号推送**
 
-推荐的公众号：
-
-![](/images/blog/kindle/kindle-image-4.jpg)
+可以通过关注相关公众号来推送电子书到 Kindle。
 
 ## 4.其他
 
