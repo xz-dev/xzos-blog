@@ -1,0 +1,83 @@
+---
+// Theme Toggle Component
+---
+
+<button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+	<svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+		<circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
+		<line x1="10" y1="2" x2="10" y2="4" stroke="currentColor" stroke-width="2"/>
+		<line x1="10" y1="16" x2="10" y2="18" stroke="currentColor" stroke-width="2"/>
+		<line x1="2" y1="10" x2="4" y2="10" stroke="currentColor" stroke-width="2"/>
+		<line x1="16" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="2"/>
+		<line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2"/>
+		<line x1="14.36" y1="14.36" x2="15.78" y2="15.78" stroke="currentColor" stroke-width="2"/>
+		<line x1="4.22" y1="15.78" x2="5.64" y2="14.36" stroke="currentColor" stroke-width="2"/>
+		<line x1="14.36" y1="5.64" x2="15.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
+	</svg>
+	<svg class="moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+		<path d="M17 10.5C16 14.5 12 17.5 8 17C4 16.5 1 13 1 9C1 5 3.5 1.5 7.5 1C7 2 6.5 3.5 7 5.5C7.5 7.5 9 9 11 9.5C13 10 14.5 9.5 15.5 9C16 9 17 9.5 17 10.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+	</svg>
+</button>
+
+<style>
+	#theme-toggle {
+		position: relative;
+		width: 40px;
+		height: 40px;
+		padding: 10px;
+		background: transparent;
+		border: 1px solid var(--border);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	#theme-toggle:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
+
+	#theme-toggle:hover svg {
+		color: var(--bg-primary);
+	}
+
+	#theme-toggle svg {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		transition: opacity 0.2s ease;
+		color: var(--fg-primary);
+	}
+
+	/* Show/hide icons based on theme */
+	:root[data-theme="solarized"] .moon-icon {
+		opacity: 0;
+	}
+
+	:root[data-theme="solarized"] .sun-icon {
+		opacity: 1;
+	}
+
+	:root[data-theme="tty"] .sun-icon {
+		opacity: 0;
+	}
+
+	:root[data-theme="tty"] .moon-icon {
+		opacity: 1;
+	}
+</style>
+
+<script>
+	// Theme toggle functionality
+	const button = document.getElementById('theme-toggle');
+
+	if (button) {
+		button.addEventListener('click', () => {
+			const currentTheme = document.documentElement.getAttribute('data-theme') || 'solarized';
+			const newTheme = currentTheme === 'solarized' ? 'tty' : 'solarized';
+
+			document.documentElement.setAttribute('data-theme', newTheme);
+			localStorage.setItem('theme', newTheme);
+		});
+	}
+</script>

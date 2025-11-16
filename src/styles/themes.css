@@ -1,0 +1,134 @@
+/* Terminal-Style Theme System
+ * Day Mode: Solarized Light
+ * Night Mode: TTY Pure Black with Green Phosphor
+ */
+
+/* Default Theme (Solarized Light) */
+:root {
+	/* Solarized Light Base Colors */
+	--bg-primary: #fdf6e3;
+	--bg-secondary: #eee8d5;
+	--fg-primary: #657b83;
+	--fg-emphasized: #586e75;
+	--fg-secondary: #93a1a1;
+
+	/* Solarized Accent Colors */
+	--accent: #268bd2; /* blue */
+	--accent-hover: #2aa198; /* cyan */
+	--accent-alt: #859900; /* green */
+	--warning: #cb4b16; /* orange */
+	--error: #dc322f; /* red */
+
+	/* UI Colors */
+	--border: #93a1a1;
+	--shadow: none;
+
+	/* Terminal Effects (disabled in light mode) */
+	--scanline-opacity: 0;
+	--glow-color: transparent;
+	--glow-size: 0;
+}
+
+/* TTY Green Theme (Night Mode) */
+:root[data-theme="tty"] {
+	/* Pure Black Background */
+	--bg-primary: #000000;
+	--bg-secondary: #0a0a0a;
+	--fg-primary: #33FF66; /* phosphor green */
+	--fg-emphasized: #00FF00; /* bright green */
+	--fg-secondary: #008800; /* dim green */
+
+	/* TTY Accent Colors */
+	--accent: #33FF66;
+	--accent-hover: #00FF00;
+	--accent-alt: #66FF99;
+	--warning: #FFAA00; /* amber */
+	--error: #FF3333; /* bright red */
+
+	/* UI Colors */
+	--border: #008800;
+	--shadow: none;
+
+	/* CRT Effects */
+	--scanline-opacity: 0.03;
+	--glow-color: #33FF66;
+	--glow-size: 2px;
+}
+
+/* Global Terminal Styles */
+* {
+	/* Remove all rounded corners */
+	border-radius: 0 !important;
+
+	/* Remove all shadows */
+	box-shadow: none !important;
+	text-shadow: none;
+}
+
+/* Add phosphor glow only in TTY mode */
+:root[data-theme="tty"] {
+	color-scheme: dark;
+}
+
+:root[data-theme="tty"] body {
+	text-shadow: 0 0 var(--glow-size) var(--glow-color);
+}
+
+/* CRT Scanline Effect (TTY Mode Only) */
+:root[data-theme="tty"] body::before {
+	content: "";
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 9999;
+	background: repeating-linear-gradient(
+		0deg,
+		rgba(0, 0, 0, 0) 0px,
+		rgba(0, 0, 0, var(--scanline-opacity)) 1px,
+		rgba(0, 0, 0, 0) 2px
+	);
+}
+
+/* Smooth theme transitions */
+* {
+	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Terminal-style selection */
+::selection {
+	background: var(--accent);
+	color: var(--bg-primary);
+}
+
+::-moz-selection {
+	background: var(--accent);
+	color: var(--bg-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--fg-secondary);
+	border: 2px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--fg-primary);
+}
+
+/* Firefox scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--fg-secondary) var(--bg-secondary);
+}

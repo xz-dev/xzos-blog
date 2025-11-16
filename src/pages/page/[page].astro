@@ -99,7 +99,9 @@ const { posts, currentPage, totalPages } = Astro.props;
 				margin: 0 0 1rem 0;
 			}
 			.post-title a {
-				color: rgb(var(--black));
+				color: var(--fg-primary);
+			background: var(--bg-secondary);
+			transition: all 0.2s ease;
 				text-decoration: none;
 			}
 			.post-title a:hover {
@@ -141,8 +143,7 @@ const { posts, currentPage, totalPages } = Astro.props;
 			.post-excerpt :global(pre) {
 				background-color: #f4f4f4;
 				padding: 1rem;
-				border-radius: 4px;
-				overflow-x: auto;
+					overflow-x: auto;
 			}
 			.post-excerpt :global(pre code) {
 				background-color: transparent;
@@ -174,19 +175,22 @@ const { posts, currentPage, totalPages } = Astro.props;
 			.pagination a,
 			.pagination span {
 				padding: 0.5rem 1rem;
-				border: 1px solid #e0e0e0;
-				border-radius: 4px;
-				text-decoration: none;
-				color: rgb(var(--black));
+				border: 1px solid var(--border);
+					text-decoration: none;
+				color: var(--fg-primary);
+			background: var(--bg-secondary);
+			transition: all 0.2s ease;
 			}
 			.pagination a:hover {
 				background-color: var(--accent);
-				color: white;
+				color: var(--bg-primary);
+			font-weight: 700;
 				border-color: var(--accent);
 			}
 			.pagination .current {
 				background-color: var(--accent);
-				color: white;
+				color: var(--bg-primary);
+			font-weight: 700;
 				border-color: var(--accent);
 			}
 		</style>
