@@ -1,48 +1,219 @@
 ---
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_DESCRIPTION, SITE_FULL_TITLE } from '../consts';
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+// 辅助函数：提取文章摘要
+function getExcerptHtml(body: string): { html: string; hasMore: boolean } {
+	const moreMarker = '<!--more-->';
+	const moreIndex = body.indexOf(moreMarker);
+
+	if (moreIndex > 0) {
+		// 找到了<!--more-->标记，只渲染之前的内容
+		const excerptMd = body.substring(0, moreIndex).trim();
+		return {
+			html: marked.parse(excerptMd) as string,
+			hasMore: true,
+		};
+	}
+
+	// 没有<!--more-->标记，取前3段
+	const paragraphs = body.split(/\n\n+/);
+	const firstFewParagraphs = paragraphs.slice(0, 3).join('\n\n');
+
+	return {
+		html: marked.parse(firstFewParagraphs) as string,
+		hasMore: paragraphs.length > 3 || body.length > firstFewParagraphs.length + 100,
+	};
+}
+
+// 为每篇文章生成摘要
+const postsWithExcerpts = allPosts.map((post) => ({
+	post,
+	excerpt: getExcerptHtml(post.body),
+}));
+
+// 每页显示10篇文章
+const postsPerPage = 10;
+const totalPages = Math.ceil(postsWithExcerpts.length / postsPerPage);
+const paginatedPosts = postsWithExcerpts.slice(0, postsPerPage);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={SITE_FULL_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2rem);
+				margin: auto;
+				padding: 3rem 1rem;
+			}
+			h1 {
+				font-size: 2.5rem;
+				font-weight: 700;
+				margin: 0 0 2rem 0;
+			}
+			.post-list {
+				list-style-type: none;
+				padding: 0;
+				margin: 0 0 3rem 0;
+			}
+			.post-item {
+				margin-bottom: 3rem;
+				padding-bottom: 3rem;
+				border-bottom: 1px solid #e0e0e0;
+			}
+			.post-item:last-child {
+				border-bottom: none;
+			}
+			.post-title {
+				font-size: 1.8rem;
+				font-weight: 600;
+				margin: 0 0 1rem 0;
+			}
+			.post-title a {
+				color: rgb(var(--black));
+				text-decoration: none;
+			}
+			.post-title a:hover {
+				color: rgb(var(--accent));
+			}
+			.post-excerpt {
+				color: rgb(var(--gray-dark));
+				line-height: 1.6;
+				margin: 1rem 0;
+			}
+			.post-excerpt :global(blockquote) {
+				margin: 1rem 0;
+				padding-left: 1rem;
+				border-left: 3px solid rgb(var(--gray));
+				font-style: italic;
+				color: rgb(var(--gray-dark));
+			}
+			.post-excerpt :global(h2),
+			.post-excerpt :global(h3),
+			.post-excerpt :global(h4) {
+				font-size: 1.2rem;
+				margin: 1rem 0 0.5rem 0;
+			}
+			.post-excerpt :global(p) {
+				margin: 0.5rem 0;
+			}
+			.post-excerpt :global(ul),
+			.post-excerpt :global(ol) {
+				margin: 0.5rem 0;
+				padding-left: 2rem;
+			}
+			.post-excerpt :global(code) {
+				background-color: #f4f4f4;
+				padding: 0.2rem 0.4rem;
+				border-radius: 3px;
+				font-size: 0.9em;
+				font-family: monospace;
+			}
+			.post-excerpt :global(pre) {
+				background-color: #f4f4f4;
+				padding: 1rem;
+				border-radius: 4px;
+				overflow-x: auto;
+			}
+			.post-excerpt :global(pre code) {
+				background-color: transparent;
+				padding: 0;
+			}
+			.post-meta {
+				display: flex;
+				gap: 1rem;
+				align-items: center;
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+				flex-wrap: wrap;
+			}
+			.read-more {
+				color: rgb(var(--accent));
+				text-decoration: none;
+				font-weight: 500;
+			}
+			.read-more:hover {
+				text-decoration: underline;
+			}
+			.pagination {
+				display: flex;
+				justify-content: center;
+				gap: 0.5rem;
+				margin: 2rem 0;
+			}
+			.pagination a,
+			.pagination span {
+				padding: 0.5rem 1rem;
+				border: 1px solid #e0e0e0;
+				border-radius: 4px;
+				text-decoration: none;
+				color: rgb(var(--black));
+			}
+			.pagination a:hover {
+				background-color: var(--accent);
+				color: white;
+				border-color: var(--accent);
+			}
+			.pagination .current {
+				background-color: var(--accent);
+				color: white;
+				border-color: var(--accent);
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
+			<h1>博客</h1>
+			<ul class="post-list">
+				{
+					paginatedPosts.map(({ post, excerpt }) => (
+						<li class="post-item">
+							<h2 class="post-title">
+								<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+							</h2>
+							<div class="post-excerpt" set:html={excerpt.html} />
+							<div class="post-meta">
+								<time>
+									<FormattedDate date={post.data.pubDate} />
+								</time>
+								{post.data.author && <span>作者：{post.data.author}</span>}
+								{post.data.category && <span>分类：{post.data.category}</span>}
+								{excerpt.hasMore && (
+									<a href={`/blog/${post.id}/`} class="read-more">
+										继续阅读 →
+									</a>
+								)}
+							</div>
+						</li>
+					))
+				}
 			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+
+			{totalPages > 1 && (
+				<nav class="pagination">
+					<span class="current">1</span>
+					{totalPages > 1 && <a href="/page/2/">2</a>}
+					{totalPages > 2 && <a href="/page/3/">3</a>}
+					{totalPages > 3 && <a href="/page/4/">4</a>}
+					{totalPages > 4 && <a href="/page/5/">5</a>}
+					{totalPages > 5 && <span>…</span>}
+					{totalPages > 5 && <a href={`/page/${totalPages}/`}>{totalPages}</a>}
+					{totalPages > 1 && <a href="/page/2/">下一页 →</a>}
+				</nav>
+			)}
 		</main>
 		<Footer />
 	</body>
