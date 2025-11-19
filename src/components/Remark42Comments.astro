@@ -1,0 +1,65 @@
+---
+// Remark42 Comments Component
+---
+
+<div id="remark42"></div>
+
+<script>
+  // Configuration
+  const REMARK42_HOST = 'https://remark42.xzos.net';
+  const REMARK42_SITE_ID = 'xzos-blog';
+
+  // Get current page URL
+  const currentUrl = window.location.origin + window.location.pathname;
+
+  // Map blog theme to Remark42 theme
+  const getTheme = () => {
+    const blogTheme = document.documentElement.dataset.theme || 'solarized';
+    return blogTheme === 'tty' ? 'dark' : 'light';
+  };
+
+  // Initialize Remark42
+  window.remark_config = {
+    host: REMARK42_HOST,
+    site_id: REMARK42_SITE_ID,
+    components: ['embed'],
+    url: currentUrl,
+    theme: getTheme(),
+    locale: 'en',
+  };
+
+  // Load Remark42 script
+  (function(c) {
+    for(var i = 0; i < c.length; i++){
+      var d = document, s = d.createElement('script');
+      s.src = window.remark_config.host + '/web/' + c[i] + '.js';
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(window.remark_config.components || ['embed']);
+
+  // Listen for theme changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'data-theme') {
+        const newTheme = getTheme();
+        if (window.REMARK42) {
+          window.REMARK42.changeTheme(newTheme);
+        }
+      }
+    });
+  });
+
+  // Start observing theme changes
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme']
+  });
+</script>
+
+<style>
+  #remark42 {
+    max-width: 100%;
+    margin: 2rem auto;
+  }
+</style>
