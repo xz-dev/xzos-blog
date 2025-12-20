@@ -1,5 +1,5 @@
 ---
-title: "如何将10G11万个文件的文件夹（微信存档）从一个 iPhone 传输到另一个 iPhone 上"
+title: "如何将 10G 11 万个文件的文件夹（微信存档）从一个 iPhone 传输到另一个 iPhone"
 pubDate: "2025-12-20"
 description: "使用 a-Shell 和 SSH/tar 组合，通过 Linux 电脑中转，高效传输 iPhone 上的大型文件夹"
 author: "xz-dev"
@@ -119,10 +119,10 @@ ssh -c aes128-ctr user@ip "cat ~/wx_backup.tar.gz" | tar xzf -
 在电脑上监控传输进度（适用于方案一）：
 
 ```bash
-watch 'echo "Size: $(du -sh . 2>/dev/null | cut -f1)"; echo "Files: $(find . -type f 2>/dev/null | wc -l)"'
+watch -n 3 'echo "Size: $(du -sh . 2>/dev/null | cut -f1)"; echo "Files: $(find . -type f 2>/dev/null | wc -l)"'
 ```
 
-这会每 2 秒刷新一次，显示当前目录的大小和文件数量。
+这会每 3 秒刷新一次，显示当前目录的大小和文件数量。
 
 对于方案二，可以监控 tar 文件大小：
 
@@ -154,3 +154,7 @@ tar tzf ~/wx_backup.tar.gz | grep -v '/$' | wc -l
 | 方案二（不解压 tar） | 兼容 Windows，无文件名问题 | 电脑上无法直接查看文件 |
 
 对于 10GB、11 万个文件的传输任务，这种 SSH + tar 流式传输方案比逐个文件复制高效得多，也比 AirDrop 更稳定可靠。
+
+## 实测速度
+
+在 Wi-Fi 内网环境下，传输速度可达 **100Mbps**（约 12.5MB/s）。按此速度计算，10GB 数据大约需要 **13-15 分钟**完成传输。

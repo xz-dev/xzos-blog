@@ -1,0 +1,76 @@
+---
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	headings: Heading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter to only include h2 and h3 headings
+const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+	<nav class="toc">
+		<details open>
+			<summary>目录</summary>
+			<ul>
+				{filteredHeadings.map((heading) => (
+					<li class={`toc-level-${heading.depth}`}>
+						<a href={`#${heading.slug}`}>{heading.text}</a>
+					</li>
+				))}
+			</ul>
+		</details>
+	</nav>
+)}
+
+<style>
+	.toc {
+		background: rgba(var(--gray-light), 0.3);
+		border: 1px solid rgba(var(--gray-light), 0.5);
+		border-radius: 8px;
+		padding: 1em;
+		margin-bottom: 2em;
+	}
+
+	.toc summary {
+		font-weight: bold;
+		cursor: pointer;
+		color: rgb(var(--black));
+	}
+
+	.toc ul {
+		list-style: none;
+		padding: 0;
+		margin: 0.5em 0 0 0;
+	}
+
+	.toc li {
+		margin: 0.3em 0;
+		line-height: 1.4;
+	}
+
+	.toc-level-2 {
+		padding-left: 0;
+	}
+
+	.toc-level-3 {
+		padding-left: 1.2em;
+	}
+
+	.toc a {
+		color: rgb(var(--gray-dark));
+		text-decoration: none;
+	}
+
+	.toc a:hover {
+		color: rgb(var(--accent));
+		text-decoration: underline;
+	}
+</style>
