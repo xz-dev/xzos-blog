@@ -77,7 +77,7 @@ Tip：这里会有一个UUID，**没有任何用处**。
 lsblk -no UUID /dev/XzRoot/root
 ```
 
-![查看 UUID](/images/blog/arch-linux-hibernation-into-swap-file/lsblk-uuid.png)
+![查看 UUID](/images/blog/arch-linux-hibernation-into-swap-file/filefrag-output.png)
 
 将这串 UUID（2cee6498-2bd1-496f-9801-164ddddcc9c3） 填入 resume
 
@@ -91,7 +91,7 @@ resume=UUID=2cee6498-2bd1-496f-9801-164ddddcc9c3
 
 运行 `sudo filefrag -v /swapfile`
 
-![filefrag 输出](/images/blog/arch-linux-hibernation-into-swap-file/filefrag-output.png)
+![filefrag 输出](/images/blog/arch-linux-hibernation-into-swap-file/lsblk-uuid.png)
 
 找到第一行第一个拥有两个句点的数字。如截图所示，为：78610432
 
