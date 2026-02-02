@@ -43,6 +43,7 @@ export async function GET({ props }) {
     // Load fonts (using process.cwd() to ensure it works in build environment)
     const fontRegular = fs.readFileSync(path.join(process.cwd(), 'public/fonts/atkinson-regular.woff'));
     const fontBold = fs.readFileSync(path.join(process.cwd(), 'public/fonts/atkinson-bold.woff'));
+    const fontChinese = fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansSC-Bold.ttf'));
     
     // Load Logo
     const logoBuffer = fs.readFileSync(path.join(process.cwd(), 'public/dotted_circle.png'));
@@ -99,6 +100,7 @@ export async function GET({ props }) {
                             style: {
                                 fontSize: 60,
                                 fontWeight: 'bold',
+                                fontFamily: 'Atkinson Hyperlegible, Noto Sans SC',
                                 color: 'white',
                                 textAlign: 'center',
                                 padding: '0 40px',
@@ -137,6 +139,12 @@ export async function GET({ props }) {
                 {
                     name: 'Atkinson Hyperlegible',
                     data: fontBold,
+                    weight: 700,
+                    style: 'normal',
+                },
+                {
+                    name: 'Noto Sans SC',
+                    data: fontChinese,
                     weight: 700,
                     style: 'normal',
                 },
