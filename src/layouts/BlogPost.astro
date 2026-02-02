@@ -14,14 +14,14 @@ interface Heading {
 	text: string;
 }
 
-type Props = CollectionEntry<'blog'>['data'] & { headings?: Heading[] };
+type Props = CollectionEntry<'blog'>['data'] & { headings?: Heading[]; ogImage?: string };
 
-const { title, description, pubDate, updatedDate, heroImage, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, headings = [], ogImage } = Astro.props;
 ---
 
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} image={ogImage} />
 		<style>
 			main {
 				width: calc(100% - 2em);

@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # playwright mcp
 .playwright-mcp/
+
+# wrangler
+.wrangler/

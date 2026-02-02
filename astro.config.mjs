@@ -23,6 +23,7 @@ export default defineConfig({
   // 301 重定向：从旧 WordPress URL 到新 Astro URL
   // 保留 SEO 权重，确保外部链接和搜索引擎结果正常工作
   redirects: {
+    '/introduction': '/about',
     // AI/技术类
     '/ai-driven-manual-testing-revolution': '/blog/ai-driven-manual-testing-revolution',
     '/ai-write-post-observed-phenomena': '/blog/ai-write-post-observed-phenomena',
