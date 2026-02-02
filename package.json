@@ -18,8 +18,5 @@
     "marked": "^17.0.0",
     "satori": "^0.19.1",
     "sharp": "^0.34.3"
-  },
-  "devDependencies": {
-    "playwright": "^1.56.1"
   }
 }
