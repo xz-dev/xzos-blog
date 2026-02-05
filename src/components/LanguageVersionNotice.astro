@@ -2,6 +2,7 @@
 /**
  * 语言版本提示组件
  * 显示在博客文章顶部，提示用户可以切换到其他语言版本
+ * 对于英文版本，还会显示 LLM 翻译声明
  */
 import { languages, defaultLang, type Lang } from '../i18n/ui';
 import { existsSync } from 'node:fs';
@@ -39,9 +40,19 @@ if (lang === 'zh') {
 const noticeText = lang === 'zh' 
   ? `This article is also available in ${otherLangLabel}`
   : `本文也有${otherLangLabel}版本`;
+
+// 英文版本的 LLM 翻译声明
+const isTranslatedVersion = lang === 'en';
 ---
 
-{otherVersionExists && (
+{isTranslatedVersion && (
+  <div class="translation-notice">
+    <span class="notice-icon">🤖</span>
+    <span>This article was translated by AI (LLM). There may be errors or inaccuracies. For the original content, please refer to the <a href={otherVersionPath} hreflang="zh">original version</a>.</span>
+  </div>
+)}
+
+{otherVersionExists && !isTranslatedVersion && (
   <div class="language-notice">
     <span class="notice-icon">🌐</span>
     <span>{noticeText}:</span>
@@ -52,7 +63,8 @@ const noticeText = lang === 'zh'
 )}
 
 <style>
-  .language-notice {
+  .language-notice,
+  .translation-notice {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -64,17 +76,25 @@ const noticeText = lang === 'zh'
     font-size: 0.9rem;
   }
   
-  .notice-icon {
-    font-size: 1.1rem;
+  .translation-notice {
+    border-left-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
   }
   
-  .language-notice a {
+  .notice-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  
+  .language-notice a,
+  .translation-notice a {
     color: rgb(var(--accent));
     font-weight: 600;
     text-decoration: none;
   }
   
-  .language-notice a:hover {
+  .language-notice a:hover,
+  .translation-notice a:hover {
     text-decoration: underline;
   }
 </style>
