@@ -1,0 +1,72 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+// Detect language from referrer or default to zh
+const referrer = Astro.request.headers.get('referer') || '';
+const isEnglish = referrer.includes('/en/') || Astro.url.pathname.startsWith('/en/');
+
+const title = isEnglish ? 'Page Not Found' : '页面未找到';
+const description = isEnglish ? 'The page you are looking for does not exist.' : '您访问的页面不存在。';
+const message = isEnglish ? "Sorry, we couldn't find the page you're looking for." : '抱歉，我们找不到您要访问的页面。';
+const backHome = isEnglish ? 'Back to Home' : '返回首页';
+const homeLink = isEnglish ? '/en/' : '/';
+---
+
+<!doctype html>
+<html lang={isEnglish ? 'en' : 'zh-CN'}>
+	<head>
+		<BaseHead title={`${title} - ${SITE_TITLE}`} description={description} />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2rem);
+				margin: auto;
+				padding: 3rem 1rem;
+				text-align: center;
+				min-height: 60vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+			}
+			h1 {
+				font-size: 6rem;
+				font-weight: 700;
+				margin: 0;
+				color: var(--accent);
+			}
+			h2 {
+				font-size: 1.5rem;
+				font-weight: 400;
+				margin: 1rem 0 2rem 0;
+				color: var(--secondary);
+			}
+			.back-link {
+				display: inline-block;
+				padding: 0.75rem 1.5rem;
+				background: var(--accent);
+				color: var(--background);
+				text-decoration: none;
+				font-weight: 600;
+				transition: all 0.2s ease;
+				border: 2px solid var(--accent);
+			}
+			.back-link:hover {
+				background: transparent;
+				color: var(--accent);
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>404</h1>
+			<h2>{message}</h2>
+			<a href={homeLink} class="back-link">{backHome}</a>
+		</main>
+		<Footer />
+	</body>
+</html>

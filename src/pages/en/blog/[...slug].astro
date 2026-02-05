@@ -1,15 +1,15 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
+import BlogPost from '../../../layouts/BlogPost.astro';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	const posts = await getCollection('blog-en');
 	return posts.map((post) => ({
 		params: { slug: post.id },
 		props: post,
 	}));
 }
-type Props = CollectionEntry<'blog'>;
+type Props = CollectionEntry<'blog-en'>;
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
@@ -35,6 +35,6 @@ if (!ogImage) {
 }
 ---
 
-<BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang="zh" slug={post.id}>
+<BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang="en" slug={post.id}>
 	<Content />
 </BlogPost>

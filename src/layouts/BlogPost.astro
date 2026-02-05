@@ -5,8 +5,10 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import LanguageVersionNotice from '../components/LanguageVersionNotice.astro';
 import Remark42Comments from '../components/Remark42Comments.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import type { Lang } from '../i18n/ui';
 
 interface Heading {
 	depth: number;
@@ -14,12 +16,20 @@ interface Heading {
 	text: string;
 }
 
-type Props = CollectionEntry<'blog'>['data'] & { headings?: Heading[]; ogImage?: string };
+type Props = CollectionEntry<'blog'>['data'] & { 
+	headings?: Heading[]; 
+	ogImage?: string;
+	lang?: Lang;
+	slug?: string;
+};
 
-const { title, description, pubDate, updatedDate, heroImage, headings = [], ogImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
+
+// 从 URL 提取 slug（如果没有传入）
+const actualSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
 ---
 
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<BaseHead title={title} description={description} image={ogImage} />
 		<style>
@@ -85,6 +95,7 @@ const { title, description, pubDate, updatedDate, heroImage, headings = [], ogIm
 						<h1>{title}</h1>
 						<hr />
 					</div>
+					<LanguageVersionNotice slug={actualSlug} lang={lang} />
 					<TableOfContents headings={headings} />
 					<slot />
 					<hr />

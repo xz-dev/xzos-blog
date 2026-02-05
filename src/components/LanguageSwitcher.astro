@@ -1,0 +1,53 @@
+---
+/**
+ * 语言切换组件
+ */
+import { languages, defaultLang, type Lang } from '../i18n/ui';
+import { getAlternateLanguagePath, getLangFromUrl } from '../i18n/utils';
+
+const currentLang = getLangFromUrl(Astro.url);
+---
+
+<nav class="language-switcher" aria-label="Language switcher">
+  {Object.entries(languages).map(([lang, label]) => {
+    const isActive = lang === currentLang;
+    const href = getAlternateLanguagePath(Astro.url, lang as Lang);
+    
+    return (
+      <a 
+        href={href}
+        class:list={['lang-link', { active: isActive }]}
+        aria-current={isActive ? 'page' : undefined}
+        hreflang={lang}
+      >
+        {label}
+      </a>
+    );
+  })}
+</nav>
+
+<style>
+  .language-switcher {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .lang-link {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    color: rgb(var(--gray));
+    transition: color 0.2s, background-color 0.2s;
+  }
+  
+  .lang-link:hover {
+    color: rgb(var(--accent));
+  }
+  
+  .lang-link.active {
+    color: rgb(var(--accent));
+    font-weight: 600;
+  }
+</style>

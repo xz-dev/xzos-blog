@@ -3,22 +3,41 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
+import translate from './src/integrations/translate';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://xzos.net',
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    // 翻译集成：在 build 开始前自动翻译博客文章
+    // 需要设置环境变量 SILICONFLOW_API_KEY
+    translate({
+      // enabled: false, // 取消注释可禁用翻译
+    }),
+    mdx(),
+    sitemap(),
+  ],
+
+  // 国际化配置
+  i18n: {
+    locales: ['zh', 'en'],
+    defaultLocale: 'zh',
+    routing: {
+      prefixDefaultLocale: false, // 中文不加前缀: /blog/xxx
+                                   // 英文加前缀: /en/blog/xxx
+    },
+  },
 
   markdown: {
-      shikiConfig: {
-          theme: 'github-dark',
-      },
-	},
+    shikiConfig: {
+      theme: 'github-dark',
+    },
+  },
 
   image: {
-      // Don't optimize images during development
-      service: { entrypoint: 'astro/assets/services/sharp' },
-	},
+    // Don't optimize images during development
+    service: { entrypoint: 'astro/assets/services/sharp' },
+  },
 
   // 301 重定向：从旧 WordPress URL 到新 Astro URL
   // 保留 SEO 权重，确保外部链接和搜索引擎结果正常工作

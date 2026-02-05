@@ -4,6 +4,8 @@ import '../styles/terminal.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
+import { getLangFromUrl, getAlternateLanguagePath } from '../i18n/utils';
+import { languages, defaultLang } from '../i18n/ui';
 
 interface Props {
 	title: string;
@@ -12,10 +14,17 @@ interface Props {
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const currentLang = getLangFromUrl(Astro.url);
 
 const { title, description, image = FallbackImage } = Astro.props;
 const imageSrc = typeof image === 'string' ? image : image.src;
 const imageURL = new URL(imageSrc, Astro.site || Astro.url);
+
+// Generate hreflang URLs for all languages
+const hreflangUrls = Object.keys(languages).map((lang) => ({
+	lang: lang as keyof typeof languages,
+	url: new URL(getAlternateLanguagePath(Astro.url, lang as keyof typeof languages), Astro.site),
+}));
 ---
 
 <!-- Global Metadata -->
@@ -38,6 +47,12 @@ const imageURL = new URL(imageSrc, Astro.site || Astro.url);
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+
+<!-- hreflang tags for multilingual SEO -->
+{hreflangUrls.map(({ lang, url }) => (
+	<link rel="alternate" hreflang={lang === 'zh' ? 'zh-CN' : lang} href={url} />
+))}
+<link rel="alternate" hreflang="x-default" href={new URL(getAlternateLanguagePath(Astro.url, defaultLang), Astro.site)} />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>

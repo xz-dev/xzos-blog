@@ -1,0 +1,80 @@
+---
+/**
+ * 语言版本提示组件
+ * 显示在博客文章顶部，提示用户可以切换到其他语言版本
+ */
+import { languages, defaultLang, type Lang } from '../i18n/ui';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface Props {
+  /** 当前文章的 slug (文件名，不含扩展名) */
+  slug: string;
+  /** 当前语言 */
+  lang?: Lang;
+}
+
+const { slug, lang = defaultLang } = Astro.props;
+
+// 检查其他语言版本是否存在
+const otherLang: Lang = lang === 'zh' ? 'en' : 'zh';
+const otherLangLabel = languages[otherLang];
+
+// 构建其他语言版本的路径
+let otherVersionPath: string;
+let otherVersionExists = false;
+
+if (lang === 'zh') {
+  // 当前是中文，检查英文版本
+  const enPath = join(process.cwd(), 'src/content/blog/en', `${slug}.md`);
+  otherVersionExists = existsSync(enPath);
+  otherVersionPath = `/en/blog/${slug}`;
+} else {
+  // 当前是英文，检查中文版本
+  const zhPath = join(process.cwd(), 'src/content/blog', `${slug}.md`);
+  otherVersionExists = existsSync(zhPath);
+  otherVersionPath = `/blog/${slug}`;
+}
+
+const noticeText = lang === 'zh' 
+  ? `This article is also available in ${otherLangLabel}`
+  : `本文也有${otherLangLabel}版本`;
+---
+
+{otherVersionExists && (
+  <div class="language-notice">
+    <span class="notice-icon">🌐</span>
+    <span>{noticeText}:</span>
+    <a href={otherVersionPath} hreflang={otherLang}>
+      {otherLangLabel}
+    </a>
+  </div>
+)}
+
+<style>
+  .language-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    background: var(--card-background, rgba(var(--gray-light), 0.3));
+    border-radius: 8px;
+    border-left: 4px solid rgb(var(--accent));
+    font-size: 0.9rem;
+  }
+  
+  .notice-icon {
+    font-size: 1.1rem;
+  }
+  
+  .language-notice a {
+    color: rgb(var(--accent));
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .language-notice a:hover {
+    text-decoration: underline;
+  }
+</style>

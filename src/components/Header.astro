@@ -1,7 +1,13 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const basePath = lang === 'zh' ? '' : `/${lang}`;
 ---
 
 <header>
@@ -14,12 +20,13 @@ import ThemeToggle from './ThemeToggle.astro';
 			</div>
 		</div>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
-			<HeaderLink href="/link-exchange">友链</HeaderLink>
+			<HeaderLink href={`${basePath}/`}>{t('nav.home')}</HeaderLink>
+			<HeaderLink href={`${basePath}/blog`}>{t('nav.blog')}</HeaderLink>
+			<HeaderLink href="/about">{t('nav.about')}</HeaderLink>
+			<HeaderLink href="/link-exchange">{t('nav.links')}</HeaderLink>
 		</div>
 		<div class="right-section">
+			<LanguageSwitcher />
 			<ThemeToggle />
 			<div class="social-links">
 				<a href="https://fosstodon.org/@xzdev" target="_blank">
