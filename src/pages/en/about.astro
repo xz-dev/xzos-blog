@@ -1,20 +1,20 @@
 ---
 import { getEntry, render } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE } from '../consts';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE } from '../../consts';
 
-const page = await getEntry('pages', 'about');
+const page = await getEntry('pages-en', 'about');
 if (!page) {
-	throw new Error('About page not found in content/pages/about.md');
+	throw new Error('English About page not found in content/pages/en/about.md');
 }
 
 const { Content } = await render(page);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 	<head>
 		<BaseHead title={`${page.data.title} - ${SITE_TITLE}`} description={page.data.description} />
 		<style>

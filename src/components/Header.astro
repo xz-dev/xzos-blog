@@ -22,7 +22,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		<div class="internal-links">
 			<HeaderLink href={`${basePath}/`}>{t('nav.home')}</HeaderLink>
 			<HeaderLink href={`${basePath}/blog`}>{t('nav.blog')}</HeaderLink>
-			<HeaderLink href="/about">{t('nav.about')}</HeaderLink>
+			<HeaderLink href={`${basePath}/about`}>{t('nav.about')}</HeaderLink>
 			<HeaderLink href="/link-exchange">{t('nav.links')}</HeaderLink>
 		</div>
 		<div class="right-section">

@@ -16,6 +16,15 @@ const blogSchema = ({ image }: { image: () => z.ZodType }) =>
 		source_hash: z.string().optional(),
 	});
 
+// 静态页面 schema（about 等）
+const pageSchema = () =>
+	z.object({
+		title: z.string(),
+		description: z.string(),
+		// 翻译文件的源文件哈希（用于增量翻译检测）
+		source_hash: z.string().optional(),
+	});
+
 // 中文博客（默认）
 const blog = defineCollection({
 	loader: glob({ base: './src/content/blog', pattern: '*.{md,mdx}' }),
@@ -28,7 +37,21 @@ const blogEn = defineCollection({
 	schema: blogSchema,
 });
 
+// 中文静态页面
+const pages = defineCollection({
+	loader: glob({ base: './src/content/pages', pattern: '*.{md,mdx}' }),
+	schema: pageSchema,
+});
+
+// 英文静态页面
+const pagesEn = defineCollection({
+	loader: glob({ base: './src/content/pages/en', pattern: '*.{md,mdx}' }),
+	schema: pageSchema,
+});
+
 export const collections = { 
 	blog,
 	'blog-en': blogEn,
+	pages,
+	'pages-en': pagesEn,
 };

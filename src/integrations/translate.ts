@@ -1,7 +1,8 @@
 /**
- * Astro Integration: 自动翻译博客文章
- * 使用硅基流动 API (DeepSeek-V3) 将中文博客翻译为英文
+ * Astro Integration: 自动翻译内容
+ * 使用硅基流动 API (DeepSeek-V3) 将中文内容翻译为英文
  * 通过源文件哈希实现增量翻译
+ * 支持多个 content collection（blog, pages 等）
  */
 import type { AstroIntegration } from 'astro';
 import { createHash } from 'node:crypto';
@@ -14,7 +15,7 @@ import { loadEnv } from 'vite';
 const SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1';
 const DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V3';
 
-const SYSTEM_PROMPT = `You are a professional translator. Translate the Chinese markdown blog post to English.
+const SYSTEM_PROMPT = `You are a professional translator. Translate the Chinese markdown content to English.
 
 OUTPUT: Return a COMPLETE, valid markdown file with frontmatter.
 
@@ -23,7 +24,7 @@ RULES:
 2. Translate title and description to English
 3. Keep these values EXACTLY as-is: pubDate, updatedDate, author, category, tags, heroImage
 4. Preserve ALL markdown formatting (headers, code blocks, links, images)
-5. Keep code snippets, URLs, file paths UNCHANGED
+5. Keep code snippets, URLs, file paths, Base64 strings UNCHANGED
 6. Output ONLY the markdown file, no explanations or comments
 
 Example output format:
@@ -37,20 +38,42 @@ tags: ["tag1", "tag2"]
 
 Translated content here...`;
 
+/** 翻译目录配置 */
+interface TranslateDir {
+  /** 源目录 */
+  source: string;
+  /** 目标目录 */
+  target: string;
+  /** 描述（用于日志） */
+  name: string;
+}
+
 interface TranslateOptions {
   /** 硅基流动 API Key（默认从环境变量读取） */
   apiKey?: string;
   /** 使用的模型 */
   model?: string;
-  /** 源博客目录 */
-  sourceDir?: string;
-  /** 目标博客目录 */
-  targetDir?: string;
+  /** 要翻译的目录列表 */
+  directories?: TranslateDir[];
   /** 强制重新翻译所有文件 */
   force?: boolean;
   /** 是否启用（可用于在开发时禁用） */
   enabled?: boolean;
 }
+
+/** 默认翻译目录 */
+const DEFAULT_DIRECTORIES: TranslateDir[] = [
+  {
+    source: 'src/content/blog',
+    target: 'src/content/blog/en',
+    name: 'Blog Posts',
+  },
+  {
+    source: 'src/content/pages',
+    target: 'src/content/pages/en',
+    name: 'Static Pages',
+  },
+];
 
 /** 计算内容哈希（前8位） */
 function computeHash(content: string): string {
@@ -83,20 +106,6 @@ function insertSourceHash(content: string, hash: string): string {
   
   // 如果没有 frontmatter，创建一个
   return `---\nsource_hash: "${hash}"\n---\n\n${content}`;
-}
-
-/** 提取 frontmatter 和正文 */
-function extractFrontmatter(content: string): { frontmatter: string | null; body: string } {
-  // 更宽容的匹配：允许 --- 后面没有换行
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n?---\r?\n?([\s\S]*)$/);
-  if (match) {
-    // 清理 frontmatter，确保每行正确分隔
-    let fm = match[1].trim();
-    // 修复 "tags: ["xxx"]---" 这种情况
-    fm = fm.replace(/\]---$/, ']');
-    return { frontmatter: fm, body: match[2] };
-  }
-  return { frontmatter: null, body: content };
 }
 
 /** 调用硅基流动 API 翻译 */
@@ -205,12 +214,79 @@ async function translateFile(
   return true;
 }
 
+/** 翻译一个目录 */
+async function translateDirectory(
+  dir: TranslateDir,
+  apiKey: string,
+  model: string,
+  force: boolean
+): Promise<{ translated: number; skipped: number; errors: number }> {
+  const { source: sourceDir, target: targetDir, name } = dir;
+  
+  console.log(`\n📁 ${name}`);
+  console.log(`   Source: ${sourceDir}`);
+  console.log(`   Target: ${targetDir}\n`);
+
+  // 检查源目录是否存在
+  if (!existsSync(sourceDir)) {
+    console.log(`   ⚠️  Source directory does not exist, skipping...`);
+    return { translated: 0, skipped: 0, errors: 0 };
+  }
+
+  // 确保目标目录存在
+  if (!existsSync(targetDir)) {
+    await mkdir(targetDir, { recursive: true });
+  }
+
+  // 获取所有 markdown 文件
+  const files = await readdir(sourceDir);
+  const mdFiles = files.filter(f => f.endsWith('.md') || f.endsWith('.mdx'));
+
+  if (mdFiles.length === 0) {
+    console.log(`   No markdown files found`);
+    return { translated: 0, skipped: 0, errors: 0 };
+  }
+
+  console.log(`   Found ${mdFiles.length} files\n`);
+
+  let translated = 0;
+  let skipped = 0;
+  let errors = 0;
+
+  for (const file of mdFiles) {
+    const sourcePath = join(sourceDir, file);
+    const targetPath = join(targetDir, file);
+
+    try {
+      const wasTranslated = await translateFile(
+        sourcePath,
+        targetPath,
+        apiKey,
+        model,
+        force
+      );
+      
+      if (wasTranslated) {
+        translated++;
+        // 添加延迟避免 API 限流
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        skipped++;
+      }
+    } catch (error) {
+      errors++;
+      console.error(`  ❌ ${file}: ${error instanceof Error ? error.message : error}`);
+    }
+  }
+
+  return { translated, skipped, errors };
+}
+
 /** Astro Integration */
 export default function translateIntegration(options: TranslateOptions = {}): AstroIntegration {
   const {
     model = DEFAULT_MODEL,
-    sourceDir = 'src/content/blog',
-    targetDir = 'src/content/blog/en',
+    directories = DEFAULT_DIRECTORIES,
     force = false,
     enabled = true,
   } = options;
@@ -234,58 +310,27 @@ export default function translateIntegration(options: TranslateOptions = {}): As
           return;
         }
 
-        console.log('\n[translate] Starting blog translation...');
+        console.log('\n[translate] Starting content translation...');
         console.log(`[translate] Model: ${model}`);
-        console.log(`[translate] Source: ${sourceDir}`);
-        console.log(`[translate] Target: ${targetDir}\n`);
+        console.log(`[translate] Directories: ${directories.length}`);
 
-        // 确保目标目录存在
-        if (!existsSync(targetDir)) {
-          await mkdir(targetDir, { recursive: true });
+        let totalTranslated = 0;
+        let totalSkipped = 0;
+        let totalErrors = 0;
+
+        for (const dir of directories) {
+          const { translated, skipped, errors } = await translateDirectory(
+            dir,
+            apiKey,
+            model,
+            force
+          );
+          totalTranslated += translated;
+          totalSkipped += skipped;
+          totalErrors += errors;
         }
 
-        // 获取所有 markdown 文件
-        const files = await readdir(sourceDir);
-        const mdFiles = files.filter(f => f.endsWith('.md') || f.endsWith('.mdx'));
-
-        if (mdFiles.length === 0) {
-          console.log('[translate] No markdown files found');
-          return;
-        }
-
-        console.log(`[translate] Found ${mdFiles.length} files\n`);
-
-        let translated = 0;
-        let skipped = 0;
-        let errors = 0;
-
-        for (const file of mdFiles) {
-          const sourcePath = join(sourceDir, file);
-          const targetPath = join(targetDir, file);
-
-          try {
-            const wasTranslated = await translateFile(
-              sourcePath,
-              targetPath,
-              apiKey,
-              model,
-              force
-            );
-            
-            if (wasTranslated) {
-              translated++;
-              // 添加延迟避免 API 限流
-              await new Promise(resolve => setTimeout(resolve, 1000));
-            } else {
-              skipped++;
-            }
-          } catch (error) {
-            errors++;
-            console.error(`  ❌ ${file}: ${error instanceof Error ? error.message : error}`);
-          }
-        }
-
-        console.log(`\n[translate] Done! Translated: ${translated}, Skipped: ${skipped}, Errors: ${errors}\n`);
+        console.log(`\n[translate] Done! Translated: ${totalTranslated}, Skipped: ${totalSkipped}, Errors: ${totalErrors}\n`);
       },
     },
   };
