@@ -51,6 +51,21 @@ export function useTranslatedPath(lang: Lang) {
 }
 
 /**
+ * 不支持多语言的页面路径（这些页面只有中文版）
+ * 切换语言时，这些页面会跳转到对应语言的首页
+ */
+const SHARED_PAGES = ['/link-exchange'];
+
+/**
+ * 检查路径是否为共享页面（不支持翻译的页面）
+ */
+function isSharedPage(path: string): boolean {
+  // 移除尾部斜杠进行比较
+  const normalizedPath = path.replace(/\/$/, '') || '/';
+  return SHARED_PAGES.some(p => normalizedPath === p || normalizedPath === `/en${p}`);
+}
+
+/**
  * 获取当前页面的其他语言版本路径
  */
 export function getAlternateLanguagePath(url: URL, targetLang: Lang): string {
@@ -60,6 +75,11 @@ export function getAlternateLanguagePath(url: URL, targetLang: Lang): string {
   // 移除当前语言前缀（如果有）
   if (currentLang !== defaultLang) {
     path = path.replace(`/${currentLang}`, '') || '/';
+  }
+  
+  // 对于共享页面，切换语言时跳转到对应语言的首页
+  if (isSharedPage(path)) {
+    return targetLang === defaultLang ? '/' : `/${targetLang}/`;
   }
   
   // 添加目标语言前缀（如果不是默认语言）
