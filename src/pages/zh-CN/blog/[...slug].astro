@@ -1,0 +1,40 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BlogPost from '../../../layouts/BlogPost.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog-zh-CN');
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: post,
+	}));
+}
+type Props = CollectionEntry<'blog-zh-CN'>;
+
+const post = Astro.props;
+const { Content, headings } = await render(post);
+
+// Resolve OG Image
+let ogImage = '';
+if (post.data.heroImage) {
+	// @ts-ignore
+	ogImage = post.data.heroImage.src || post.data.heroImage;
+} else if (post.body) {
+	const mdMatch = post.body.match(/!\[.*?\]\((.*?)\)/);
+	if (mdMatch && mdMatch[1]) {
+		ogImage = mdMatch[1];
+	} else {
+		const htmlMatch = post.body.match(/<img[^>]+src=["'](.*?)["']/);
+		if (htmlMatch && htmlMatch[1]) {
+			ogImage = htmlMatch[1];
+		}
+	}
+}
+if (!ogImage) {
+	ogImage = `/og/${post.id}.png`;
+}
+---
+
+<BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang="zh-CN" slug={post.id}>
+	<Content />
+</BlogPost>

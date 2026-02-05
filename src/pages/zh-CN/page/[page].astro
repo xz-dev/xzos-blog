@@ -1,0 +1,247 @@
+---
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import FormattedDate from '../../../components/FormattedDate.astro';
+import Header from '../../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../../consts';
+
+export async function getStaticPaths() {
+	// 辅助函数：提取文章摘要
+	function getExcerptHtml(body: string): { html: string; hasMore: boolean } {
+		const moreMarker = '<!--more-->';
+		const moreIndex = body.indexOf(moreMarker);
+
+		if (moreIndex > 0) {
+			// 找到了<!--more-->标记，只渲染之前的内容
+			const excerptMd = body.substring(0, moreIndex).trim();
+			return {
+				html: marked.parse(excerptMd) as string,
+				hasMore: true,
+			};
+		}
+
+		// 没有<!--more-->标记，取前3段
+		const paragraphs = body.split(/\n\n+/);
+		const firstFewParagraphs = paragraphs.slice(0, 3).join('\n\n');
+
+		return {
+			html: marked.parse(firstFewParagraphs) as string,
+			hasMore: paragraphs.length > 3 || body.length > firstFewParagraphs.length + 100,
+		};
+	}
+
+	const posts = (await getCollection('blog-zh-CN')).sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	);
+
+	const postsPerPage = 10;
+	const totalPages = Math.ceil(posts.length / postsPerPage);
+
+	return Array.from({ length: totalPages }, (_, i) => {
+		const pageNum = i + 1;
+		const start = i * postsPerPage;
+		const end = start + postsPerPage;
+
+		const pagePosts = posts.slice(start, end);
+		const postsWithExcerpts = pagePosts.map((post) => ({
+			post,
+			excerpt: getExcerptHtml(post.body),
+		}));
+
+		return {
+			params: { page: pageNum.toString() },
+			props: {
+				posts: postsWithExcerpts,
+				currentPage: pageNum,
+				totalPages,
+			},
+		};
+	});
+}
+
+const { posts, currentPage, totalPages } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`${SITE_TITLE} - 第${currentPage}页`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 960px;
+				max-width: calc(100% - 2rem);
+				margin: auto;
+				padding: 3rem 1rem;
+			}
+			h1 {
+				font-size: 2.5rem;
+				font-weight: 700;
+				margin: 0 0 2rem 0;
+			}
+			.post-list {
+				list-style-type: none;
+				padding: 0;
+				margin: 0 0 3rem 0;
+			}
+			.post-item {
+				margin-bottom: 3rem;
+				padding-bottom: 3rem;
+				border-bottom: 1px solid #e0e0e0;
+			}
+			.post-item:last-child {
+				border-bottom: none;
+			}
+			.post-title {
+				font-size: 1.8rem;
+				font-weight: 600;
+				margin: 0 0 1rem 0;
+			}
+			.post-title a {
+				color: var(--fg-primary);
+				background: var(--bg-secondary);
+				transition: all 0.2s ease;
+				text-decoration: none;
+			}
+			.post-title a:hover {
+				color: rgb(var(--accent));
+			}
+			.post-excerpt {
+				color: rgb(var(--gray-dark));
+				line-height: 1.6;
+				margin: 1rem 0;
+			}
+			.post-excerpt :global(blockquote) {
+				margin: 1rem 0;
+				padding-left: 1rem;
+				border-left: 3px solid rgb(var(--gray));
+				font-style: italic;
+				color: rgb(var(--gray-dark));
+			}
+			.post-excerpt :global(h2),
+			.post-excerpt :global(h3),
+			.post-excerpt :global(h4) {
+				font-size: 1.2rem;
+				margin: 1rem 0 0.5rem 0;
+			}
+			.post-excerpt :global(p) {
+				margin: 0.5rem 0;
+			}
+			.post-excerpt :global(ul),
+			.post-excerpt :global(ol) {
+				margin: 0.5rem 0;
+				padding-left: 2rem;
+			}
+			.post-excerpt :global(code) {
+				background-color: #f4f4f4;
+				padding: 0.2rem 0.4rem;
+				border-radius: 3px;
+				font-size: 0.9em;
+				font-family: monospace;
+			}
+			.post-excerpt :global(pre) {
+				background-color: #f4f4f4;
+				padding: 1rem;
+				overflow-x: auto;
+			}
+			.post-excerpt :global(pre code) {
+				background-color: transparent;
+				padding: 0;
+			}
+			.post-meta {
+				display: flex;
+				gap: 1rem;
+				align-items: center;
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+				flex-wrap: wrap;
+			}
+			.read-more {
+				color: rgb(var(--accent));
+				text-decoration: none;
+				font-weight: 500;
+			}
+			.read-more:hover {
+				text-decoration: underline;
+			}
+			.pagination {
+				display: flex;
+				justify-content: center;
+				gap: 0.5rem;
+				margin: 2rem 0;
+				flex-wrap: wrap;
+			}
+			.pagination a,
+			.pagination span {
+				padding: 0.5rem 1rem;
+				border: 2px solid var(--accent);
+				text-decoration: none;
+				color: var(--accent);
+				background: transparent;
+				transition: all 0.2s ease;
+			}
+			.pagination a:hover {
+				background: var(--accent);
+				color: var(--background);
+			}
+			.pagination .current {
+				background: var(--accent);
+				color: var(--background);
+				font-weight: 700;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>博客</h1>
+			<ul class="post-list">
+				{
+					posts.map(({ post, excerpt }) => (
+						<li class="post-item">
+							<h2 class="post-title">
+								<a href={`/zh-CN/blog/${post.id}/`}>{post.data.title}</a>
+							</h2>
+							<div class="post-excerpt" set:html={excerpt.html} />
+							<div class="post-meta">
+								<time>
+									<FormattedDate date={post.data.pubDate} />
+								</time>
+								{post.data.author && <span>作者：{post.data.author}</span>}
+								{post.data.category && <span>分类：{post.data.category}</span>}
+								{excerpt.hasMore && (
+									<a href={`/zh-CN/blog/${post.id}/`} class="read-more">
+										继续阅读 →
+									</a>
+								)}
+							</div>
+						</li>
+					))
+				}
+			</ul>
+			<div class="pagination">
+				{currentPage > 1 && (
+					<a href={currentPage === 2 ? '/zh-CN/' : `/zh-CN/page/${currentPage - 1}`}>
+						上一页
+					</a>
+				)}
+				{Array.from({ length: totalPages }, (_, i) => {
+					const pageNum = i + 1;
+					const href = pageNum === 1 ? '/zh-CN/' : `/zh-CN/page/${pageNum}`;
+					return pageNum === currentPage ? (
+						<span class="current">{pageNum}</span>
+					) : (
+						<a href={href}>{pageNum}</a>
+					);
+				})}
+				{currentPage < totalPages && (
+					<a href={`/zh-CN/page/${currentPage + 1}`}>
+						下一页
+					</a>
+				)}
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
