@@ -1,16 +1,35 @@
 ---
 // Remark42 Comments Component
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'zh' } = Astro.props;
+
+// 将语言转换为 Remark42 支持的格式
+// zh-CN -> zh, 其他保持不变
+const remark42Locale = lang === 'zh-CN' ? 'zh' : lang;
 ---
 
 <div id="remark42"></div>
 
-<script>
+<script define:vars={{ remark42Locale }}>
   // Configuration
   const REMARK42_HOST = 'https://remark42.xzos.net';
   const REMARK42_SITE_ID = 'xzos-blog';
 
-  // Get current page URL
-  const currentUrl = window.location.origin + window.location.pathname;
+  /**
+   * 规范化 URL - 移除语言前缀
+   * 确保所有语言版本共享同一个评论区
+   */
+  const getNormalizedUrl = () => {
+    const pathname = window.location.pathname;
+    // 移除 /en 或 /zh-CN 前缀
+    const normalizedPath = pathname.replace(/^\/(en|zh-CN)\//, '/');
+    return window.location.origin + normalizedPath;
+  };
 
   // Map blog theme to Remark42 theme
   const getTheme = () => {
@@ -23,9 +42,9 @@
     host: REMARK42_HOST,
     site_id: REMARK42_SITE_ID,
     components: ['embed'],
-    url: currentUrl,
+    url: getNormalizedUrl(),           // 使用规范化 URL
     theme: getTheme(),
-    locale: 'en',
+    locale: remark42Locale,            // 使用页面语言
   };
 
   // Load Remark42 script

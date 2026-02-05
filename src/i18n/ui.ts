@@ -3,8 +3,9 @@
  */
 
 export const languages = {
-  zh: '中文',
+  zh: '源站',
   en: 'English',
+  'zh-CN': '简体中文',
 } as const;
 
 export type Lang = keyof typeof languages;
@@ -74,6 +75,36 @@ export const ui = {
     
     // Language switch
     'lang.switch': 'Switch language',
+  },
+  'zh-CN': {
+    // 导航
+    'nav.home': '首页',
+    'nav.blog': '博客',
+    'nav.about': '关于',
+    'nav.links': '友链',
+    
+    // 站点信息
+    'site.title': 'xzOS',
+    'site.description': "xzOS - xzdev's blog",
+    
+    // 博客
+    'blog.readMore': '阅读全文',
+    'blog.publishedOn': '发布于',
+    'blog.updatedOn': '更新于',
+    'blog.author': '作者',
+    'blog.toc': '目录',
+    'blog.backToBlog': '返回博客',
+    
+    // 分页
+    'pagination.prev': '上一页',
+    'pagination.next': '下一页',
+    'pagination.page': '第 {page} 页',
+    
+    // 页脚
+    'footer.copyright': '版权所有',
+    
+    // 语言切换
+    'lang.switch': '切换语言',
   },
 } as const;
 

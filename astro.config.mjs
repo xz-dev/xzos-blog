@@ -12,6 +12,7 @@ export default defineConfig({
     // 翻译集成：在 build 开始前自动翻译博客文章
     // 需要设置环境变量 SILICONFLOW_API_KEY
     translate({
+      // force: true,  // 强制重新翻译所有文件
       // enabled: false, // 取消注释可禁用翻译
     }),
     mdx(),
@@ -20,11 +21,12 @@ export default defineConfig({
 
   // 国际化配置
   i18n: {
-    locales: ['zh', 'en'],
+    locales: ['zh', 'en', 'zh-CN'],
     defaultLocale: 'zh',
     routing: {
       prefixDefaultLocale: false, // 中文不加前缀: /blog/xxx
                                    // 英文加前缀: /en/blog/xxx
+                                   // 简中加前缀: /zh-CN/blog/xxx
     },
   },
 

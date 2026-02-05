@@ -99,7 +99,7 @@ const actualSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() |
 					<TableOfContents headings={headings} />
 					<slot />
 					<hr />
-					<Remark42Comments />
+					<Remark42Comments lang={lang} />
 				</div>
 			</article>
 		</main>

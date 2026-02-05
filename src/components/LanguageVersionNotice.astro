@@ -2,7 +2,7 @@
 /**
  * 语言版本提示组件
  * 显示在博客文章顶部，提示用户可以切换到其他语言版本
- * 对于英文版本，还会显示 LLM 翻译声明
+ * 对于翻译版本，显示 LLM 翻译声明
  */
 import { languages, defaultLang, type Lang } from '../i18n/ui';
 import { existsSync } from 'node:fs';
@@ -18,47 +18,72 @@ interface Props {
 const { slug, lang = defaultLang } = Astro.props;
 
 // 检查其他语言版本是否存在
-const otherLang: Lang = lang === 'zh' ? 'en' : 'zh';
-const otherLangLabel = languages[otherLang];
+const availableVersions: { lang: Lang; path: string; label: string }[] = [];
 
-// 构建其他语言版本的路径
-let otherVersionPath: string;
-let otherVersionExists = false;
-
-if (lang === 'zh') {
-  // 当前是中文，检查英文版本
-  const enPath = join(process.cwd(), 'src/content/blog/en', `${slug}.md`);
-  otherVersionExists = existsSync(enPath);
-  otherVersionPath = `/en/blog/${slug}`;
-} else {
-  // 当前是英文，检查中文版本
-  const zhPath = join(process.cwd(), 'src/content/blog', `${slug}.md`);
-  otherVersionExists = existsSync(zhPath);
-  otherVersionPath = `/blog/${slug}`;
+// 检查原文（中文）
+const zhPath = join(process.cwd(), 'src/content/blog', `${slug}.md`);
+if (existsSync(zhPath) && lang !== 'zh') {
+  availableVersions.push({
+    lang: 'zh',
+    path: `/blog/${slug}`,
+    label: languages.zh,
+  });
 }
 
-const noticeText = lang === 'zh' 
-  ? `This article is also available in ${otherLangLabel}`
-  : `本文也有${otherLangLabel}版本`;
+// 检查英文版本
+const enPath = join(process.cwd(), 'src/content/blog/en', `${slug}.md`);
+if (existsSync(enPath) && lang !== 'en') {
+  availableVersions.push({
+    lang: 'en',
+    path: `/en/blog/${slug}`,
+    label: languages.en,
+  });
+}
 
-// 英文版本的 LLM 翻译声明
-const isTranslatedVersion = lang === 'en';
+// 检查简中版本
+const zhCNPath = join(process.cwd(), 'src/content/blog/zh-CN', `${slug}.md`);
+if (existsSync(zhCNPath) && lang !== 'zh-CN') {
+  availableVersions.push({
+    lang: 'zh-CN',
+    path: `/zh-CN/blog/${slug}`,
+    label: languages['zh-CN'],
+  });
+}
+
+// 检查是否为翻译版本（英文或简中）
+const isTranslatedVersion = lang === 'en' || lang === 'zh-CN';
+const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
 ---
 
-{isTranslatedVersion && (
+{isTranslatedVersion && originalVersionPath && (
   <div class="translation-notice">
     <span class="notice-icon">🤖</span>
-    <span>This article was translated by AI (LLM). There may be errors or inaccuracies. For the original content, please refer to the <a href={otherVersionPath} hreflang="zh">original version</a>.</span>
+    <span>
+      {lang === 'en' 
+        ? 'This article was translated by AI (LLM). There may be errors or inaccuracies. For the original content, please refer to the '
+        : '本文由 AI（大语言模型）翻译。可能存在错误或不准确之处。如需查看原文，请参阅'
+      }
+      <a href={originalVersionPath} hreflang="zh">
+        {lang === 'en' ? 'original version' : '原文'}
+      </a>。
+    </span>
   </div>
 )}
 
-{otherVersionExists && !isTranslatedVersion && (
+{availableVersions.length > 0 && (
   <div class="language-notice">
     <span class="notice-icon">🌐</span>
-    <span>{noticeText}:</span>
-    <a href={otherVersionPath} hreflang={otherLang}>
-      {otherLangLabel}
-    </a>
+    <span>
+      {lang === 'zh' ? 'This article is also available in:' : '本文还有其他语言版本：'}
+    </span>
+    {availableVersions.map((version, index) => (
+      <>
+        <a href={version.path} hreflang={version.lang}>
+          {version.label}
+        </a>
+        {index < availableVersions.length - 1 && <span> / </span>}
+      </>
+    ))}
   </div>
 )}
 
