@@ -425,6 +425,32 @@ async function copyFileAsVersion(
   console.log(`    📋 Copied to ${basename(targetPath)}`);
 }
 
+/** 快速检查是否需要处理（不调用 AI） */
+async function needsProcessing(
+  sourceContent: string,
+  enPath: string,
+  zhCNPath: string,
+  force: boolean
+): Promise<boolean> {
+  if (force) return true;
+  
+  const sourceHash = computeHash(sourceContent);
+  
+  // 检查英文目标
+  if (!existsSync(enPath)) return true;
+  const enContent = await readFile(enPath, 'utf-8');
+  const enHash = getSourceHash(enContent);
+  if (!enHash || enHash !== sourceHash) return true;
+  
+  // 检查中文目标
+  if (!existsSync(zhCNPath)) return true;
+  const zhCNContent = await readFile(zhCNPath, 'utf-8');
+  const zhCNHash = getSourceHash(zhCNContent);
+  if (!zhCNHash || zhCNHash !== sourceHash) return true;
+  
+  return false;
+}
+
 /** 处理单个文件的翻译和副本生成 */
 async function processFile(
   sourcePath: string,
@@ -437,7 +463,16 @@ async function processFile(
   const sourceContent = await readFile(sourcePath, 'utf-8');
   const sourceHash = computeHash(sourceContent);
   
-  // 检测语言
+  const enPath = join(targetDirs.en, filename);
+  const zhCNPath = join(targetDirs.zhCN, filename);
+  
+  // 快速检查：如果两个目标都是最新的，直接跳过（不调用 AI）
+  if (!await needsProcessing(sourceContent, enPath, zhCNPath, force)) {
+    console.log(`  ⏭️  ${filename}: Up to date (hash: ${sourceHash})`);
+    return { translated: 0, copied: 0, skipped: 2 };
+  }
+  
+  // 需要处理，才检测语言
   console.log(`  🔍 ${filename}: Detecting language...`);
   const sourceLang = await detectLanguage(sourceContent, apiKey, model);
   console.log(`     Detected: ${sourceLang}`);
@@ -445,9 +480,6 @@ async function processFile(
   let translated = 0;
   let copied = 0;
   let skipped = 0;
-  
-  const enPath = join(targetDirs.en, filename);
-  const zhCNPath = join(targetDirs.zhCN, filename);
   
   // 根据源语言决定操作
   if (sourceLang === 'zh') {

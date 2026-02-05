@@ -28,6 +28,35 @@ function getGradientForTitle(title: string) {
     return gradients[index];
 }
 
+// 模块级缓存：字体和 logo 只读取一次，被所有缩略图生成任务复用
+let cachedAssets: {
+    fontRegular?: Buffer;
+    fontBold?: Buffer;
+    fontChinese?: Buffer;
+    logoBase64?: string;
+    fontFiles?: string[];
+} = {};
+
+function loadAssets() {
+    if (!cachedAssets.fontRegular) {
+        const fontDir = path.join(process.cwd(), 'public/fonts');
+        cachedAssets.fontRegular = fs.readFileSync(path.join(fontDir, 'atkinson-regular.woff'));
+        cachedAssets.fontBold = fs.readFileSync(path.join(fontDir, 'atkinson-bold.woff'));
+        cachedAssets.fontChinese = fs.readFileSync(path.join(fontDir, 'NotoSansSC-Bold.ttf'));
+        
+        // 字体文件路径供 Resvg 使用
+        cachedAssets.fontFiles = [
+            path.join(fontDir, 'atkinson-regular.woff'),
+            path.join(fontDir, 'atkinson-bold.woff'),
+            path.join(fontDir, 'NotoSansSC-Bold.ttf'),
+        ];
+        
+        const logoBuffer = fs.readFileSync(path.join(process.cwd(), 'public/dotted_circle.png'));
+        cachedAssets.logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    }
+    return cachedAssets;
+}
+
 export async function getStaticPaths() {
     const posts = await getCollection('blog');
     return posts.map((post) => ({
@@ -36,19 +65,12 @@ export async function getStaticPaths() {
     }));
 }
 
-export async function GET({ props }) {
+export async function GET({ props }: { props: any }) {
     const post = props;
     const gradient = getGradientForTitle(post.data.title);
     
-    // Load fonts (using process.cwd() to ensure it works in build environment)
-    const fontRegular = fs.readFileSync(path.join(process.cwd(), 'public/fonts/atkinson-regular.woff'));
-    const fontBold = fs.readFileSync(path.join(process.cwd(), 'public/fonts/atkinson-bold.woff'));
-    const fontChinese = fs.readFileSync(path.join(process.cwd(), 'public/fonts/NotoSansSC-Bold.ttf'));
-    
-    // Load Logo
-    const logoBuffer = fs.readFileSync(path.join(process.cwd(), 'public/dotted_circle.png'));
-    const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
-
+    // 使用缓存的资源
+    const { fontRegular, fontBold, fontChinese, logoBase64 } = loadAssets();
     const svg = await satori(
         {
             type: 'div',
@@ -132,19 +154,19 @@ export async function GET({ props }) {
             fonts: [
                 {
                     name: 'Atkinson Hyperlegible',
-                    data: fontRegular,
+                    data: fontRegular!,
                     weight: 400,
                     style: 'normal',
                 },
                 {
                     name: 'Atkinson Hyperlegible',
-                    data: fontBold,
+                    data: fontBold!,
                     weight: 700,
                     style: 'normal',
                 },
                 {
                     name: 'Noto Sans SC',
-                    data: fontChinese,
+                    data: fontChinese!,
                     weight: 700,
                     style: 'normal',
                 },
@@ -152,11 +174,17 @@ export async function GET({ props }) {
         }
     );
 
-    const resvg = new Resvg(svg);
+    // 使用优化配置的 Resvg：禁用系统字体扫描，只加载必要的字体
+    const resvg = new Resvg(svg, {
+        font: {
+            loadSystemFonts: false,  // 关键优化：不扫描系统字体（默认 true 会很慢）
+            fontFiles: cachedAssets.fontFiles,  // 只加载我们需要的字体
+        },
+    });
     const pngData = resvg.render();
     const pngBuffer = pngData.asPng();
 
-    return new Response(pngBuffer, {
+    return new Response(pngBuffer as unknown as BodyInit, {
         headers: {
             'Content-Type': 'image/png',
         },
