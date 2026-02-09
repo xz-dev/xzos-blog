@@ -8,6 +8,9 @@
     "preview": "astro preview",
     "astro": "astro"
   },
+  "overrides": {
+    "wrangler": "^4.59.1"
+  },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
     "@astrojs/mdx": "^4.3.10",
