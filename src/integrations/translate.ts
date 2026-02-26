@@ -19,7 +19,7 @@ import { loadEnv } from 'vite';
 
 // ============ 配置 ============
 const SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1';
-const DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V3';
+const DEFAULT_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';
 
 // ============ 提示词配置 ============
 
