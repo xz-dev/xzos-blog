@@ -37,6 +37,5 @@ Welcome to connect:
 
 > **Resume / CV**
 >
-> [Bilingual Version (Chinese-English)](/cv/xiangzhe_cv-zh_en.pdf) |
 > [English](/cv/xiangzhe_cv.pdf) |
 > [Chinese Version](/cv/曾祥哲的简历.pdf)
