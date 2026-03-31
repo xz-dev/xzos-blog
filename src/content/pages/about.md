@@ -33,6 +33,5 @@ description: "关于 xz-dev 的个人博客介绍"
 
 > **简历 / CV**
 >
-> [中英双语版](/cv/xiangzhe_cv-zh_en.pdf) |
 > [English](/cv/xiangzhe_cv.pdf) |
 > [中文版](/cv/曾祥哲的简历.pdf)
