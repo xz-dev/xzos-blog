@@ -1,17 +1,16 @@
 ---
-source_hash: "2bc9ff84"
+source_hash: "c642a683"
+source_lang: "zh"
+target_lang: "en"
 title: "Introduction"
-description: "About xz-dev's personal blog"
-pubDate: "2024-01-01"
-author: "original"
-tags: ["tag1", "tag2"]
+description: "Introduction to xz-dev's personal blog"
 ---
 
 > This is xz-dev's personal blog
 >
-> Mainly used for sharing IT technologies and the blogger's random thoughts ฅ'ω'ฅ
+> Mainly used for sharing IT technology and the blogger's random thoughts ฅ'ω'ฅ
 
-> [GitHub Profile](https://github.com/xz-dev)
+> [GitHub Homepage](https://github.com/xz-dev)
 
 > **Active Contributor on Stack Exchange Communities**
 >

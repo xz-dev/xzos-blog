@@ -4,9 +4,8 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
 
-// Detect language from referrer or default to zh
-const referrer = Astro.request.headers.get('referer') || '';
-const isEnglish = referrer.includes('/en/') || Astro.url.pathname.startsWith('/en/');
+// Detect language from URL path (headers are not available on prerendered pages)
+const isEnglish = Astro.url.pathname.startsWith('/en/');
 
 const title = isEnglish ? 'Page Not Found' : '页面未找到';
 const description = isEnglish ? 'The page you are looking for does not exist.' : '您访问的页面不存在。';
