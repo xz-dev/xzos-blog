@@ -1,0 +1,74 @@
+---
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+import BlogList from '../../../layouts/BlogList.astro';
+import { getBlogCollection, nonDefaultLocales } from '../../../i18n/collections';
+import type { Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+	function getExcerptHtml(body: string): { html: string; hasMore: boolean } {
+		const moreMarker = '<!--more-->';
+		const moreIndex = body.indexOf(moreMarker);
+
+		if (moreIndex > 0) {
+			const excerptMd = body.substring(0, moreIndex).trim();
+			return {
+				html: marked.parse(excerptMd) as string,
+				hasMore: true,
+			};
+		}
+
+		const paragraphs = body.split(/\n\n+/);
+		const firstFewParagraphs = paragraphs.slice(0, 3).join('\n\n');
+
+		return {
+			html: marked.parse(firstFewParagraphs) as string,
+			hasMore: paragraphs.length > 3 || body.length > firstFewParagraphs.length + 100,
+		};
+	}
+
+	const paths = [];
+	const postsPerPage = 10;
+
+	for (const lang of nonDefaultLocales) {
+		const posts = (await getCollection(getBlogCollection(lang) as any)).sort(
+			(a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+		);
+
+		const totalPages = Math.ceil(posts.length / postsPerPage);
+
+		for (let i = 0; i < totalPages; i++) {
+			const pageNum = i + 1;
+			const start = i * postsPerPage;
+			const end = start + postsPerPage;
+
+			const pagePosts = posts.slice(start, end);
+			const postsWithExcerpts = pagePosts.map((post: any) => ({
+				post,
+				excerpt: getExcerptHtml(post.body || ''),
+			}));
+
+			paths.push({
+				params: { lang, page: pageNum.toString() },
+				props: {
+					posts: postsWithExcerpts,
+					currentPage: pageNum,
+					totalPages,
+					lang,
+				},
+			});
+		}
+	}
+
+	return paths;
+}
+
+const { posts, currentPage, totalPages, lang } = Astro.props as {
+	posts: { post: any; excerpt: { html: string; hasMore: boolean } }[];
+	currentPage: number;
+	totalPages: number;
+	lang: Lang;
+};
+---
+
+<BlogList lang={lang} currentPage={currentPage} totalPages={totalPages} posts={posts} />

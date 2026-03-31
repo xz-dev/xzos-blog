@@ -1,56 +1,48 @@
 ---
-import { getCollection } from 'astro:content';
+/**
+ * 博客列表页 - excerpt 列表布局（含智能分页）
+ * 用于首页 (/, /en/, /zh-CN/) 和分页页面 (/page/N, /en/page/N, /zh-CN/page/N)
+ */
 import { marked } from 'marked';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_FULL_TITLE } from '../../consts';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { getBlogPrefix, getHomePath, getHtmlLang, getPagePrefix } from '../i18n/collections';
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const allPosts = (await getCollection('blog-zh-CN')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-
-// 辅助函数：提取文章摘要
-function getExcerptHtml(body: string): { html: string; hasMore: boolean } {
-	const moreMarker = '<!--more-->';
-	const moreIndex = body.indexOf(moreMarker);
-
-	if (moreIndex > 0) {
-		// 找到了<!--more-->标记，只渲染之前的内容
-		const excerptMd = body.substring(0, moreIndex).trim();
-		return {
-			html: marked.parse(excerptMd) as string,
-			hasMore: true,
-		};
-	}
-
-	// 没有<!--more-->标记，取前3段
-	const paragraphs = body.split(/\n\n+/);
-	const firstFewParagraphs = paragraphs.slice(0, 3).join('\n\n');
-
-	return {
-		html: marked.parse(firstFewParagraphs) as string,
-		hasMore: paragraphs.length > 3 || body.length > firstFewParagraphs.length + 100,
-	};
+interface PostWithExcerpt {
+	post: any;
+	excerpt: { html: string; hasMore: boolean };
 }
 
-// 为每篇文章生成摘要
-const postsWithExcerpts = allPosts.map((post) => ({
-	post,
-	excerpt: getExcerptHtml(post.body || ''),
-}));
+interface Props {
+	lang: Lang;
+	currentPage: number;
+	totalPages: number;
+	posts: PostWithExcerpt[];
+}
 
-// 每页显示10篇文章
-const postsPerPage = 10;
-const totalPages = Math.ceil(postsWithExcerpts.length / postsPerPage);
-const paginatedPosts = postsWithExcerpts.slice(0, postsPerPage);
+const { lang, currentPage, totalPages, posts } = Astro.props;
+const t = useTranslations(lang);
+const htmlLang = getHtmlLang(lang);
+const blogPrefix = getBlogPrefix(lang);
+const pagePrefix = getPagePrefix(lang);
+const homePath = getHomePath(lang);
+
+// 页面标题
+const isFirstPage = currentPage === 1;
+const pageTitle = isFirstPage
+	? `${SITE_TITLE} - For Coding Life`
+	: t('pagination.pageTitle', { title: SITE_TITLE, page: currentPage.toString() });
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={htmlLang}>
 	<head>
-		<BaseHead title={SITE_FULL_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
 		<style>
 			main {
 				width: 960px;
@@ -153,6 +145,7 @@ const paginatedPosts = postsWithExcerpts.slice(0, postsPerPage);
 				justify-content: center;
 				gap: 0.5rem;
 				margin: 2rem 0;
+				flex-wrap: wrap;
 			}
 			.pagination a,
 			.pagination span {
@@ -177,24 +170,24 @@ const paginatedPosts = postsWithExcerpts.slice(0, postsPerPage);
 	<body>
 		<Header />
 		<main>
-			<h1>博客</h1>
+			<h1>{t('blog.heading')}</h1>
 			<ul class="post-list">
 				{
-					paginatedPosts.map(({ post, excerpt }) => (
+					posts.map(({ post, excerpt }) => (
 						<li class="post-item">
 							<h2 class="post-title">
-								<a href={`/zh-CN/blog/${post.id}/`}>{post.data.title}</a>
+								<a href={`${blogPrefix}/${post.id}/`}>{post.data.title}</a>
 							</h2>
 							<div class="post-excerpt" set:html={excerpt.html} />
 							<div class="post-meta">
 								<time>
 									<FormattedDate date={post.data.pubDate} />
 								</time>
-								{post.data.author && <span>作者：{post.data.author}</span>}
-								{post.data.category && <span>分类：{post.data.category}</span>}
+								{post.data.author && <span>{t('blog.authorLabel')}{post.data.author}</span>}
+								{post.data.category && <span>{t('blog.categoryLabel')}{post.data.category}</span>}
 								{excerpt.hasMore && (
-									<a href={`/zh-CN/blog/${post.id}/`} class="read-more">
-										继续阅读 →
+									<a href={`${blogPrefix}/${post.id}/`} class="read-more">
+										{t('blog.continueReading')}
 									</a>
 								)}
 							</div>
@@ -202,17 +195,53 @@ const paginatedPosts = postsWithExcerpts.slice(0, postsPerPage);
 					))
 				}
 			</ul>
+
 			{totalPages > 1 && (
-				<div class="pagination">
+				<nav class="pagination">
+					{currentPage > 1 && (
+						<a href={currentPage === 2 ? homePath : `${pagePrefix}/${currentPage - 1}/`}>{t('pagination.prev')}</a>
+					)}
+
+					{/* 始终显示第1页 */}
+					{currentPage === 1 ? (
+						<span class="current">1</span>
+					) : (
+						<a href={homePath}>1</a>
+					)}
+
+					{/* 如果当前页 > 3，显示省略号 */}
+					{currentPage > 3 && <span>…</span>}
+
+					{/* 显示当前页附近的页码（当前页-1, 当前页, 当前页+1） */}
 					{Array.from({ length: totalPages }, (_, i) => {
 						const pageNum = i + 1;
-						return pageNum === 1 ? (
-							<span class="current">1</span>
-						) : (
-							<a href={`/zh-CN/page/${pageNum}`}>{pageNum}</a>
-						);
+						// 跳过第1页和最后一页（它们单独处理）
+						if (pageNum === 1 || pageNum === totalPages) return null;
+						// 只显示当前页附近的2页
+						if (Math.abs(pageNum - currentPage) > 1) return null;
+
+						if (pageNum === currentPage) {
+							return <span class="current">{pageNum}</span>;
+						}
+						return <a href={`${pagePrefix}/${pageNum}/`}>{pageNum}</a>;
 					})}
-				</div>
+
+					{/* 如果当前页 < 总页数-2，显示省略号 */}
+					{currentPage < totalPages - 2 && <span>…</span>}
+
+					{/* 始终显示最后一页（如果总页数>1） */}
+					{totalPages > 1 && (
+						currentPage === totalPages ? (
+							<span class="current">{totalPages}</span>
+						) : (
+							<a href={`${pagePrefix}/${totalPages}/`}>{totalPages}</a>
+						)
+					)}
+
+					{currentPage < totalPages && (
+						<a href={`${pagePrefix}/${currentPage + 1}/`}>{t('pagination.next')}</a>
+					)}
+				</nav>
 			)}
 		</main>
 		<Footer />

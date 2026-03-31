@@ -1,26 +1,42 @@
 ---
+/**
+ * 博客归档页 - 卡片网格布局
+ * 用于 /blog/, /en/blog/, /zh-CN/blog/
+ */
 import { getCollection } from 'astro:content';
-import BaseHead from '../../../components/BaseHead.astro';
-import Footer from '../../../components/Footer.astro';
-import FormattedDate from '../../../components/FormattedDate.astro';
-import Header from '../../../components/Header.astro';
-import PostThumbnail from '../../../components/PostThumbnail.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import PostThumbnail from '../components/PostThumbnail.astro';
+import { getBlogCollection, getBlogPrefix, getHtmlLang } from '../i18n/collections';
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-const SITE_TITLE = 'xzOS';
-const SITE_DESCRIPTION = "xzOS - xzdev's blog";
+interface Props {
+	lang: Lang;
+}
 
-const posts = (await getCollection('blog-zh-CN')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const htmlLang = getHtmlLang(lang);
+const blogPrefix = getBlogPrefix(lang);
+const collectionName = getBlogCollection(lang);
+
+const posts = (await getCollection(collectionName as any)).sort(
+	(a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={htmlLang}>
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
 			main {
 				width: 960px;
+				margin: 0 auto;
 			}
 			ul {
 				display: flex;
@@ -90,10 +106,10 @@ const posts = (await getCollection('blog-zh-CN')).sort(
 			<section>
 				<ul>
 					{
-						posts.map((post) => {
+						posts.map((post: any) => {
 							return (
 							<li>
-								<a href={`/zh-CN/blog/${post.id}/`}>
+								<a href={`${blogPrefix}/${post.id}/`}>
 									<PostThumbnail post={post} />
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">

@@ -1,20 +1,35 @@
 ---
+/**
+ * 静态页面布局（about 等）
+ * 用于 /about, /en/about, /zh-CN/about
+ */
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { getHtmlLang, getPagesCollection } from '../i18n/collections';
+import type { Lang } from '../i18n/ui';
+import { SITE_TITLE } from '../consts';
 import { getEntry, render } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import { SITE_TITLE } from '../../consts';
 
-const page = await getEntry('pages-zh-CN', 'about');
+interface Props {
+	lang: Lang;
+	slug: string;
+}
+
+const { lang, slug } = Astro.props;
+const htmlLang = getHtmlLang(lang);
+const collectionName = getPagesCollection(lang);
+
+const page = await getEntry(collectionName as any, slug);
 if (!page) {
-	throw new Error('Simplified Chinese About page not found in content/pages/zh-CN/about.md');
+	throw new Error(`Page "${slug}" not found in collection "${collectionName}"`);
 }
 
 const { Content } = await render(page);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={htmlLang}>
 	<head>
 		<BaseHead title={`${page.data.title} - ${SITE_TITLE}`} description={page.data.description} />
 		<style>

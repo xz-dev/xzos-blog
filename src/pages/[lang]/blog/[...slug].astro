@@ -1,17 +1,24 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BlogPost from '../../../layouts/BlogPost.astro';
+import { getBlogCollection, nonDefaultLocales } from '../../../i18n/collections';
+import type { Lang } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog-en');
-	return posts.map((post) => ({
-		params: { slug: post.id },
-		props: post,
-	}));
+	const paths = [];
+	for (const lang of nonDefaultLocales) {
+		const posts = await getCollection(getBlogCollection(lang) as any);
+		for (const post of posts as any[]) {
+			paths.push({
+				params: { lang, slug: post.id },
+				props: { post, lang },
+			});
+		}
+	}
+	return paths;
 }
-type Props = CollectionEntry<'blog-en'>;
 
-const post = Astro.props;
+const { post, lang } = Astro.props as { post: any; lang: Lang };
 const { Content, headings } = await render(post);
 
 // Resolve OG Image
@@ -35,6 +42,6 @@ if (!ogImage) {
 }
 ---
 
-<BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang="en" slug={post.id}>
+<BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang={lang} slug={post.id}>
 	<Content />
 </BlogPost>
