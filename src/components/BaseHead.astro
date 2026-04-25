@@ -2,7 +2,6 @@
 // Import the terminal theme (contains all base styles)
 import '../styles/terminal.css';
 import type { ImageMetadata } from 'astro';
-import FallbackImage from '../assets/blog-placeholder-1.jpg';
 import { SITE_TITLE } from '../consts';
 import { getLangFromUrl, getAlternateLanguagePath } from '../i18n/utils';
 import { languages, defaultLang } from '../i18n/ui';
@@ -16,7 +15,7 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const currentLang = getLangFromUrl(Astro.url);
 
-const { title, description, image = FallbackImage } = Astro.props;
+const { title, description, image = '/og/default.png' } = Astro.props;
 const imageSrc = typeof image === 'string' ? image : image.src;
 const imageURL = new URL(imageSrc, Astro.site || Astro.url);
 
