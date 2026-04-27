@@ -7,7 +7,7 @@
  * 3. 智能生成副本：英文原文生成英文副本，中文原文生成中文副本
  * 4. 增量翻译：通过源文件哈希避免重复翻译
  * 
- * 使用硅基流动 API (DeepSeek-V3)
+ * 使用硅基流动 API (DeepSeek-V4-Flash)
  * 支持多个 content collection（blog, pages 等）
  */
 import type { AstroIntegration } from 'astro';
@@ -19,7 +19,7 @@ import { loadEnv } from 'vite';
 
 // ============ 配置 ============
 const SILICONFLOW_BASE_URL = 'https://api.siliconflow.cn/v1';
-const DEFAULT_MODEL = 'Pro/deepseek-ai/DeepSeek-V3.2';
+const DEFAULT_MODEL = 'deepseek-ai/DeepSeek-V4-Flash';
 
 // ============ 提示词配置 ============
 
