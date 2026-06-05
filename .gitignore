@@ -26,6 +26,9 @@ pnpm-debug.log*
 # playwright mcp
 .playwright-mcp/
 
+# pi local agent state
+.pi/
+
 # wrangler
 .wrangler/
 

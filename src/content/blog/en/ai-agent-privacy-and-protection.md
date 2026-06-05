@@ -1,5 +1,5 @@
 ---
-source_hash: "23d2ac27"
+source_hash: "e8fa7c4a"
 source_lang: "zh"
 target_lang: "en"
 title: "AI Agent Privacy and Protection"
@@ -216,7 +216,7 @@ Therefore, safety guardrails can be implemented like this. Clearly, this is clos
     1. Identity and confirmation method: use separate OAuth, push notifications, or MFA, e.g., Keycloak + WebAuthn/passkeys.
     2. Data flow control method: Envoy `ext_authz`.
 
-## Demo / Security Component: ai-gateway-filter
+### Demo / Security Component: ai-gateway-filter
 
 I wrote a demo a couple of days ago as a prototype for subsequent security components: [ai-gateway-filter](https://github.com/xz-dev/ai-gateway-filter)
 
