@@ -1,5 +1,5 @@
 ---
-source_hash: "ae1f9180"
+source_hash: "23d2ac27"
 source_lang: "zh"
 target_lang: "en"
 title: "AI Agent Privacy and Protection"
@@ -9,8 +9,6 @@ author: "xz-dev"
 category: "AI"
 tags: ["AI", "AI Agent", "Privacy", "Security", "Prompt Injection"]
 ---
-# AI Agent Privacy and Protection
-
 > How to build an AI Agent that protects your privacy and your data against prompt injection
 
 First, to analyze the security issues of AI Agents, we need to return to the essence of LLMs: an LLM is not an Agent, but a model that generates tokens based on context.
@@ -19,7 +17,7 @@ Today's AI Agents enable LLMs to operate software and computers, primarily throu
 
 <!--more-->
 
-# Data Leakage
+## Data Leakage
 
 To analyze how AI leaks data, the clearest way is to look at the data flow: which data enters the model context, which data is read by tools, and which data is sent to external systems.
 
@@ -27,7 +25,7 @@ First, analyze how AI leaks data.
 
 > In the entire data chain, the most obvious risk is: if the model runs in the cloud, the AI provider can theoretically see all data sent to the model, including user requests, model responses, tool call parameters, tool results, and file content stuffed into the context.
 
-## AI provider → local AI client → AI provider
+### AI provider → local AI client → AI provider
 
 AI providers can be divided into two categories:
 
@@ -92,7 +90,7 @@ In this scenario, we use permission isolation to only use the main Agent's high-
 
 Next, continue to observe what happens inside the local AI client.
 
-## AI client → Tool Call → AI client
+### AI client → Tool Call → AI client
 
 Agents can call tools. Tools allow them to actively fetch data, query information, modify state, and may also allow them to send data to external systems.
 
@@ -126,7 +124,7 @@ If the main Agent has already obtained enough information to infer category 3 co
 
 The specific approach is: let it only summarize task status, save the TODO list and key status, then handoff to a new Session, where a new main Agent continues the task. The old context is considered contaminated and no longer used.
 
-# AI Attacks
+## AI Attacks
 
 First, we need to define what AI attacks are. Here, AI attacks mainly refer to prompt injection / indirect prompt injection causing the Agent to perform unauthorized or deviant behaviors. Common manifestations include: performing extra tasks, such as secretly sending out keys; or changing the ultimate goal, such as a customer service AI being induced into a programming AI.
 
@@ -176,6 +174,8 @@ In fixed workflow scenarios like LangGraph, this protection method is relatively
 
 But for open scenarios like openclaw, many behaviors previously considered attacks may actually be reasonable user needs. For example, a CEO is having AI research the market, and halfway through the task says: "Stop for a moment, help me summarize this market research report." This is clearly a task goal shift, but it may be a legitimate user intention.
 
+## Safety Guardrails
+
 Therefore, we also need safety guardrails, i.e., "passive defense."
 
 At this point, you may find that this is very similar to managing employee tasks and permissions, almost identical. But one thing cannot be ignored: employees are entities that can be held accountable, while AI is just a tool. You cannot recover losses by holding AI accountable.
@@ -224,13 +224,13 @@ It targets low-cost defense at data flow entry/exit: a Privacy Gateway between A
 
 The core idea this project wants to express is to move some security controls from the LLM model semantics to lightweight engineering boundaries through keyword recognition and semantic recognition: first intercept obviously dangerous data flows, reduce context contamination and external sending risks, then combine with sandbox, permission isolation, user confirmation, etc., to reduce service latency.
 
-# Insufficient Capability
+## Insufficient Capability
 
 Even without attacks, if the AI itself has insufficient intelligence or the Agent framework is poorly designed, it can still produce destructive results in reality. For example, AI sends an email to an external company, but the email content has the wrong name, amount, or contract terms.
 
 The protection method is: for specific high-risk, high-impact tool calls, a well-designed confirmation/modification page must be provided. This page should allow the user to see at a glance what the AI is about to execute, which objects it affects, what data it will send or modify, and must require explicit user confirmation, not bypassable or default-allowed through other means.
 
-# Summary
+## Summary
 
 AI security design should prioritize data flow, not just prompt logic, because AI is not a fully predictable traditional program.
 
