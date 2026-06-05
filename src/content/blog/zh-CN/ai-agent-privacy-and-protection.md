@@ -1,5 +1,5 @@
 ---
-source_hash: "74dcabc8"
+source_hash: "a654ef9d"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
@@ -15,7 +15,9 @@ tags: ["AI", "AI Agent", "隐私", "安全", "Prompt Injection"]
 
 首先，要分析 AI Agent 的安全问题，需要先回到 LLM 的本质：LLM 不是 Agent，而是一个根据上下文生成 token 的模型。
 
-如今的 AI Agent 让 LLM 操作软件和电脑，主要依靠 tool calling / function calling。MCP 是一种把工具、资源和提示词暴露给 Agent 的协议；在实际运行时，模型生成结构化的工具调用请求，客户端执行工具，再把工具结果返回给模型。AI 可以通过多轮“生成请求—执行工具—返回结果”的循环影响真实系统（也就是现实）。
+进一步说，深度自回归 Transformer 还天然存在 Lost in the Middle 现象。论文 [Lost in the Middle at Birth: An Exact Theory of Transformer Position Bias](https://arxiv.org/abs/2603.10123) 将这种 U 形位置偏置解释为架构本身带来的结果：因果掩码强化开头位置的 primacy，残差连接强化末尾 token 的 recency anchor。直觉上，可以粗略把生成过程理解为：AI 基于开头锚定坐标系和方向，在残差流（residual stream）/ 隐藏状态空间的几何结构（hidden-state geometry）中，借助注意力路由（attention routing）搜索后续 token 的生成路径；而上下文尾部因为离当前输出最近，并通过残差路径直接影响下一步生成，所以拥有强约束力。这不意味着中间内容无效，而是意味着如果我们想约束 AI 行为，应该特别关注上下文的开头和结尾；对应到实际系统，就是系统提示词，以及最新的输入、工具结果和模型输出。
+
+回到 AI Agent 为什么可以对现实造成影响：LLM 本身只生成 token，但当它被接入 tool calling / function calling 后，这些 token 就会变成可执行的结构化请求。MCP 是一种把工具、资源和提示词暴露给 Agent 的协议；在实际运行时，模型生成工具调用请求，客户端执行工具，再把工具结果返回给模型。AI 正是通过多轮“生成请求—执行工具—返回结果”的循环影响真实系统（也就是现实）。
 
 <!--more-->
 
