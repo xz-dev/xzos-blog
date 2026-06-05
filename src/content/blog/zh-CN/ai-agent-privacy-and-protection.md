@@ -1,5 +1,5 @@
 ---
-source_hash: "e8fa7c4a"
+source_hash: "9760f9d7"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
@@ -57,7 +57,7 @@ AI provider 可以分为两类：
 
 先解释什么是 subagent。注意，因为 subagent 的概念会在文中多次作为解决方案出现，但它的实现方式会随问题不同而变化。
 
-和大部分人不同，我在这里不把 subagent 视为“合作伙伴”，也不把多个 subagent 视为一个 team。在本文的安全模型中，subagent 更像外部工具或隔离执行单元，原因如下。
+和大部分人不同，我参考 [Claude Code web search tool 的设计](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool)，在这里不把 subagent 视为“合作伙伴”，也不把多个 subagent 视为一个 team。在本文的安全模型中，subagent 更像外部工具或隔离执行单元，原因如下。
 
 前提：
 

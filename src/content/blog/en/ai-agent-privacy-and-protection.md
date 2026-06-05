@@ -1,5 +1,5 @@
 ---
-source_hash: "e8fa7c4a"
+source_hash: "9760f9d7"
 source_lang: "zh"
 target_lang: "en"
 title: "AI Agent Privacy and Protection"
@@ -53,7 +53,7 @@ For category 3 business-sensitive information, the problem is more complex. It m
 
 First, explain what a subagent is. Note that the concept of subagent will appear multiple times as a solution in this article, but its implementation varies with different problems.
 
-Unlike most people, I do not treat subagent as a "partner" or multiple subagents as a team. In the security model of this article, subagents are more like external tools or isolated execution units, for the following reasons:
+Unlike most people, referring to the design of the [Claude Code web search tool](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool), I do not treat subagent as a "partner" or multiple subagents as a team. In the security model of this article, subagents are more like external tools or isolated execution units, for the following reasons:
 
 Prerequisites:
 
