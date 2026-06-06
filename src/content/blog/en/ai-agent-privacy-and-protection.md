@@ -1,5 +1,5 @@
 ---
-source_hash: "86fef199"
+source_hash: "7392cbfb"
 source_lang: "zh"
 target_lang: "en"
 title: "AI Agent Privacy and Protection"
@@ -16,7 +16,11 @@ First, to analyze the security issues of AI Agents, we need to return to the ess
 
 <!--more-->
 
-More specifically, deep autoregressive Transformers also naturally exhibit the Lost in the Middle phenomenon. The paper [Lost in the Middle at Birth: An Exact Theory of Transformer Position Bias](https://arxiv.org/abs/2603.10123) explains this U-shaped positional bias as a result of the architecture itself: causal masking strengthens primacy at the beginning, while residual connections strengthen the recency anchor at the final token. Intuitively, we can roughly understand generation as follows: the AI anchors coordinates and direction from the beginning, then searches for the generation path of subsequent tokens in the residual stream / hidden-state geometry via attention routing; meanwhile, the tail of the context is closest to the current output and directly affects the next-token prediction through residual paths, so it has strong constraining power. This does not mean middle content is useless. It means that if we want to constrain AI behavior, we should pay special attention to the beginning and end of the context; in real systems, that corresponds to the system prompt, plus the latest input, tool results, and model output.
+More specifically, deep autoregressive Transformers also naturally exhibit the Lost in the Middle phenomenon. The paper [Lost in the Middle at Birth: An Exact Theory of Transformer Position Bias](https://arxiv.org/abs/2603.10123) explains this U-shaped positional bias as a result of the architecture itself: causal masking strengthens primacy at the beginning, while residual connections strengthen the recency anchor at the final token.
+
+Intuitively, we can roughly understand generation as follows: the AI anchors coordinates and direction from the beginning, then searches for the generation path of subsequent tokens in the residual stream / hidden-state geometry via attention routing; meanwhile, the tail of the context is closest to the current output and directly affects the next-token prediction through residual paths, so it has strong constraining power.
+
+This does not mean middle content is useless. It means that if we want to constrain AI behavior, we should pay special attention to the beginning and end of the context; in real systems, that corresponds to the system prompt, plus the latest input, tool results, and model output.
 
 Returning to why AI Agents can affect reality: an LLM itself only generates tokens, but when it is connected to tool calling / function calling, those tokens become executable structured requests. MCP is a protocol that exposes tools, resources, and prompts to Agents; during runtime, the model generates tool call requests, the client executes the tool, and then returns the tool results to the model. AI influences real systems (i.e., reality) precisely through multiple rounds of the "generate request—execute tool—return result" loop.
 
