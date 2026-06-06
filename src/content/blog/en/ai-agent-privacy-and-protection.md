@@ -1,5 +1,5 @@
 ---
-source_hash: "7392cbfb"
+source_hash: "707b1d27"
 source_lang: "zh"
 target_lang: "en"
 title: "AI Agent Privacy and Protection"
@@ -185,6 +185,8 @@ But for open-ended scenarios like openclaw, many behaviors previously considered
 
 Therefore, we also need safety guardrails, i.e., "passive defense."
 
+As the last line of defense, we should focus on balancing full containment isolation and user authorization. This is a balance because an authorization flow that is too burdensome will push users to break safety boundaries themselves.
+
 Analyzing to this point, you might find: this is very similar to managing employee tasks and employee permissions, almost identical. But one point cannot be ignored: employees are entities that can be held accountable, while AI is just a tool. You cannot recover losses by holding AI accountable.
 
 Unlike employee management, AI safety guardrails should prioritize starting from the data flow, and AI cannot authorize itself. We should treat AI as a highly unreliable external contractor. This includes self-built providers, because the risk comes not only from the provider itself but also from the behavior of AI after its semantics have been tampered with.
@@ -202,12 +204,12 @@ Therefore, safety guardrails should focus on:
     1. Actual access permissions to the file system.
     2. Write permissions with real-world impact, such as databases, emails, tickets, cloud resources.
 
-Safety guardrails should not primarily rely on:
+Safety guardrails should not:
 
-1. Pre-combining specific permission sets. You cannot predict in advance which files or data are needed to complete a task, so permissions should be dynamically requested and authorized.
-2. Writing permission rules only in MCP Tool / skill descriptions. Prompt rules cannot replace runtime mandatory isolation; the more exceptions, the more vulnerabilities.
-3. Treating AI as an employee. A safer assumption is: once attacked, AI is an uncontrolled executor.
-4. Treating AI as a human. AI requires an actual computing platform and is essentially a program. Therefore, data leakage risks from providers, logs, caches, networks, and the infrastructure itself must also be considered.
+1. Predict. The more permission combinations and special cases there are, the more vulnerabilities there are. Do not try to predict every possible task combination. You cannot predict in advance which files or data are needed to complete a task, so permissions should be dynamically requested and authorized.
+2. Trust "safe" prompts. Do not write permission rules only in MCP Tool / skill descriptions. Prompt rules cannot replace runtime mandatory isolation.
+3. Treat AI as an employee. A safer assumption is: once attacked, AI is an uncontrolled executor.
+4. Treat AI as a human. AI requires an actual computing platform and is essentially a program. Therefore, data leakage risks from providers, logs, caches, networks, and the infrastructure itself must also be considered.
 
 In summary, safety guardrails should be placed in these areas:
 
