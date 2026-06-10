@@ -8,7 +8,7 @@ description: "When tools no longer require human operation, but humans need to w
 author: "xz-dev"
 category: "Musings"
 tags: ["AI", "Musings", "Poetry"]
-lang: "zh-CN"
+lang: "en"
 ---
 
 > People watching over AI at work, closing their eyes, thoughts gradually drift away.

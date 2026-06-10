@@ -12,6 +12,7 @@ const blogSchema = ({ image }: { image: () => z.ZodType }) =>
 		author: z.string().optional(),
 		category: z.string().optional(),
 		tags: z.array(z.string()).optional(),
+		lang: z.string().optional(),
 		// 翻译文件的源文件哈希（用于增量翻译检测）
 		source_hash: z.string().optional(),
 		// 翻译文件元数据
@@ -25,6 +26,7 @@ const pageSchema = () =>
 	z.object({
 		title: z.string(),
 		description: z.string(),
+		lang: z.string().optional(),
 		// 翻译文件的源文件哈希（用于增量翻译检测）
 		source_hash: z.string().optional(),
 		// 翻译文件元数据

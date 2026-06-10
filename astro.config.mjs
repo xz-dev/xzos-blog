@@ -10,7 +10,7 @@ export default defineConfig({
   site: 'https://xzos.net',
   integrations: [
     // 翻译集成：在 build 开始前自动翻译博客文章
-    // 需要设置环境变量 SILICONFLOW_API_KEY
+    // 需要设置环境变量 OPENAI_API_KEY、OPENAI_MODEL；可选 OPENAI_BASE_URL
     translate({
       // force: true,  // 强制重新翻译所有文件
       // enabled: false, // 取消注释可禁用翻译
