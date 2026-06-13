@@ -315,6 +315,9 @@ async function detectLanguage(
       ],
       temperature: 0,
       max_tokens: 10,
+      // Some OpenAI-compatible upstreams/proxies attach stream_options.
+      // SiliconFlow rejects stream_options unless stream is explicitly true.
+      stream: true,
     }),
   });
   
@@ -357,6 +360,9 @@ async function translateContent(
       ],
       temperature: 0.3,
       max_tokens: 8192,
+      // Some OpenAI-compatible upstreams/proxies attach stream_options.
+      // SiliconFlow rejects stream_options unless stream is explicitly true.
+      stream: true,
     }),
   });
 
