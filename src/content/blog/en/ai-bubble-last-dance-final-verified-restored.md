@@ -1,5 +1,5 @@
 ---
-source_hash: "ae6d23e6"
+source_hash: "7205a498"
 source_lang: "zh"
 target_lang: "en"
 lang: "en"
@@ -10,9 +10,6 @@ author: "xz-dev"
 category: "AI"
 tags: ["AI", "AI Bubble", "Finance", "Macro", "Stagflation", "Gold", "USD", "OpenAI", "NVIDIA", "SpaceX", "IPO", "Data Center", "Capital Markets"]
 ---
-
-# The Last Dance Under the AI Bubble
-
 > I started buying gold after Silicon Valley Bank collapsed on March 10, 2023. The FDIC later confirmed that SVB was closed by California regulators on March 10, 2023, and announced protection for all depositors on March 13; the FDIC's deposit insurance reform report that same year also placed this event in the context of re-examining the U.S. deposit insurance system. [G1][G2] Since then, gold has tripled.
 >
 > Gold is about to return to its essence and challenge the authority of the dollar once again.
