@@ -1,9 +1,9 @@
 ---
-source_hash: "499bba7d"
+source_hash: "c1a26135"
 title: "How to Transfer a 10GB Folder with 110K Files (WeChat Archive) from One iPhone to Another"
 description: "Using a combination of a-Shell and SSH/tar with a Linux computer as intermediary for efficient transfer of large folders between iPhones"
-pubDate: "2025-12-20"
-updatedDate: "2025-12-20"
+pubDate: "2025-12-20T00:00:00+08:00"
+updatedDate: "2025-12-20T00:00:00+08:00"
 author: "xz-dev"
 category: "Tips"
 tags: ["iPhone", "a-Shell", "SSH", "tar", "File Transfer", "WeChat"]

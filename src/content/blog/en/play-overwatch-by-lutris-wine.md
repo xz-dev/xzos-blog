@@ -1,7 +1,7 @@
 ---
-source_hash: "9a0e75e4"
+source_hash: "a2af506d"
 title: "Playing Overwatch on Wine Platform"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "A complete configuration guide for playing Overwatch on Arch Linux using Lutris Wine with Nvidia graphics, including driver installation, GPU management, and performance optimization."
 author: "xz-dev"
 category: "Wine"

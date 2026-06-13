@@ -1,6 +1,6 @@
 ---
 title: "Steam for Linux no sound when streaming"
-pubDate: "2022-05-30"
+pubDate: "2022-05-30T00:00:00+08:00"
 description: "Fix Steam Link streaming sound issue on Linux using pipewire virtual device."
 author: "xz-dev"
 category: "Linux"

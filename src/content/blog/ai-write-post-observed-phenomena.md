@@ -1,6 +1,6 @@
 ---
 title: "AI 撰写 Post 的有趣观察"
-pubDate: "2025-09-02"
+pubDate: "2025-09-02T00:00:00+08:00"
 description: "最近为 Klavis-AI 编写各个社交平台的新功能发布 Post，发现 AI 在不同平台的表现质量差异惊人，探讨开放性对 AI 生成内容质量的影响。"
 author: "xz-dev"
 category: "AI"

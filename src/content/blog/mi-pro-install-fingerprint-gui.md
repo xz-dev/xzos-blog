@@ -1,6 +1,6 @@
 ---
 title: "MI Pro 安装 Fingerprint GUI（Arch Linux 环境）"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "在小米 Pro 笔记本上安装和配置 Fingerprint GUI 指纹识别软件，解决权限问题的完整指南。"
 author: "xz-dev"
 category: "ArchLinux"

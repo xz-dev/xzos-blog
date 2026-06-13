@@ -1,6 +1,6 @@
 ---
 title: "Docker 安装 WordPress 并快速手动迁移所有数据"
-pubDate: "2019-07-26"
+pubDate: "2019-07-26T00:00:00+08:00"
 description: "使用 Docker Compose 部署 WordPress，包括 NGINX、MariaDB、phpMyAdmin，以及完整的数据库和文件迁移流程。"
 author: "xz-dev"
 category: "WordPress"

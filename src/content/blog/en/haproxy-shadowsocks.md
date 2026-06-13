@@ -1,7 +1,7 @@
 ---
-source_hash: "68d5c419"
+source_hash: "b5393fb4"
 title: "HAProxy with ShadowSocks"
-pubDate: "2018-06-27"
+pubDate: "2018-06-27T00:00:00+08:00"
 description: "A configuration guide for using HAProxy to load balance multiple ShadowSocks servers, achieving bandwidth aggregation and accelerated access."
 author: "xz-dev"
 category: "Science Online"

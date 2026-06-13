@@ -1,6 +1,6 @@
 ---
 title: "守着 AI 工作的人"
-pubDate: "2026-02-09"
+pubDate: "2026-02-09T00:00:00+08:00"
 description: "当工具不再需要人来驱动，而是人需要守着工具——我们与 AI 的关系，正在悄然倒置。"
 author: "xz-dev"
 category: "随想"

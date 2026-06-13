@@ -1,10 +1,10 @@
 ---
-source_hash: "bb03df8a"
+source_hash: "75dac585"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: 'DP-3T 保护隐私的"健康码"'
-pubDate: "2022-08-08"
+pubDate: "2022-08-08T00:00:00+08:00"
 description: "介绍 DP-3T 保护隐私的接触者追踪软件，基于去中心化的 P2P 蓝牙技术实现隐私保护。"
 author: "xz-dev"
 category: "技术"

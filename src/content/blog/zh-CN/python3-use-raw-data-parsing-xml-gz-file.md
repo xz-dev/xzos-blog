@@ -1,10 +1,10 @@
 ---
-source_hash: "fe031a23"
+source_hash: "11e8cb97"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Python3 下载并解析 xml.gz 文件"
-pubDate: "2020-05-28"
+pubDate: "2020-05-28T00:00:00+08:00"
 description: "使用 Python3 直接从原始数据解析 GZip 格式压缩的 XML 文件，无需先保存到磁盘。"
 author: "xz-dev"
 category: "代码笔记"

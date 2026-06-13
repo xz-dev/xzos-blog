@@ -1,7 +1,7 @@
 ---
-source_hash: "861269c7"
+source_hash: "fd016b5a"
 title: "Installing WordPress with Docker and Quickly Migrating All Data Manually"
-pubDate: "2019-07-26"
+pubDate: "2019-07-26T00:00:00+08:00"
 description: "Deploy WordPress using Docker Compose, including NGINX, MariaDB, phpMyAdmin, and complete database and file migration processes."
 author: "xz-dev"
 category: "WordPress"

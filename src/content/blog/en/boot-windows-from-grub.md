@@ -1,7 +1,7 @@
 ---
-source_hash: "58fa84ef"
+source_hash: "7df1f35e"
 title: "Arch Linux and Windows Dual Boot Setup (GRUB2)"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "Methods for configuring GRUB2 bootloader in an Arch Linux and Windows dual-boot environment, including manual configuration and automatic detection using os-prober."
 author: "xz-dev"
 category: "ArchLinux"

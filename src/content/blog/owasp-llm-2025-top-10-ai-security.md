@@ -1,6 +1,6 @@
 ---
 title: "OWASP LLM 2025 Top 10 学习笔记"
-pubDate: "2026-06-10"
+pubDate: "2026-06-10T00:00:00+08:00"
 description: "基于 OWASP LLM 2025 Top 10 的学习笔记，补充此前 AI Agent 隐私与防护文章中遗漏的系统提示词、训练数据、记忆系统、工具链、成本攻击与侧信道风险。"
 author: "xz-dev"
 category: "AI"

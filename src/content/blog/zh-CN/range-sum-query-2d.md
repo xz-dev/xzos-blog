@@ -1,10 +1,10 @@
 ---
-source_hash: "bd2b8361"
+source_hash: "2591d2f9"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Range Sum Query 2D"
-pubDate: "2021-05-12"
+pubDate: "2021-05-12T00:00:00+08:00"
 description: "使用动态规划解决 LeetCode 的二维矩阵区域和查询问题。"
 author: "xz-dev"
 category: "算法"

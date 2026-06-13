@@ -1,6 +1,6 @@
 ---
 title: "使用 Linux 游玩尼尔机械纪元"
-pubDate: "2020-10-21"
+pubDate: "2020-10-21T00:00:00+08:00"
 description: "在 Linux 下使用 Nvidia 显卡、Bumblebee 和 primus_vk 运行 Steam 游戏尼尔机械纪元的配置指南。"
 author: "xz-dev"
 category: "Linux"

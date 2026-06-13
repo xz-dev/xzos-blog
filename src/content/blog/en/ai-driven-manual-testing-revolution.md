@@ -1,9 +1,9 @@
 ---
-source_hash: "cd66d5cf"
+source_hash: "2334efd3"
 source_lang: "zh"
 target_lang: "en"
 title: "The Revolution of Manual Testing in the AI Era"
-pubDate: "2025-07-18"
+pubDate: "2025-07-18T00:00:00+08:00"
 description: "While GitHub Copilot was automating manual testing for me, I invented an AI Agent for manual testing. Explore how to leverage AI tools to enhance testing efficiency."
 author: "xz-dev"
 category: "AI"

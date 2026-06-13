@@ -1,10 +1,10 @@
 ---
-source_hash: "58fa84ef"
+source_hash: "7df1f35e"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Arch Linux、Windows 双系统启动（grub2）"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "在 Arch Linux 和 Windows 双系统环境下配置 GRUB2 启动引导的方法，包括手动配置和使用 os-prober 自动检测。"
 author: "xz-dev"
 category: "ArchLinux"

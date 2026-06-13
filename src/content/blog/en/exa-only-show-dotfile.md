@@ -1,7 +1,7 @@
 ---
-source_hash: "a673aa84"
+source_hash: "47d522d9"
 title: "Displaying Only Dotfiles with exa"
-pubDate: "2022-08-16"
+pubDate: "2022-08-16T00:00:00+08:00"
 description: "exa is a replacement for the ls command. This article explains how to use exa to display only dotfiles."
 author: "xz-dev"
 category: "Linux"

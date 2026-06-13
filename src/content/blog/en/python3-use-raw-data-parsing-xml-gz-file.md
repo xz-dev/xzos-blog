@@ -1,7 +1,7 @@
 ---
-source_hash: "fe031a23"
+source_hash: "11e8cb97"
 title: "Python3 Download and Parse xml.gz Files"
-pubDate: "2020-05-28"
+pubDate: "2020-05-28T00:00:00+08:00"
 description: "Using Python3 to directly parse GZip-compressed XML files from raw data without saving to disk first."
 author: "xz-dev"
 category: "Code Notes"

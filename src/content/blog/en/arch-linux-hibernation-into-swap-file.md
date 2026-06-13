@@ -1,9 +1,9 @@
 ---
-source_hash: "092cfb9a"
+source_hash: "d155c53d"
 source_lang: "zh"
 target_lang: "en"
 title: "Arch Linux Hibernation Using Swap File"
-pubDate: "2019-06-08"
+pubDate: "2019-06-08T00:00:00+08:00"
 description: "Complete guide to configuring Swap File on Arch Linux and enabling system hibernation, including GRUB and kernel module configurations."
 author: "xz-dev"
 category: "Linux"

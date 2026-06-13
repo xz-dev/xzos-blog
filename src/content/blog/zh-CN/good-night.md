@@ -1,10 +1,10 @@
 ---
-source_hash: "7ddd9f24"
+source_hash: "930938f5"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Good Night"
-pubDate: "2018-03-14"
+pubDate: "2018-03-14T00:00:00+08:00"
 description: "关于宠物、记忆与童年小鸡小宝的温馨回忆。"
 author: "Maloriear"
 category: "日常"

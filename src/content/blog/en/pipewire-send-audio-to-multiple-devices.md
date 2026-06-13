@@ -1,7 +1,7 @@
 ---
-source_hash: "fdf6247e"
+source_hash: "4ee8f9e0"
 title: "Pipewire: Send Audio to Multiple Devices"
-pubDate: "2022-08-13"
+pubDate: "2022-08-13T00:00:00+08:00"
 description: "Using Pipewire to output audio simultaneously to multiple devices, such as computer speakers and Bluetooth headphones."
 author: "xz-dev"
 category: "Linux"

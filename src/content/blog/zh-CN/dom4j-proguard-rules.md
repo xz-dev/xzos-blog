@@ -1,10 +1,10 @@
 ---
-source_hash: "cc9a73b3"
+source_hash: "46a5f738"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "dom4j 的 proguard-rules 配置分享"
-pubDate: "2022-09-07"
+pubDate: "2022-09-07T00:00:00+08:00"
 description: "解决 UpgradeAll 在 F-Droid 上因 dom4j 混淆导致的解析错误，分享完整的 proguard-rules 配置。"
 author: "xz-dev"
 category: "UpgradeAll"

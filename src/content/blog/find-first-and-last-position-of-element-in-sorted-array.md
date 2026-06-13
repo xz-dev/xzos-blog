@@ -1,6 +1,6 @@
 ---
 title: "Find First and Last Position of Element in Sorted Array"
-pubDate: "2021-04-30"
+pubDate: "2021-04-30T00:00:00+08:00"
 description: "LeetCode 算法题：在排序数组中查找元素的第一个和最后一个位置，对比递归和迭代两种实现方法。"
 author: "xz-dev"
 category: "算法"

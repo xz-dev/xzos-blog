@@ -1,10 +1,10 @@
 ---
-source_hash: "a8f101a5"
+source_hash: "5e514454"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Cut and move Runs via python-docx"
-pubDate: "2024-03-19"
+pubDate: "2024-03-19T00:00:00+08:00"
 description: "如何在 python-docx 中实现 Run 对象的剪切和移动操作，解决库本身不支持的问题。"
 author: "xz-dev"
 category: "Tips"

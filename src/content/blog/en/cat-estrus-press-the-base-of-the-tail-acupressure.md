@@ -1,7 +1,7 @@
 ---
-source_hash: "8f6bca13"
+source_hash: "16baa925"
 title: "Cat in Heat: Tail Base Pressure / Finger Pressure Method"
-pubDate: "2024-09-24"
+pubDate: "2024-09-24T00:00:00+08:00"
 description: "Detailed guide on using the finger pressure method to alleviate symptoms during a cat's heat cycle, including preparation materials, specific steps, and precautions."
 author: "xz-dev"
 category: "Tips"

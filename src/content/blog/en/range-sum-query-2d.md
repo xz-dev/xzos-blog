@@ -1,7 +1,7 @@
 ---
-source_hash: "bd2b8361"
+source_hash: "2591d2f9"
 title: "Range Sum Query 2D"
-pubDate: "2021-05-12"
+pubDate: "2021-05-12T00:00:00+08:00"
 description: "Solving LeetCode's 2D matrix range sum query problem using dynamic programming."
 author: "xz-dev"
 category: "Algorithms"

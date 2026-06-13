@@ -1,10 +1,10 @@
 ---
-source_hash: "d1fb81d1"
+source_hash: "a4d0fc57"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "批量修复 DJI Mimo 导出照片/视频的拍摄时间"
-pubDate: "2026-01-04"
+pubDate: "2026-01-04T00:00:00+08:00"
 description: "使用 osxphotos timewarp 命令从文件名提取正确的拍摄时间，批量修复 Apple Photos 中 DJI Mimo 导出文件的日期"
 author: "xz-dev"
 category: "Tips"

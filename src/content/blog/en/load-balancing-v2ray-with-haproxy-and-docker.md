@@ -1,7 +1,7 @@
 ---
-source_hash: "a85ae84a"
+source_hash: "ddd0333d"
 title: "Load Balancing V2Ray Multi-Protocol Multi-Server Setup with HAProxy"
-pubDate: "2019-11-23"
+pubDate: "2019-11-23T00:00:00+08:00"
 description: "Implement load balancing across multiple protocols and servers using Docker, HAProxy, and V2Ray's Dokodemo-door feature to automatically maintain a list of available nodes."
 author: "xz-dev"
 category: "Science Online"

@@ -1,6 +1,6 @@
 ---
 title: "修改 EXT4 根目录文件系统为 XFS（Arch Linux）"
-pubDate: "2019-10-19"
+pubDate: "2019-10-19T00:00:00+08:00"
 description: "在 Arch Linux 系统上将根目录文件系统从 EXT4 迁移到 XFS，使用 LVM 进行磁盘管理的完整指南。"
 author: "xz-dev"
 category: "Linux"

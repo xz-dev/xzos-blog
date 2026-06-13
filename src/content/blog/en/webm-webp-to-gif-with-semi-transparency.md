@@ -1,8 +1,8 @@
 ---
-source_hash: "10fd6b78"
+source_hash: "7b82b525"
 title: "WebM/WebP to GIF with semi-transparency"
 description: "Technical solution for converting WebM/WebP formats with semi-transparency effects to GIF while handling semi-transparent pixels."
-pubDate: "2024-09-15"
+pubDate: "2024-09-15T00:00:00+08:00"
 author: "xz-dev"
 category: "Algorithm"
 tags: ["FFMPEG", "PIL", "semi-transparent", "transparency", "WebM", "WebP"]

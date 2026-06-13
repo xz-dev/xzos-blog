@@ -1,10 +1,10 @@
 ---
-source_hash: "73540eba"
+source_hash: "622f3d09"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "荣耀平板 2 适配计划"
-pubDate: "2018-06-22"
+pubDate: "2018-06-22T00:00:00+08:00"
 description: "为荣耀平板 2 适配 LineageOS 的计划说明，包括技术思路和参与方式（该计划后来被取消）。"
 author: "xz-dev"
 category: "LineageOS"

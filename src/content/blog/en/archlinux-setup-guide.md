@@ -1,9 +1,9 @@
 ---
-source_hash: "2ab7876c"
+source_hash: "daa295c1"
 source_lang: "zh"
 target_lang: "en"
 title: "ArchLinux Configuration Guide"
-pubDate: "2020-10-21"
+pubDate: "2020-10-21T00:00:00+08:00"
 description: "A navigation page documenting the ArchLinux configuration process, including desktop environment installation, swap partition setup, user permissions, Pacman configuration, etc."
 author: "xz-dev"
 category: "Linux"

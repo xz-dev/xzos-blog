@@ -1,9 +1,9 @@
 ---
-source_hash: "2b408836"
+source_hash: "ace36eaf"
 source_lang: "zh"
 target_lang: "en"
 title: "People Watching Over AI at Work"
-pubDate: "2026-02-09"
+pubDate: "2026-02-09T00:00:00+08:00"
 description: "When tools no longer require human operation, but humans need to watch over the tools—our relationship with AI is quietly reversing."
 author: "xz-dev"
 category: "Musings"

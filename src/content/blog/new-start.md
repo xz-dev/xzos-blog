@@ -1,6 +1,6 @@
 ---
 title: "新的开始"
-pubDate: "2018-05-19"
+pubDate: "2018-05-19T00:00:00+08:00"
 description: "个人网站更换新域名 xzos.net 的公告，标志着新的开始。"
 author: "xz-dev"
 category: "日常"

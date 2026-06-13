@@ -1,10 +1,10 @@
 ---
-source_hash: "7923e9a4"
+source_hash: "ad498a68"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Docker 部署 V2Ray"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "使用 Docker 容器部署 V2Ray 的完整指南，包括多协议配置、端口映射和自动更新服务。"
 author: "xz-dev"
 category: "科学上网"

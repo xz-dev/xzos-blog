@@ -1,6 +1,6 @@
 ---
 title: "Ubuntu、Fedora 与 Nvidia"
-pubDate: "2018-06-24"
+pubDate: "2018-06-24T00:00:00+08:00"
 description: "详细的 Ubuntu 和 Fedora 系统下 Nvidia 显卡驱动安装教程，解决 Linux 新手面临的驱动安装难题。"
 author: "xz-dev"
 category: "Nvidia"

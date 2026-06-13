@@ -1,10 +1,10 @@
 ---
-source_hash: "fdf6247e"
+source_hash: "4ee8f9e0"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Pipewire 发送音频到多个设备"
-pubDate: "2022-08-13"
+pubDate: "2022-08-13T00:00:00+08:00"
 description: "使用 Pipewire 实现音频同时输出到多个设备，如电脑扬声器和蓝牙耳机。"
 author: "xz-dev"
 category: "Linux"

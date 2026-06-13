@@ -1,10 +1,10 @@
 ---
-source_hash: "2eb8c0b0"
+source_hash: "28e0bd3f"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "如何更新 12306 的铁路e卡通证件信息"
-pubDate: "2024-02-23"
+pubDate: "2024-02-23T00:00:00+08:00"
 description: "介绍如何在铁路e卡通满一年时，通过中银客信通小程序更新中国银行的实名信息，避免不必要的卡片升级。"
 author: "xz-dev"
 category: "Tips"

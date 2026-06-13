@@ -1,9 +1,9 @@
 ---
-source_hash: "707b1d27"
+source_hash: "bbbd3600"
 source_lang: "zh"
 target_lang: "en"
 title: "AI Agent Privacy and Protection"
-pubDate: "2026-06-05"
+pubDate: "2026-06-05T00:00:00+08:00"
 description: "Analyzing security considerations for AI Agents, including privacy leaks, tool calling, prompt injection attacks, and subagent isolation."
 author: "xz-dev"
 category: "AI"

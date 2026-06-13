@@ -1,7 +1,7 @@
 ---
-source_hash: "a8f101a5"
+source_hash: "5e514454"
 title: "Cut and move Runs via python-docx"
-pubDate: "2024-03-19"
+pubDate: "2024-03-19T00:00:00+08:00"
 description: "How to implement cutting and moving Run objects in python-docx, solving the problem that the library itself doesn't support this feature."
 author: "xz-dev"
 category: "Tips"

@@ -1,7 +1,7 @@
 ---
-source_hash: "e8b7e957"
+source_hash: "9ab7cadd"
 title: "Manually Flashing Any Android ROM"
-pubDate: "2023-04-22"
+pubDate: "2023-04-22T00:00:00+08:00"
 description: "Using Fastboot and payload_dumper tools to flash any required Android ROM at any time, sharing successful experience flashing third-party ROMs on Redmi K40."
 author: "xz-dev"
 category: "Android"

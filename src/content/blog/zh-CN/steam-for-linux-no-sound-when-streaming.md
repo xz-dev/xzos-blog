@@ -1,10 +1,10 @@
 ---
-source_hash: "a3c1c6de"
+source_hash: "8bf03765"
 source_lang: "en"
 target_lang: "zh-CN"
 title: "Linux版Steam串流时无声音问题"
 description: "使用PipeWire虚拟设备解决Steam Link串流时的声音问题。"
-pubDate: "2022-05-30"
+pubDate: "2022-05-30T00:00:00+08:00"
 author: "xz-dev"
 category: "Linux"
 tags: ["Arch Linux", "PipeWire", "Steam", "Steam Link"]

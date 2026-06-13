@@ -1,9 +1,9 @@
 ---
-source_hash: "f612a3c0"
+source_hash: "0035caee"
 source_lang: "zh"
 target_lang: "en"
 title: "Interesting Observations on AI-Generated Posts"
-pubDate: "2025-09-02"
+pubDate: "2025-09-02T00:00:00+08:00"
 description: "Recently while writing posts announcing new features for Klavis-AI across various social platforms, I discovered surprising quality differences in AI performance. Exploring how openness affects the quality of AI-generated content."
 author: "xz-dev"
 category: "AI"

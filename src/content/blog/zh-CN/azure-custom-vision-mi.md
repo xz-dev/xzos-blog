@@ -1,10 +1,10 @@
 ---
-source_hash: "3d9e8161"
+source_hash: "4235f043"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Azure Custom Vision: Use managed identity or other Azure Identity"
-pubDate: "2025-01-01"
+pubDate: "2025-01-01T00:00:00+08:00"
 description: "介绍如何在 Azure Custom Vision 中使用 Managed Identity 或其他 Azure Identity 进行身份验证，替代传统的 API Key 方式。"
 author: "xz-dev"
 category: "Tips"

@@ -1,10 +1,10 @@
 ---
-source_hash: "9a719393"
+source_hash: "3f9af512"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "LVM 保留数据平滑替换（升级）物理磁盘"
-pubDate: "2019-09-03"
+pubDate: "2019-09-03T00:00:00+08:00"
 description: "使用 LVM 功能在保留数据的情况下平滑替换或升级物理硬盘，无需重装系统或手动拷贝数据。"
 author: "xz-dev"
 category: "Linux"

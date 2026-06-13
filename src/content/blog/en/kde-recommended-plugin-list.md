@@ -1,7 +1,7 @@
 ---
-source_hash: "560b2877"
+source_hash: "67a51606"
 title: "Recommended KDE Applets List"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "A collection of commonly used KDE applets including practical tools like RedShift Control, Simple System Monitor, and network monitoring utilities."
 author: "xz-dev"
 category: "Linux Desktop Environment"

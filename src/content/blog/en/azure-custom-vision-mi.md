@@ -1,7 +1,7 @@
 ---
-source_hash: "3d9e8161"
+source_hash: "4235f043"
 title: "Azure Custom Vision: Use managed identity or other Azure Identity"
-pubDate: "2025-01-01"
+pubDate: "2025-01-01T00:00:00+08:00"
 description: "Introduces how to use Managed Identity or other Azure Identity for authentication in Azure Custom Vision, replacing the traditional API Key approach."
 author: "xz-dev"
 category: "Tips"

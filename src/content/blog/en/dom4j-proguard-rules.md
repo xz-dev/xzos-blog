@@ -1,7 +1,7 @@
 ---
-source_hash: "cc9a73b3"
+source_hash: "46a5f738"
 title: "Sharing dom4j Proguard Rules Configuration"
-pubDate: "2022-09-07"
+pubDate: "2022-09-07T00:00:00+08:00"
 description: "Resolving UpgradeAll's parsing errors caused by dom4j obfuscation on F-Droid, sharing complete proguard-rules configuration."
 author: "xz-dev"
 category: "UpgradeAll"

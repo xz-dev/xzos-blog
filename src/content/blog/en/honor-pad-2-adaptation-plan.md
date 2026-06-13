@@ -1,7 +1,7 @@
 ---
-source_hash: "73540eba"
+source_hash: "622f3d09"
 title: "Honor Pad 2 Adaptation Plan"
-pubDate: "2018-06-22"
+pubDate: "2018-06-22T00:00:00+08:00"
 description: "Plan description for adapting LineageOS to Honor Pad 2, including technical approach and participation methods (this plan was later canceled)."
 author: "xz-dev"
 category: "LineageOS"

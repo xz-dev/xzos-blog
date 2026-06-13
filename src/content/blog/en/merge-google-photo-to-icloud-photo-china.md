@@ -1,7 +1,7 @@
 ---
-source_hash: "eeff1d87"
+source_hash: "75f5db22"
 title: "Migrating Google Photos to Guizhou Cloud iCloud Photos"
-pubDate: "2025-03-07"
+pubDate: "2025-03-07T00:00:00+08:00"
 description: "A detailed guide on migrating photos from Google Photos to China's Guizhou Cloud iCloud Photos, including the complete process of batch downloading, converting, and uploading."
 author: "xz-dev"
 category: "Tips"

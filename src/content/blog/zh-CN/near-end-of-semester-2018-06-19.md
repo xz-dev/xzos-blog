@@ -1,10 +1,10 @@
 ---
-source_hash: "3d0e3e66"
+source_hash: "34d155cb"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "临近期末 2018-06-19"
-pubDate: "2018-06-19"
+pubDate: "2018-06-19T00:00:00+08:00"
 description: "期末临近时的个人感悟与思考。"
 author: "xz-dev"
 category: "日常"

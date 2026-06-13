@@ -1,10 +1,10 @@
 ---
-source_hash: "499bba7d"
+source_hash: "c1a26135"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "如何将 10G 11 万个文件的文件夹（微信存档）从一个 iPhone 传输到另一个 iPhone"
-pubDate: "2025-12-20"
+pubDate: "2025-12-20T00:00:00+08:00"
 description: "使用 a-Shell 和 SSH/tar 组合，通过 Linux 电脑中转，高效传输 iPhone 上的大型文件夹"
 author: "xz-dev"
 category: "Tips"

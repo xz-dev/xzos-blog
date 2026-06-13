@@ -1,10 +1,10 @@
 ---
-source_hash: "8eb6de71"
+source_hash: "ed466f34"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "FireFox 从 stable 版本无缝转移到 develop 版本"
-pubDate: "2020-06-05"
+pubDate: "2020-06-05T00:00:00+08:00"
 description: "由于 Mozilla 证书过期事件导致 Firefox 扩展失效，本文介绍如何无缝地将 Firefox 数据从稳定版本迁移到开发版。"
 author: "xz-dev"
 category: "Firefox"

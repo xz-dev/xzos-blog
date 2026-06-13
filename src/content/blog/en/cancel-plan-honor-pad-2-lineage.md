@@ -1,7 +1,7 @@
 ---
-source_hash: "c398b55e"
+source_hash: "32c16b42"
 title: "Project Cancellation: LineageOS Port for Honor Pad 2"
-pubDate: "2018-06-30"
+pubDate: "2018-06-30T00:00:00+08:00"
 description: "Announcing cancellation of LineageOS porting project for Honor Pad 2 due to lack of development resources and community support for Huawei devices."
 author: "xz-dev"
 category: "LineageOS"

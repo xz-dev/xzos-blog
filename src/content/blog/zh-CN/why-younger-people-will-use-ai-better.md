@@ -1,10 +1,10 @@
 ---
-source_hash: "4ff2018f"
+source_hash: "2dcbc91c"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "为什么最终更年轻的人会比年长者更会使用 AI"
-pubDate: "2026-04-24"
+pubDate: "2026-04-24T00:00:00+08:00"
 description: "年长的人使用新工具解决现有的工作问题，而儿童和学生使用 AI 则是为了解决学业问题。"
 author: "xz-dev"
 category: "AI"

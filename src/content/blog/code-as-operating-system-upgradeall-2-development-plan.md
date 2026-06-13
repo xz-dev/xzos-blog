@@ -1,6 +1,6 @@
 ---
 title: "代码即操作系统（UpgradeAll 2 开发计划）"
-pubDate: "2023-10-18"
+pubDate: "2023-10-18T00:00:00+08:00"
 description: "探讨如何从程序员的角度进行运维，提出一个支持回滚、面向功能的新构建系统理念，以及 UpgradeAll 2 的开发方向。"
 author: "xz-dev"
 category: "Linux"

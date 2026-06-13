@@ -1,6 +1,6 @@
 ---
 title: "Arch Linux 的 KDE 最小安装方案"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "提供一个最小、方便、可用的 KDE 桌面环境安装方案，包括 Xorg、显示管理器、KDE 桌面和推荐应用的配置。"
 author: "xz-dev"
 category: "Linux 桌面环境"

@@ -1,10 +1,10 @@
 ---
-source_hash: "a85ae84a"
+source_hash: "ddd0333d"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "V2Ray 多协议多服务器情况使用 HAProxy 负载均衡"
-pubDate: "2019-11-23"
+pubDate: "2019-11-23T00:00:00+08:00"
 description: "使用 Docker、HAProxy 和 V2Ray 任意门功能实现多协议多服务器的负载均衡，自动维护可用节点列表。"
 author: "xz-dev"
 category: "科学上网"

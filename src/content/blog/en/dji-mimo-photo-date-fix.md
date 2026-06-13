@@ -1,7 +1,7 @@
 ---
-source_hash: "d1fb81d1"
+source_hash: "a4d0fc57"
 title: "Batch Fix Shooting Time for DJI Mimo Exported Photos/Videos"
-pubDate: "2026-01-04"
+pubDate: "2026-01-04T00:00:00+08:00"
 description: "Using osxphotos timewarp command to extract correct shooting time from filenames and batch fix dates for DJI Mimo exported files in Apple Photos"
 author: "xz-dev"
 category: "Tips"

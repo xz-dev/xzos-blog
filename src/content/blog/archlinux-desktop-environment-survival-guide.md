@@ -1,6 +1,6 @@
 ---
 title: "ArchLinux 桌面环境生存指南"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "提供 Arch Linux 桌面环境安装和配置的完整指南，包括系统安装、用户管理、网络配置和 KDE 桌面环境部署，帮助用户建立友好的开发环境。"
 author: "xz-dev"
 category: "ArchLinux"

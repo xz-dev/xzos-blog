@@ -1,6 +1,6 @@
 ---
 title: "AI 时代的乐观可失败队列"
-pubDate: "2026-02-04"
+pubDate: "2026-02-04T00:00:00+08:00"
 description: "为 MCP 官方 Memory Server 修复并发写入问题的思考：当用户从人变成 AI，我们可以主动拥抱概率性。"
 author: "xz-dev"
 category: "AI"

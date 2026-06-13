@@ -1,7 +1,7 @@
 ---
-source_hash: "2a08119f"
+source_hash: "983e2eef"
 title: "Optimistic and Fail-able Queues in the AI Era"
-pubDate: "2026-02-04"
+pubDate: "2026-02-04T00:00:00+08:00"
 description: "Thoughts on fixing concurrent write issues for MCP's official Memory Server: When users shift from humans to AI, we can proactively embrace probabilistic approaches."
 author: "xz-dev"
 category: "AI"

@@ -1,7 +1,7 @@
 ---
-source_hash: "80017bfc"
+source_hash: "dcfe2385"
 title: "Installing Fingerprint GUI on MI Pro (Arch Linux Environment)"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "Complete guide for installing and configuring Fingerprint GUI fingerprint recognition software on Xiaomi Pro notebook, including solutions for permission issues."
 author: "xz-dev"
 category: "ArchLinux"

@@ -1,7 +1,7 @@
 ---
-source_hash: "1aa98c54"
+source_hash: "e19c96ed"
 title: "Playing NieR:Automata on Linux"
-pubDate: "2020-10-21"
+pubDate: "2020-10-21T00:00:00+08:00"
 description: "Configuration guide for running Steam game NieR:Automata on Linux using Nvidia graphics cards, Bumblebee, and primus_vk."
 author: "xz-dev"
 category: "Linux"

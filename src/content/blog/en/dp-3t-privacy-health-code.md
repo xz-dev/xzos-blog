@@ -1,7 +1,7 @@
 ---
-source_hash: "bb03df8a"
+source_hash: "75dac585"
 title: 'DP-3T: A Privacy-Preserving "Health Code"'
-pubDate: "2022-08-08"
+pubDate: "2022-08-08T00:00:00+08:00"
 description: "Introducing DP-3T, a privacy-preserving contact tracing software based on decentralized P2P Bluetooth technology."
 author: "xz-dev"
 category: "Technology"

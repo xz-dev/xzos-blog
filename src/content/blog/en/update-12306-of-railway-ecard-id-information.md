@@ -1,7 +1,7 @@
 ---
-source_hash: "2eb8c0b0"
+source_hash: "28e0bd3f"
 title: "How to Update ID Information for Railway e-Card on 12306"
-pubDate: "2024-02-23"
+pubDate: "2024-02-23T00:00:00+08:00"
 description: "Guide on updating Bank of China's real-name information via the 'BOC Customer Verification' WeChat mini-program when Railway e-Card reaches one year, avoiding unnecessary card upgrades."
 author: "xz-dev"
 category: "Tips"

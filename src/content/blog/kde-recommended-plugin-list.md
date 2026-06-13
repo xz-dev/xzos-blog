@@ -1,6 +1,6 @@
 ---
 title: "KDE 推荐插件列表"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "整理了一些常用的 KDE 插件，包括 RedShift Control、Simple System Monitor 和网络监视器等实用工具。"
 author: "xz-dev"
 category: "Linux 桌面环境"

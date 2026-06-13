@@ -1,6 +1,6 @@
 ---
 title: "临近期末 2018-06-19"
-pubDate: "2018-06-19"
+pubDate: "2018-06-19T00:00:00+08:00"
 description: "期末临近时的个人感悟与思考。"
 author: "xz-dev"
 category: "日常"

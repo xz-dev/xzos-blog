@@ -1,7 +1,7 @@
 ---
-source_hash: "bdc69c52"
+source_hash: "5e7c7c48"
 title: "Converting EXT4 Root Filesystem to XFS (Arch Linux)"
-pubDate: "2019-10-19"
+pubDate: "2019-10-19T00:00:00+08:00"
 description: "Complete guide for migrating root filesystem from EXT4 to XFS on Arch Linux using LVM for disk management."
 author: "xz-dev"
 category: "Linux"

@@ -1,10 +1,10 @@
 ---
-source_hash: "dc77e6ab"
+source_hash: "0ac3e4f1"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Fedora、Ubuntu 与 LineageOS"
-pubDate: "2018-06-28"
+pubDate: "2018-06-28T00:00:00+08:00"
 description: "详细介绍如何在 Fedora 和 Ubuntu 系统下编译 LineageOS 的完整指南，包括依赖安装、源码下载和编译配置。"
 author: "xz-dev"
 category: "LineageOS"

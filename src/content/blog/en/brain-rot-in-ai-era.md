@@ -1,7 +1,7 @@
 ---
-source_hash: "afe9e115"
+source_hash: "5f68abe0"
 title: "Brain Rot in the AI Era"
-pubDate: "2026-02-02"
+pubDate: "2026-02-02T00:00:00+08:00"
 description: "When AI-generated content floods our feeds, scrolling through our phones becomes like searching for gold in a cesspool. What we lose in endless scrolling isn't just time, but our very ability to focus."
 author: "xz-dev"
 category: "Musings"

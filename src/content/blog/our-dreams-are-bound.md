@@ -1,6 +1,6 @@
 ---
 title: "随笔，摘抄"
-pubDate: "2022-10-28"
+pubDate: "2022-10-28T00:00:00+08:00"
 description: "一首关于太空探索和人类梦想的英文诗歌摘抄。"
 author: "xz-dev"
 category: "日常"

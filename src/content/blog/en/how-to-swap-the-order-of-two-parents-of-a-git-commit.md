@@ -1,7 +1,7 @@
 ---
-source_hash: "ccec3796"
+source_hash: "f17198a9"
 title: "Modifying the Parent Commit of a Historical Commit"
-pubDate: "2021-02-06"
+pubDate: "2021-02-06T00:00:00+08:00"
 description: "Using Git's grafts and filter-repo tools to modify the parent commit order in history, solving the issue of incorrect merge direction."
 author: "xz-dev"
 category: "Git"

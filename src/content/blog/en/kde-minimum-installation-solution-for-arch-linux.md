@@ -1,7 +1,7 @@
 ---
-source_hash: "d7177536"
+source_hash: "1129a9bf"
 title: "Minimal KDE Installation Guide for Arch Linux"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "Provides a minimal, convenient, and usable KDE desktop environment installation solution, including configurations for Xorg, display manager, KDE desktop, and recommended applications."
 author: "xz-dev"
 category: "Linux Desktop Environment"

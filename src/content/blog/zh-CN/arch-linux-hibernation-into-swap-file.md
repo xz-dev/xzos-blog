@@ -1,10 +1,10 @@
 ---
-source_hash: "092cfb9a"
+source_hash: "d155c53d"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Arch Linux 使用 Swap File 进行休眠"
-pubDate: "2019-06-08"
+pubDate: "2019-06-08T00:00:00+08:00"
 description: "在 Arch Linux 上配置 Swap File 并实现系统休眠功能的完整指南，包括 GRUB 和内核模块配置。"
 author: "xz-dev"
 category: "Linux"

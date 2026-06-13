@@ -1,10 +1,10 @@
 ---
-source_hash: "029155a4"
+source_hash: "90b0193c"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "kindle基本使用方法"
-pubDate: "2017-12-14"
+pubDate: "2017-12-14T00:00:00+08:00"
 description: "详细的 Kindle 使用指南，包括待机唤醒、屏幕分区、导入书籍等基本操作方法。"
 author: "xz-dev"
 category: "日常"

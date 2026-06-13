@@ -1,10 +1,10 @@
 ---
-source_hash: "e83c86eb"
+source_hash: "81643b13"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "使用 timeshift 重装 Arch Linux"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "使用 Timeshift 备份和恢复工具实现 Arch Linux 系统整体迁移的完整指南，包括备份创建和系统恢复步骤。"
 author: "xz-dev"
 category: "ArchLinux"

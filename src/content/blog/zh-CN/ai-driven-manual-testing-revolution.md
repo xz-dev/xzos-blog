@@ -1,10 +1,10 @@
 ---
-source_hash: "cd66d5cf"
+source_hash: "2334efd3"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "AI 时代的手动测试革命"
-pubDate: "2025-07-18"
+pubDate: "2025-07-18T00:00:00+08:00"
 description: "当 GitHub Copilot 正在为我自动进行手动测试时，我为自己发明了一个 AI Agent for 手动测试。探索如何利用 AI 工具提升测试效率。"
 author: "xz-dev"
 category: "AI"

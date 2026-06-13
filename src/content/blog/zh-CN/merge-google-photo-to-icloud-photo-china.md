@@ -1,10 +1,10 @@
 ---
-source_hash: "eeff1d87"
+source_hash: "75f5db22"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "迁移 Google Photo 到云上贵州 iCloud Photo"
-pubDate: "2025-03-07"
+pubDate: "2025-03-07T00:00:00+08:00"
 description: "详细记录如何将 Google Photo 的照片迁移到中国大陆的云上贵州 iCloud Photo，包括批量下载、转换和上传的完整流程。"
 author: "xz-dev"
 category: "Tips"

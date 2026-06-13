@@ -1,7 +1,7 @@
 ---
-source_hash: "7923e9a4"
+source_hash: "ad498a68"
 title: "Deploying V2Ray with Docker"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "A comprehensive guide to deploying V2Ray using Docker containers, including multi-protocol configuration, port mapping, and automatic update services."
 author: "xz-dev"
 category: "Science Online"

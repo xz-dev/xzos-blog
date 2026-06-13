@@ -1,7 +1,7 @@
 ---
-source_hash: "029155a4"
+source_hash: "90b0193c"
 title: "Basic Kindle Usage Guide"
-pubDate: "2017-12-14"
+pubDate: "2017-12-14T00:00:00+08:00"
 description: "A detailed Kindle user guide covering basic operations like standby/wakeup, screen zones, importing books, and more."
 author: "xz-dev"
 category: "Daily"

@@ -1,6 +1,6 @@
 ---
 title: "取消计划：荣耀平板 2 LineageOS 适配"
-pubDate: "2018-06-30"
+pubDate: "2018-06-30T00:00:00+08:00"
 description: "宣布取消荣耀平板 2 的 LineageOS 适配计划，华为设备缺乏相关开发资源和社区支持。"
 author: "xz-dev"
 category: "LineageOS"

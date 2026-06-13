@@ -1,7 +1,7 @@
 ---
-source_hash: "415e3447"
+source_hash: "4e462221"
 title: "Ubuntu, Fedora and Nvidia"
-pubDate: "2018-06-24"
+pubDate: "2018-06-24T00:00:00+08:00"
 description: "Detailed tutorials for installing Nvidia graphics drivers on Ubuntu and Fedora systems, solving driver installation challenges faced by Linux beginners."
 author: "xz-dev"
 category: "Nvidia"

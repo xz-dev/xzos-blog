@@ -1,7 +1,7 @@
 ---
-source_hash: "9a719393"
+source_hash: "3f9af512"
 title: "Smooth Physical Disk Replacement (Upgrade) with LVM While Preserving Data"
-pubDate: "2019-09-03"
+pubDate: "2019-09-03T00:00:00+08:00"
 description: "Using LVM functionality to smoothly replace or upgrade physical hard drives while preserving data, without reinstalling the system or manually copying data."
 author: "xz-dev"
 category: "Linux"

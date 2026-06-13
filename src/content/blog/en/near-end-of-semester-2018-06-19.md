@@ -1,7 +1,7 @@
 ---
-source_hash: "3d0e3e66"
+source_hash: "34d155cb"
 title: "Approaching Finals - 2018-06-19"
-pubDate: "2018-06-19"
+pubDate: "2018-06-19T00:00:00+08:00"
 description: "Personal reflections and thoughts as finals approach."
 author: "xz-dev"
 category: "Daily"

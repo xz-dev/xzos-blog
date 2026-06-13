@@ -1,10 +1,10 @@
 ---
-source_hash: "4612b985"
+source_hash: "eac45664"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "Pacman 通用配置"
-pubDate: "2020-10-19"
+pubDate: "2020-10-19T00:00:00+08:00"
 description: "ArchLinux 的 Pacman 包管理器通用配置文件，包括彩色输出、进度显示、archlinuxcn 源等优化设置。"
 author: "xz-dev"
 category: "Linux"

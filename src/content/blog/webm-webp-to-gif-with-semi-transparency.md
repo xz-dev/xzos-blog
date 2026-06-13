@@ -1,6 +1,6 @@
 ---
 title: "WebM/WebP to GIF with semi-transparency"
-pubDate: "2024-09-15"
+pubDate: "2024-09-15T00:00:00+08:00"
 description: "如何将带有半透明效果的 WebM/WebP 格式转换为 GIF，并处理半透明像素的技术方案。"
 author: "xz-dev"
 category: "算法"

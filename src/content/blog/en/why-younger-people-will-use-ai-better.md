@@ -1,9 +1,9 @@
 ---
-source_hash: "4ff2018f"
+source_hash: "2dcbc91c"
 source_lang: "zh"
 target_lang: "en"
 title: "Why Ultimately Younger People Become More Proficient with AI Than Older Generations"
-pubDate: "2026-04-24"
+pubDate: "2026-04-24T00:00:00+08:00"
 description: "Older people use new tools to solve existing work problems, while children and students use AI to address academic challenges."
 author: "xz-dev"
 category: "AI"

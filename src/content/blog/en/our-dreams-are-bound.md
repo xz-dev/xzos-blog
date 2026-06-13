@@ -1,7 +1,7 @@
 ---
-source_hash: "0fa19b23"
+source_hash: "32a5fff1"
 title: "Random Thoughts, Excerpts"
-pubDate: "2022-10-28"
+pubDate: "2022-10-28T00:00:00+08:00"
 description: "An excerpt of an English poem about space exploration and human dreams."
 author: "xz-dev"
 category: "Daily Life"

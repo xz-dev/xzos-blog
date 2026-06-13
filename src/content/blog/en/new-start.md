@@ -1,7 +1,7 @@
 ---
-source_hash: "e14eff98"
+source_hash: "d867e8b3"
 title: "A New Beginning"
-pubDate: "2018-05-19"
+pubDate: "2018-05-19T00:00:00+08:00"
 description: "Announcement of the personal website's new domain xzos.net, marking a fresh start."
 author: "xz-dev"
 category: "Daily"

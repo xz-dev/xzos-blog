@@ -1,7 +1,7 @@
 ---
-source_hash: "8eb6de71"
+source_hash: "ed466f34"
 title: "Seamlessly Migrating from Firefox Stable to Developer Edition"
-pubDate: "2020-06-05"
+pubDate: "2020-06-05T00:00:00+08:00"
 description: "Due to Mozilla's certificate expiration incident causing Firefox extensions to fail, this article explains how to seamlessly migrate Firefox data from the stable version to the developer edition."
 author: "xz-dev"
 category: "Firefox"

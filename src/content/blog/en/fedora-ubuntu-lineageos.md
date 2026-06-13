@@ -1,7 +1,7 @@
 ---
-source_hash: "dc77e6ab"
+source_hash: "0ac3e4f1"
 title: "Fedora, Ubuntu and LineageOS"
-pubDate: "2018-06-28"
+pubDate: "2018-06-28T00:00:00+08:00"
 description: "A comprehensive guide on compiling LineageOS under Fedora and Ubuntu systems, including dependency installation, source code downloading, and compilation configuration."
 author: "xz-dev"
 category: "LineageOS"

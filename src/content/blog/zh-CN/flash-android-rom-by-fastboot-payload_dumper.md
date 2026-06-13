@@ -1,10 +1,10 @@
 ---
-source_hash: "e8b7e957"
+source_hash: "9ab7cadd"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "手动线刷任意 Android ROM"
-pubDate: "2023-04-22"
+pubDate: "2023-04-22T00:00:00+08:00"
 description: "通过 Fastboot 与 payload_dumper 工具，在任意时刻刷入任意需要的 Android ROM，分享在 Redmi K40 上成功刷入第三方 ROM 的经验。"
 author: "xz-dev"
 category: "Android"

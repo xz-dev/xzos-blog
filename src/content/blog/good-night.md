@@ -1,6 +1,6 @@
 ---
 title: "Good Night"
-pubDate: "2018-03-14"
+pubDate: "2018-03-14T00:00:00+08:00"
 description: "关于宠物、记忆与童年小鸡小宝的温馨回忆。"
 author: "Maloriear"
 category: "日常"

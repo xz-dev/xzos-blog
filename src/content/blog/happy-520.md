@@ -1,6 +1,6 @@
 ---
 title: "Happy 520"
-pubDate: "2018-05-20"
+pubDate: "2018-05-20T00:00:00+08:00"
 description: "520 表白日的情感表达。"
 author: "xz-dev"
 category: "纪念日/节日"

@@ -1,10 +1,10 @@
 ---
-source_hash: "f332198c"
+source_hash: "3109c1ca"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "WebSocket+TLS+CDN+Web，Apache2 部署V2Ray"
-pubDate: "2020-06-05"
+pubDate: "2020-06-05T00:00:00+08:00"
 description: "详细介绍如何使用 Apache2 配置 V2Ray 的 WebSocket+TLS+CDN+Web 模式，实现安全可靠的代理服务。"
 author: "xz-dev"
 category: "科学上网"

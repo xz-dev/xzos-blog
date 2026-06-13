@@ -1,10 +1,10 @@
 ---
-source_hash: "2ab7876c"
+source_hash: "daa295c1"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "ArchLinux 配置指南"
-pubDate: "2020-10-21"
+pubDate: "2020-10-21T00:00:00+08:00"
 description: "一个记录 ArchLinux 配置过程的导航页面，包括桌面环境安装、交换分区、用户权限、Pacman 配置等。"
 author: "xz-dev"
 category: "Linux"

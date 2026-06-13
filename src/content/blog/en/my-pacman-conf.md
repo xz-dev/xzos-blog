@@ -1,7 +1,7 @@
 ---
-source_hash: "4612b985"
+source_hash: "eac45664"
 title: "Pacman Universal Configuration"
-pubDate: "2020-10-19"
+pubDate: "2020-10-19T00:00:00+08:00"
 description: "Universal configuration file for ArchLinux's Pacman package manager, including optimized settings for colored output, progress display, archlinuxcn repository, and more."
 author: "xz-dev"
 category: "Linux"

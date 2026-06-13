@@ -1,10 +1,10 @@
 ---
-source_hash: "9a0e75e4"
+source_hash: "a2af506d"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "使用 Wine 平台游玩守望先锋"
-pubDate: "2019-05-18"
+pubDate: "2019-05-18T00:00:00+08:00"
 description: "在 Arch Linux 上使用 Lutris Wine 和 Nvidia 显卡玩守望先锋的完整配置指南，包括驱动安装、显卡管理和性能优化。"
 author: "xz-dev"
 category: "Wine"

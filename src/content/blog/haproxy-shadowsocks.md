@@ -1,6 +1,6 @@
 ---
 title: "HAProxy 与 ShadowSocks"
-pubDate: "2018-06-27"
+pubDate: "2018-06-27T00:00:00+08:00"
 description: "使用 HAProxy 对多台 ShadowSocks 服务器进行负载均衡，实现带宽聚合和加速访问的配置指南。"
 author: "xz-dev"
 category: "科学上网"

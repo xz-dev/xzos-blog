@@ -1,7 +1,7 @@
 ---
-source_hash: "f332198c"
+source_hash: "3109c1ca"
 title: "WebSocket+TLS+CDN+Web: Deploying V2Ray with Apache2"
-pubDate: "2020-06-05"
+pubDate: "2020-06-05T00:00:00+08:00"
 description: "Detailed guide on configuring V2Ray's WebSocket+TLS+CDN+Web mode using Apache2 for secure and reliable proxy services."
 author: "xz-dev"
 category: "Science Internet"

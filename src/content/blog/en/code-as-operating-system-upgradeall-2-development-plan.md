@@ -1,7 +1,7 @@
 ---
-source_hash: "e1ce0d99"
+source_hash: "23f9b0cd"
 title: "Code as Operating System (UpgradeAll 2 Development Plan)"
-pubDate: "2023-10-18"
+pubDate: "2023-10-18T00:00:00+08:00"
 description: "Exploring operations from a programmer's perspective, proposing a new build system concept supporting rollback and feature-oriented design, along with UpgradeAll 2's development direction."
 author: "xz-dev"
 category: "Linux"

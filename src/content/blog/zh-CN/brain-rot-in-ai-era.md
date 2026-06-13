@@ -1,10 +1,10 @@
 ---
-source_hash: "afe9e115"
+source_hash: "5f68abe0"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "AI 时代的脑腐症"
-pubDate: "2026-02-02"
+pubDate: "2026-02-02T00:00:00+08:00"
 description: "当 AI 生成内容泛滥成灾，刷手机变成了粪坑里找金子，而我们在无限滑动中失去的不只是时间，更是专注力本身。"
 author: "xz-dev"
 category: "随想"

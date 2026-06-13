@@ -1,7 +1,7 @@
 ---
-source_hash: "bd9c951c"
+source_hash: "c9dde01d"
 title: "Find First and Last Position of Element in Sorted Array"
-pubDate: "2021-04-30"
+pubDate: "2021-04-30T00:00:00+08:00"
 description: "LeetCode algorithm problem: Finding the first and last position of an element in a sorted array, comparing recursive and iterative implementation approaches."
 author: "xz-dev"
 category: "Algorithms"

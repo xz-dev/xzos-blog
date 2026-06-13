@@ -1,10 +1,10 @@
 ---
-source_hash: "a673aa84"
+source_hash: "47d522d9"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "exa 仅显示点文件"
-pubDate: "2022-08-16"
+pubDate: "2022-08-16T00:00:00+08:00"
 description: "exa 是一个 ls 程序的替代品，本文介绍如何使用 exa 仅显示点文件（dotfiles）。"
 author: "xz-dev"
 category: "Linux"

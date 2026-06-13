@@ -1,7 +1,7 @@
 ---
-source_hash: "e83c86eb"
+source_hash: "81643b13"
 title: "Reinstalling Arch Linux Using Timeshift"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "A comprehensive guide to migrating an entire Arch Linux system using Timeshift backup and restore tool, including steps for creating backups and system recovery."
 author: "xz-dev"
 category: "ArchLinux"

@@ -1,6 +1,6 @@
 ---
 title: "修改一个历史提交的父提交"
-pubDate: "2021-02-06"
+pubDate: "2021-02-06T00:00:00+08:00"
 description: "使用 Git 的 grafts 和 filter-repo 工具来修改历史提交的父提交顺序，解决合并方向错误的问题。"
 author: "xz-dev"
 category: "Git"

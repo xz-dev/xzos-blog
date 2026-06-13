@@ -1,10 +1,10 @@
 ---
-source_hash: "707b1d27"
+source_hash: "bbbd3600"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
 title: "AI Agent Privacy and Protection"
-pubDate: "2026-06-05"
+pubDate: "2026-06-05T00:00:00+08:00"
 description: "分析 AI Agent 的隐私泄露、工具调用、提示注入攻击与 subagent 隔离等安全防护思路。"
 author: "xz-dev"
 category: "AI"

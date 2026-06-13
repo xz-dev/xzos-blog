@@ -1,9 +1,9 @@
 ---
-source_hash: "c754feb1"
+source_hash: "00b7dc4f"
 source_lang: "zh"
 target_lang: "en"
 title: "ArchLinux Desktop Environment Survival Guide"
-pubDate: "2019-02-27"
+pubDate: "2019-02-27T00:00:00+08:00"
 description: "A comprehensive guide to installing and configuring Arch Linux desktop environment, covering system installation, user management, network configuration, and KDE desktop deployment to help users establish a developer-friendly environment."
 author: "xz-dev"
 category: "ArchLinux"
