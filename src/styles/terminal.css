@@ -144,6 +144,12 @@ a {
   transition: all 0.2s ease;
 }
 
+/* Long reference URLs must not force horizontal scrolling on mobile. */
+.prose a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 button {
   position: relative;
   font: inherit;
