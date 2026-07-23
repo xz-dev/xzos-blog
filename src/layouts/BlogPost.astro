@@ -1,4 +1,5 @@
 ---
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
@@ -16,9 +17,9 @@ interface Heading {
 	text: string;
 }
 
-type Props = CollectionEntry<'blog'>['data'] & { 
-	headings?: Heading[]; 
-	ogImage?: string;
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: Heading[];
+	ogImage?: ImageMetadata | string;
 	lang?: Lang;
 	slug?: string;
 };

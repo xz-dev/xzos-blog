@@ -1,7 +1,7 @@
 /**
  * 语言到 content collection 名称的映射
  */
-import { defaultLang, type Lang } from './ui';
+import { defaultLang, type Lang } from './ui.ts';
 
 /** 非默认语言列表 — [lang] 动态路由的单一来源 */
 export const nonDefaultLocales: Lang[] = ['en', 'zh-CN'];

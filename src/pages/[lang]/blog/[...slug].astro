@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BlogPost from '../../../layouts/BlogPost.astro';
 import { getBlogCollection, nonDefaultLocales } from '../../../i18n/collections';
 import type { Lang } from '../../../i18n/ui';
+import { selectPostSocialImage } from '../../../lib/social-preview';
 
 export async function getStaticPaths() {
 	const paths = [];
@@ -21,25 +22,7 @@ export async function getStaticPaths() {
 const { post, lang } = Astro.props as { post: any; lang: Lang };
 const { Content, headings } = await render(post);
 
-// Resolve OG Image
-let ogImage = '';
-if (post.data.heroImage) {
-	// @ts-ignore
-	ogImage = post.data.heroImage.src || post.data.heroImage;
-} else if (post.body) {
-	const mdMatch = post.body.match(/!\[.*?\]\((.*?)\)/);
-	if (mdMatch && mdMatch[1]) {
-		ogImage = mdMatch[1];
-	} else {
-		const htmlMatch = post.body.match(/<img[^>]+src=["'](.*?)["']/);
-		if (htmlMatch && htmlMatch[1]) {
-			ogImage = htmlMatch[1];
-		}
-	}
-}
-if (!ogImage) {
-	ogImage = `/og/${post.id}.png`;
-}
+const ogImage = selectPostSocialImage(post, lang);
 ---
 
 <BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang={lang} slug={post.id}>

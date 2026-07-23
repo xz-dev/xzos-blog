@@ -1,44 +1,29 @@
 ---
-import { getCollection, render } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { getBlogCollection } from '../../i18n/collections';
 import type { Lang } from '../../i18n/ui';
+import { selectPostSocialImage } from '../../lib/social-preview';
 
 const lang: Lang = 'zh';
-const collectionName = getBlogCollection(lang);
-
 export async function getStaticPaths() {
-	const posts = await getCollection(getBlogCollection('zh') as any);
-	return posts.map((post: any) => ({
+	const posts = await getCollection('blog');
+	return posts.map((post: CollectionEntry<'blog'>) => ({
 		params: { slug: post.id },
 		props: post,
 	}));
 }
 
-const post = Astro.props;
+const post = Astro.props as CollectionEntry<'blog'>;
 const { Content, headings } = await render(post);
 
-// Resolve OG Image
-let ogImage = '';
-if (post.data.heroImage) {
-	// @ts-ignore
-	ogImage = post.data.heroImage.src || post.data.heroImage;
-} else if (post.body) {
-	const mdMatch = post.body.match(/!\[.*?\]\((.*?)\)/);
-	if (mdMatch && mdMatch[1]) {
-		ogImage = mdMatch[1];
-	} else {
-		const htmlMatch = post.body.match(/<img[^>]+src=["'](.*?)["']/);
-		if (htmlMatch && htmlMatch[1]) {
-			ogImage = htmlMatch[1];
-		}
-	}
-}
-if (!ogImage) {
-	ogImage = `/og/${post.id}.png`;
-}
+const heroImage = post.data.heroImage as ImageMetadata | undefined;
+const ogImage = selectPostSocialImage(
+	{ ...post, data: { ...post.data, heroImage } },
+	lang,
+);
 ---
 
-<BlogPost {...post.data} headings={headings} heroImage={post.data.heroImage} ogImage={ogImage} lang={lang} slug={post.id}>
+<BlogPost {...post.data} headings={headings} heroImage={heroImage} ogImage={ogImage} lang={lang} slug={post.id}>
 	<Content />
 </BlogPost>
