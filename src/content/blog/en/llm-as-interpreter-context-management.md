@@ -1,5 +1,5 @@
 ---
-source_hash: "0efbe10d"
+source_hash: "e2f8b7e5"
 source_lang: "zh"
 target_lang: "en"
 lang: "en"
@@ -111,6 +111,8 @@ Fewer people now recommend devoting most of one’s effort to optimizing the sys
 Worse, prompt effects do not accumulate independently, one rule at a time. A single requirement may not seem rigid, yet dozens together can produce an extremely strong “personality.” Put the same long prompt into different models and that personality may change completely; rules intended to prevent problems may even begin to create them. Methodological skills expose this especially clearly. A skill may intend only to encourage a way of thinking, but once it becomes too long and too tightly qualified, it can shift from “guiding the model” to “thinking in the model’s place.”
 
 This is why I have always followed one rule when writing prompts: **prefer semantically dense words that activate conceptual clusters the model already possesses, and convey constraints in the cleanest, shortest form instead of explaining them repeatedly.** One word with depth can evoke a complete concept the model has already learned. Dozens of local prohibitions can only assemble one from fragments.
+
+This also explains why the industry encounters the problem of “prompt migration”: broadly effective prompting methods often carry across models, but their exact wording may not transfer unchanged. The same text can unfold along different generation paths in different models: wording that works well for one may produce only a suboptimal result from another. A study of natural-language prompts found that merely rephrasing components or changing their order can substantially alter results; this order dependence appeared across several two-level fractional factorial design instances and different GPT and Gemini models ([Ying et al., 2026](https://arxiv.org/abs/2607.05537)). If a simple prompt achieves similar results across multiple models, there is stronger reason to believe that it captures a general method; complex wording that yields an additional benefit on only one model is more likely to depend on that model’s particular response tendencies.
 
 #### Write Less “Don’t”; State the Goal Instead
 
