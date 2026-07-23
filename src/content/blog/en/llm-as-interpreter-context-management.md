@@ -1,5 +1,5 @@
 ---
-source_hash: "e2f8b7e5"
+source_hash: "8b294bc8"
 source_lang: "zh"
 target_lang: "en"
 lang: "en"
@@ -11,7 +11,7 @@ category: "AI"
 tags: ["AI", "LLM", "Agent", "Context Engineering", "System Prompt", "Function Call", "Tool call", "skill", "memory", "subagent"]
 ---
 
-> Humanity’s problem is that the people doing the work are always too young. The AI industry is rediscovering *Cybernetics* (Wiener, 1948).
+> Humanity’s problem is that the people doing the work are always too young. The AI industry is rediscovering *Cybernetics* (Wiener, 1948) [1].
 >
 > Do not imagine “intelligence,” but do not think of it as merely mechanical either.
 
@@ -112,11 +112,11 @@ Worse, prompt effects do not accumulate independently, one rule at a time. A sin
 
 This is why I have always followed one rule when writing prompts: **prefer semantically dense words that activate conceptual clusters the model already possesses, and convey constraints in the cleanest, shortest form instead of explaining them repeatedly.** One word with depth can evoke a complete concept the model has already learned. Dozens of local prohibitions can only assemble one from fragments.
 
-This also explains why the industry encounters the problem of “prompt migration”: broadly effective prompting methods often carry across models, but their exact wording may not transfer unchanged. The same text can unfold along different generation paths in different models: wording that works well for one may produce only a suboptimal result from another. A study of natural-language prompts found that merely rephrasing components or changing their order can substantially alter results; this order dependence appeared across several two-level fractional factorial design instances and different GPT and Gemini models ([Ying et al., 2026](https://arxiv.org/abs/2607.05537)). If a simple prompt achieves similar results across multiple models, there is stronger reason to believe that it captures a general method; complex wording that yields an additional benefit on only one model is more likely to depend on that model’s particular response tendencies.
+This also explains why the industry encounters the problem of “prompt migration”: broadly effective prompting methods often carry across models, but their exact wording may not transfer unchanged. The same text can unfold along different generation paths in different models: wording that works well for one may produce only a suboptimal result from another. A study of natural-language prompts found that merely rephrasing components or changing their order can substantially alter results; this order dependence appeared across several two-level fractional factorial design instances and different GPT and Gemini models ([Ying et al., 2026](https://arxiv.org/abs/2607.05537)) [2]. If a simple prompt achieves similar results across multiple models, there is stronger reason to believe that it captures a general method; complex wording that yields an additional benefit on only one model is more likely to depend on that model’s particular response tendencies.
 
 #### Write Less “Don’t”; State the Goal Instead
 
-[Anthropic’s 2026 research on a global workspace in language models](https://transformer-circuits.pub/2026/workspace/) provides a more concrete reference point for this experience. Its overall structural analysis uses J-lens to read the model’s internal **verbalizable representations**, observing how certain representations are broadcast across token positions and modulated by task instructions, and from there discussing structures in language models analogous to a global workspace. Prompt context carries the input; J-space is the space of representations read by J-lens; and global workspace describes the broadcast structure observed in the paper.
+[Anthropic’s 2026 research on a global workspace in language models](https://transformer-circuits.pub/2026/workspace/) [3] provides a more concrete reference point for this experience. Its overall structural analysis uses J-lens to read the model’s internal **verbalizable representations**, observing how certain representations are broadcast across token positions and modulated by task instructions, and from there discussing structures in language models analogous to a global workspace. Prompt context carries the input; J-space is the space of representations read by J-lens; and global workspace describes the broadcast structure observed in the paper.
 
 More directly relevant to prompt writing are the mention, don’t-think, and ignore experiments in the appendix. Under specific copying tasks and detection protocols, the researchers compared detectable representations of target concepts. The category-instance and math-expression tasks produced fairly consistent results: merely mentioning a target or instructing the model “not to think” about it usually did not make its representation disappear, whereas marking the target as irrelevant to the task was more often associated with lower detection results. This relationship was not equally clear across every task, however: the line-width task, which required character-by-character counting, produced more mixed results. And J-lens measures whether the target concept can be read from the model’s intermediate states, not whether the model ultimately copied the text correctly.
 
@@ -128,7 +128,7 @@ User input appears at the end of the context and can influence the LLM just as s
 
 An early prompting trick illustrates the same principle: if you want XML output, end the input with `<xml>`; if you want JSON, end it with `{`. This exploits the local influence of the final input on what is generated next.
 
-I have also discussed the security implications of why system prompts, the latest input, and tool results matter in [AI Agent Privacy and Protection](https://xzos.net/blog/ai-agent-privacy-and-protection/).
+I have also discussed the security implications of why system prompts, the latest input, and tool results matter in [AI Agent Privacy and Protection](https://xzos.net/blog/ai-agent-privacy-and-protection/) [4].
 
 ### Mostly Static Filtering, Reorganization, and Structured Control
 
@@ -179,11 +179,11 @@ My approach is to expose only our own entry-point skill directly to the Agent—
 >
 > This is the “library call” programmers already know: your code invokes one capability from a library when it needs it, rather than letting the library decide how the entire program should be written. For Agents, the classic concepts of libraries, interfaces, and composition are already sufficient. What truly separates people is whether they can recognize those concepts again in something new, understand them deeply enough, and compose them well.
 >
-> The Agent field is also repeating computing’s long-standing habit of coining terms. Split prompts and processes into files, for example, and call them `skills`. The term is now standard and there is no harm in continuing to use it, but a new name has not created an entirely new computing concept. This article explains it as a “library call” precisely because an old concept familiar to programmers already describes the composition involved.
->
-> Words such as `harness` expose the problem even more clearly. In Agent discourse, a `harness` often wraps existing things such as context assembly, the tool-call loop, state management, and execution control. Removed from a specific context and the reader’s prior knowledge, the name alone says nothing about what it actually does. Questions such as “can a skill replace an MCP Tool?” and “what is the difference between an MCP Tool and a function call?” once had straightforward answers: a skill organizes methods and workflows for an Agent; an MCP Tool exposes executable capabilities to the Agent host; the host can then turn an MCP Tool into a model-visible tool and invoke it in response to a function call generated by the model. Once these names are lined up beside one another, they begin to look like peers that might replace each other, and a host of unnecessary comparisons follows. Asking which can replace which merely because skills, MCP Tools, and function calls are all used by Agents is like pointing at an apple tree and asking, “Why doesn’t it grow pears?”
->
-> Coining a new term without identifying a new distinction, merely to sound profound, is not innovation. It transfers the author’s unfinished thinking to the reader. Shallow understanding and impoverished expression both become additional costs for the reader, who is then forced to translate the new term back into concepts that already existed.
+> > The Agent field is also repeating computing’s long-standing habit of coining terms. Split prompts and processes into files, for example, and call them `skills`. The term is now standard and there is no harm in continuing to use it, but a new name has not created an entirely new computing concept. This article explains it as a “library call” precisely because an old concept familiar to programmers already describes the composition involved.
+> >
+> > Words such as `harness` expose the problem even more clearly. In Agent discourse, a `harness` often wraps existing things such as context assembly, the tool-call loop, state management, and execution control. Removed from a specific context and the reader’s prior knowledge, the name alone says nothing about what it actually does. Questions such as “can a skill replace an MCP Tool?” and “what is the difference between an MCP Tool and a function call?” once had straightforward answers: a skill organizes methods and workflows for an Agent; an MCP Tool exposes executable capabilities to the Agent host; the host can then turn an MCP Tool into a model-visible tool and invoke it in response to a function call generated by the model. Once these names are lined up beside one another, they begin to look like peers that might replace each other, and a host of unnecessary comparisons follows. Asking which can replace which merely because skills, MCP Tools, and function calls are all used by Agents is like pointing at an apple tree and asking, “Why doesn’t it grow pears?”
+> >
+> > Coining a new term without identifying a new distinction, merely to sound profound, is not innovation. It transfers the author’s unfinished thinking to the reader. Shallow understanding and impoverished expression both become additional costs for the reader, who is then forced to translate the new term back into concepts that already existed.
 
 Returning to skills: the first kind, process skills, should grow out of real work. Which processes deserve to be codified, how a skill should be used and revised after it is written, and how the AI should be supervised while it works can be reduced to four points:
 
@@ -206,7 +206,7 @@ Memory is well suited both to gradually learning your habits and preferred ways 
 
 Processing memory itself also requires context, so it must be isolated. **The working Agent must never summarize, filter, or delete memories on its own.** New context should enter a memory queue automatically and be handled by an independent memory Agent or proxy, such as Honcho or Hindsight; the working Agent should only retrieve the memories it needs.
 
-> [Remember When It Matters: Proactive Memory Agent for Long-Horizon Agents](https://arxiv.org/abs/2607.08716) adopts a similar architecture: the task-executing Agent remains unchanged, while an independently running memory Agent updates structured memory from recent trajectories and decides when to inject compressed, relevant memories into the task Agent’s context, mitigating “behavioral state decay” over long trajectories.
+> [Remember When It Matters: Proactive Memory Agent for Long-Horizon Agents](https://arxiv.org/abs/2607.08716) [5] adopts a similar architecture: the task-executing Agent remains unchanged, while an independently running memory Agent updates structured memory from recent trajectories and decides when to inject compressed, relevant memories into the task Agent’s context, mitigating “behavioral state decay” over long trajectories.
 
 Nor should retrieval consist of having the working Agent perform a crude search and then filter the results itself. It should ask the memory proxy a question; the proxy should retrieve and organize the material in an isolated context and return only the answer to the working Agent. Deleting memory must likewise go through the proxy. Otherwise, memory management directly pollutes the active working context and defeats the purpose of isolation.
 
@@ -234,4 +234,8 @@ A good context, then, evokes and fully uses capabilities the LLM already learned
 
 ## References
 
-Wiener, N. (1948). *Cybernetics: Or Control and Communication in the Animal and the Machine*. Hermann & Cie; The Technology Press; John Wiley & Sons.
+1. Wiener, N. (1948). *Cybernetics: Or Control and Communication in the Animal and the Machine*. Hermann & Cie; The Technology Press; John Wiley & Sons.
+2. Ying, D. D., Vazquez, A. R., & Xu, H. (2026). *[Prompt engineering using order-of-addition experiments: An application to generating two-level fractional factorial designs](https://arxiv.org/abs/2607.05537)*. arXiv:2607.05537.
+3. Gurnee, W., et al. (2026). *[Verbalizable Representations Form a Global Workspace in Language Models](https://transformer-circuits.pub/2026/workspace/)*. Transformer Circuits Thread.
+4. xz-dev. (2026). *[AI Agent Privacy and Protection](https://xzos.net/blog/ai-agent-privacy-and-protection/)*.
+5. Wu, Y., et al. (2026). *[Remember When It Matters: Proactive Memory Agent for Long-Horizon Agents](https://arxiv.org/abs/2607.08716)*. arXiv:2607.08716.
