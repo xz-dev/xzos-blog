@@ -1,5 +1,23 @@
 ---
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
+
+type ThumbnailPost = {
+	data: {
+		title: string;
+		heroImage?: ImageMetadata;
+	};
+	body?: string;
+};
+
+interface Props {
+	post: ThumbnailPost;
+}
+
+type Thumbnail =
+	| { type: 'astro'; src: ImageMetadata }
+	| { type: 'url'; src: string }
+	| { type: 'generated'; gradient: string };
 
 const { post } = Astro.props;
 
@@ -18,7 +36,7 @@ const gradients = [
     'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)',
 ];
 
-function getGradientForTitle(title) {
+function getGradientForTitle(title: string) {
     let hash = 0;
     for (let i = 0; i < title.length; i++) {
         hash = title.charCodeAt(i) + ((hash << 5) - hash);
@@ -27,7 +45,7 @@ function getGradientForTitle(title) {
     return gradients[index];
 }
 
-function getPostImage(post) {
+function getPostImage(post: ThumbnailPost): Thumbnail {
 	// 1. Check for explicit heroImage
 	if (post.data.heroImage) {
 		return { type: 'astro', src: post.data.heroImage };
