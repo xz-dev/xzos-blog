@@ -3,15 +3,17 @@ source_hash: "0efbe10d"
 source_lang: "zh"
 target_lang: "en"
 lang: "en"
-title: "Viewing an LLM as an Interpreter: Managing Context Properly — System Prompts, Function Calls, and Skills"
+title: "Viewing an LLM as an Interpreter: Managing Context Properly — Prompts, Memory, Function Calls, Skills, and Subagents"
 description: "Understanding agents through the lens of interpreters and control flow, and exploring how system prompts, function calls, skills, memory, and subagents can manage context and guide solution paths."
 pubDate: "2026-07-23T00:13:17+08:00"
 author: "xz-dev"
 category: "AI"
-tags: ["AI", "LLM", "Agent", "Context Engineering", "System Prompt", "Function Call", "skill", "memory", "subagent"]
+tags: ["AI", "LLM", "Agent", "Context Engineering", "System Prompt", "Function Call", "Tool call", "skill", "memory", "subagent"]
 ---
 
-> Do not imagine “intelligence”; do not think mechanically, either.
+> Humanity’s problem is that the people doing the work are always too young. The AI industry is rediscovering *Cybernetics* (Wiener, 1948).
+>
+> Do not imagine “intelligence,” but do not think of it as merely mechanical either.
 
 <!--more-->
 
@@ -19,64 +21,64 @@ tags: ["AI", "LLM", "Agent", "Context Engineering", "System Prompt", "Function C
 
 ### Defining the Problem
 
-> Solving a problem starts with defining it. The difference between a novice and an expert is that the expert knows how to properly define the problem itself.
+> Solving a problem begins with defining it. What separates a novice from an expert is that the expert knows how to define the problem itself correctly.
 
-Whenever we use an LLM, the fundamental need is the same: we expect AI to achieve the intended goal, whether the problem falls within or beyond the territory we already understand.
+Our fundamental need when using an LLM is simple: we expect AI to reach the intended goal, whether within a domain we understand or one we do not.
 
-Why distinguish between the two? Because people face different kinds of problems:
+Why distinguish the two? Because the problems people face are not all alike:
 
-1. Unknown territory
-   1. People cannot always formulate the right question.
+1. Outside the expected domain
+   1. People are not always capable of asking the right question.
    2. Nor do they always know how the problem should be solved.
-2. Known workflows
-   1. People know exactly how to solve the problem but simply do not want to do the work themselves.
-   2. The process is so well defined that it leaves no room for human agency.
+2. Within the expected domain
+   1. People know exactly how to solve the problem, but cannot be bothered to do it themselves.
+   2. The process is so well defined that it leaves no room for human initiative.
 
-So the real question is not "how smart is the AI," but: **how to make the AI/LLM search for the answer along a reasonable path.**
+The real question, then, is not “how intelligent is the AI?” but: **how do we make the AI/LLM search for the answer along a reasonable path?**
 
-There are two scenarios for making the LLM search along a reasonable path: when facing the unknown, guide it to find the correct answer in a vast representation space; when facing a known process, use prompts to constrain or even "force" it to work along the expected path, rather than letting probabilities drift everywhere.
+There are two cases. When facing the unknown, we guide the LLM toward the right answer within a vast representation space. When the procedure is already known, we use prompts to constrain—even “force”—it to follow the expected path instead of letting probability wander in every direction.
 
-Since the goal is to control the solution path, the next step is to identify the parts of the Agent that can actually be controlled.
+Once the goal is to control the path to a solution, the next step is to identify what can actually be controlled inside an Agent.
 
-### Defining Agent
+### Defining an Agent
 
-An Agent is an LLM-based intelligent entity that can automatically complete tasks through function calls. Its main working method is to repeatedly execute the following loop:
+An Agent is an LLM-based agent that can complete tasks automatically through function calls. Its basic mode of operation is to repeat the following loop:
 
-1. Input text: system prompt, user input, skill prompt, and function call information.
-2. The LLM returns text, which may also contain JSON for function calls.
+1. Input text: the system prompt, user input, skill prompts, and function-call information.
+2. The LLM returns text, which may also contain function-call JSON.
 3. The client executes the function call.
-4. Put the original prompt, LLM output, and function return back into the context.
-5. The LLM continues to generate the next step.
+4. The original prompts, the LLM output, and the function result are placed back into the context.
+5. The LLM continues with the next step.
 
-#### State Machine Breakdown
+#### Breaking It Down as a State Machine
 
 ```text
 Text → (LLM → possible function call) → Text
 ```
 
-Function calls look like "actions," but to the LLM, it is still generating a piece of text that will be interpreted and executed by the client; the function return becomes new text in the next round of context. Function calls cannot be removed from this model, because they are exactly the connection point where the Agent turns text into external actions and then turns the action results back into text.
+A function call looks like an “action,” but to the LLM it is still text that the client will interpret and execute. The function result then becomes new text in the next round of context. Function calls cannot be removed from this model: they are precisely the junction where an Agent turns text into action in the outside world, then turns the result of that action back into text.
 
 #### Controllable and Uncontrollable Scope
 
-Without considering injection methods like filtering or rewriting, the controllable parts are:
+Leaving aside injection techniques such as filtering and rewriting, what we can control is:
 
 1. Prompts and user input.
-2. Function return data.
+2. Data returned by functions.
 
-The uncontrollable parts are:
+What we cannot control is:
 
-1. Function input generated by the LLM.
+1. Function arguments generated by the LLM.
 2. Text returned by the AI.
 
 #### Mutable and Immutable Scope
 
-In an actual task, what is mutable is the text, i.e., the context; what is relatively immutable is the LLM itself.
+During an actual task, the mutable part is the text—that is, the context. The relatively immutable part is the LLM itself.
 
-### LLM is the Interpreter, Context is the Control Flow
+### The LLM Is the Interpreter; Context Is the Control Flow
 
-From the engineering control perspective of the Agent, this is an interpreter program.
+From the engineering control plane of an Agent, this is an interpreter program.
 
-The LLM is a "word-completing parrot": it relies on the context to compute the probability distribution of the next token, then selects or samples a token from it; each time a new token is generated, it is added to the context, and the next step is recalculated until a stop token is encountered.
+An LLM is a “word-completing parrot”: from the context, it computes a probability distribution for the next token, then selects or samples one. Each newly generated token is added to the context, and the next token is computed again, until a stop token appears.
 
 ```python
 def LLM(prompt: str) -> str:
@@ -90,136 +92,144 @@ def LLM(prompt: str) -> str:
     return prompt
 ```
 
-**The "raw context" as input has the power to make the LLM go wildly astray from a tiny difference.**
+**A minute difference in the “raw context” supplied as input can send an LLM miles off course.**
 
-Therefore, the context itself is the program and control flow; the LLM is the interpreter, gradually translating the context into text and function calls. It is not a deterministic interpreter, and the same context does not guarantee taking exactly the same path every time, but managing the Agent is still essentially about managing the context first.
+Context itself is therefore the program and the control flow; the LLM is the interpreter that translates it, step by step, into text and function calls. It is not a deterministic interpreter—the same context does not guarantee exactly the same path every time—but managing an Agent still begins, fundamentally, with managing its context.
 
 ## Solutions
 
-### Completely Static Workflows and Static Control
+### Fully Static Workflows and Static Control
 
-The most basic and intuitive context management is managing the system prompt and user input.
+The most basic and intuitive form of context management is managing the system prompt and user input.
 
-#### System Prompt
+#### System Prompts
 
-The system prompt restricts or extends the AI's behavior through empirical writing. Because it is at the very beginning of the context, its influence is strong: written well, it can elevate a poor model; written poorly, it can dumb down an excellent model.
+A system prompt constrains or extends AI behavior through empirically developed phrasing. Because it sits at the very beginning of the context, its influence is powerful: written well, it can elevate a poor model; written badly, it can make an excellent model stupid.
 
-Nowadays, fewer and fewer people recommend spending major effort on optimizing the system prompt, not because it's useless, but because it's too hard to get right. The so-called "best prompt" often only works for a specific task, specific model, or even specific version; for a different task, the most effective wording might be completely different, even counter-intuitive. Optimizing the system prompt is thus more like local parameter tuning than finding a universally reusable perfect constitution.
+Fewer people now recommend devoting most of one’s effort to optimizing the system prompt—not because system prompts are useless, but because they are so difficult to get right. A supposed “best prompt” often holds only for a particular task, model, or even model version. Change the task, and the most effective wording may be entirely different, even counterintuitive. Optimizing a system prompt is therefore closer to local parameter tuning than to discovering a perfect, universally reusable constitution.
 
-What's more troublesome is that the influence of prompts is not independent and additive. A single requirement may not seem rigid on its own, but dozens accumulated together can collectively shape a very strong "personality." The same long prompt placed in different models can result in completely different personalities, even causing rules originally meant to avoid problems to create problems instead. Methodological skills are particularly prone to exposing this: they originally only intend to provide a thinking tendency, but once explained too long and constrained too finely, they can turn from "guiding the model" into "thinking for the model."
+Worse, prompt effects do not accumulate independently, one rule at a time. A single requirement may not seem rigid, yet dozens together can produce an extremely strong “personality.” Put the same long prompt into different models and that personality may change completely; rules intended to prevent problems may even begin to create them. Methodological skills expose this especially clearly. A skill may intend only to encourage a way of thinking, but once it becomes too long and too tightly qualified, it can shift from “guiding the model” to “thinking in the model’s place.”
 
-This is also the prompt writing principle I have always adhered to: **prioritize using semantically dense words that can mobilize the model's existing concept clusters, conveying constraints with the cleanest and shortest expression, rather than explaining repeatedly.** A word with depth can evoke a complete concept the model has already learned; dozens of local prohibitions can only piece together from fragments.
+This is why I have always followed one rule when writing prompts: **prefer semantically dense words that activate conceptual clusters the model already possesses, and convey constraints in the cleanest, shortest form instead of explaining them repeatedly.** One word with depth can evoke a complete concept the model has already learned. Dozens of local prohibitions can only assemble one from fragments.
 
-#### Write Fewer "Don'ts," More Goals
+#### Write Less “Don’t”; State the Goal Instead
 
-[Anthropic's 2026 research on the global workspace in language models](https://transformer-circuits.pub/2026/workspace/) provides a more concrete reference for this experience. The paper's overall structural analysis uses J-lens to read the model's internal **sayable representations**, observing how certain representations broadcast across token positions and are modulated by task instructions, thereby discussing structures similar to the global workspace in language models. The prompt context carries the input, J-space is the space where J-lens reads representations, and the global workspace describes the broadcast structure observed in the paper.
+[Anthropic’s 2026 research on a global workspace in language models](https://transformer-circuits.pub/2026/workspace/) provides a more concrete reference point for this experience. Its overall structural analysis uses J-lens to read the model’s internal **verbalizable representations**, observing how certain representations are broadcast across token positions and modulated by task instructions, and from there discussing structures in language models analogous to a global workspace. Prompt context carries the input; J-space is the space of representations read by J-lens; and global workspace describes the broadcast structure observed in the paper.
 
-More directly related to prompt writing are the mention, don't-think, and ignore experiments in the appendix. Under specific copying tasks and detection protocols, the researchers compared the detectable representations of target concepts: the category-instance and math-expression tasks gave relatively neat results — merely mentioning the target or asking to "not think" about it usually did not make the representation disappear; marking the target as irrelevant to the task was more often accompanied by lower detection results.
+More directly relevant to prompt writing are the mention, don’t-think, and ignore experiments in the appendix. Under specific copying tasks and detection protocols, the researchers compared detectable representations of target concepts. The category-instance and math-expression tasks produced fairly consistent results: merely mentioning a target or instructing the model “not to think” about it usually did not make its representation disappear, whereas marking the target as irrelevant to the task was more often associated with lower detection results. This relationship was not equally clear across every task, however: the line-width task, which required character-by-character counting, produced more mixed results. And J-lens measures whether the target concept can be read from the model’s intermediate states, not whether the model ultimately copied the text correctly.
 
-The line-width task required the model to secretly count characters while reading and copying text, determining which column the current character is in a line. The four prompt methods did not form as clear a relationship here as in the previous two tasks. The authors believe it may be because character-by-character counting is inherently more difficult, or because the specific wording of focus and ignore for line-width is not completely symmetric semantically. This experiment compared whether J-lens could read the target concept from the model's intermediate state, not the final copying accuracy.
-
-**Prohibiting a concept does not mean the model does not need to represent that concept first.** In engineering practice, repeatedly elaborating on practices you don't want the model to adopt also consumes tokens, dilutes the information density of the real goal, keeps the corresponding concept active during generation, and pulls the answer toward the function space you originally wanted to avoid. If you can directly write the target state, don't build a maze with its opposite; when prohibition is truly necessary, write it short, and quickly return the focus to what should be done and what is relevant to the current task.
+**Prohibiting a concept does not mean the model can avoid representing it first.** In engineering practice, repeatedly describing an unwanted approach also consumes tokens, dilutes the information density of the actual goal, keeps the corresponding concept active throughout generation, and pulls the answer toward the very function space we hoped to avoid. When you can state the desired end state directly, do not build a maze out of its opposite. When a prohibition is genuinely necessary, keep it short, then return the emphasis as quickly as possible to what should be done and what is relevant to the task.
 
 #### User Input
 
-User input is at the end of the context and also strongly influences the LLM. The simplest requirements are: make fewer typos, simplify expression, and clarify your own thoughts as much as possible first.
+User input appears at the end of the context and can influence the LLM just as strongly. The simplest advice is to make fewer typos, simplify the wording, and clarify your own thoughts as far as possible before writing.
 
-There was also a common early technique: if you want the model to output XML, end the input with `<xml>`; if you want JSON, end with `{`. This also leverages the proximity effect of the trailing input on subsequent generation.
+An early prompting trick illustrates the same principle: if you want XML output, end the input with `<xml>`; if you want JSON, end it with `{`. This exploits the local influence of the final input on what is generated next.
 
-Regarding why the system prompt, latest input, and tool results are important, I have also discussed it from a security perspective in [AI Agent Privacy and Protection](https://xzos.net/blog/ai-agent-privacy-and-protection/).
+I have also discussed the security implications of why system prompts, the latest input, and tool results matter in [AI Agent Privacy and Protection](https://xzos.net/blog/ai-agent-privacy-and-protection/).
 
-### Basically Static Filtering, Reorganization, and Structured Control
+### Mostly Static Filtering, Reorganization, and Structured Control
 
-Besides directly writing prompts, you can also organize the context at the boundaries controllable by humans. For example, MCP Tools carefully construct inputs and returns, skills specify that the AI use specific commands to narrow output, or gateways automatically trim, reorganize, and structure tool results, such as OmniRoute's RTK Engine.
+Beyond writing prompts directly, we can organize context at the boundaries humans control. An MCP Tool can carefully construct its input and return value; a skill can instruct the AI to use a particular command that narrows the output; or a gateway can automatically trim, reorganize, and structure tool results, as OmniRoute’s RTK Engine does.
 
-These methods are useful, but overall they are being replaced by built-in compression in LLM tools and context isolation via subagents. The fundamental reason is that the speed of human hand-written rules cannot keep up with the decreasing cost and evolving capabilities of models. Fixed formats, obvious noise, and low-cost preprocessing are still worth doing, but their value stops there: they are suitable for casually cleaning up input, cannot handle complex semantic control, and certainly should not be elevated to the main defense line of the entire Agent control.
+These methods are useful, but overall they are being displaced by built-in compression in LLM tools and by context isolation through subagents. The fundamental reason is that hand-written rules cannot keep pace with falling model costs and advancing model capabilities. Fixed formats, obvious noise, and cheap preprocessing are still worth handling, but that is where their value ends: they are useful for casually cleaning up input, not for complex semantic control, and certainly not as the principal defense of an entire Agent control system.
 
-### Old Paradigm: Isolating Context with Subagents
+### The Old Paradigm: Isolating Context with Subagents
 
-A step further than static filtering is to use subagents to isolate different tasks in different contexts. But isolation is not free; every handoff must face the handoff: either pass the full context, reducing information density; or compress the context, bearing the risk of summary distortion.
+A step beyond static filtering is to isolate different work in separate contexts with subagents. But isolation is not free. Every transfer creates a handoff: either pass the entire context and reduce its information density, or compress it and accept the risk that the summary distorts it.
 
-If not compressed, directly adding the full context to the receiving Agent, not to mention length, the information density will also drop, making the LLM more likely to miss the actual task to handle; if compressed, the handoff becomes a lottery.
+If the context is not compressed, handing all of it to the receiving Agent reduces information density even before length becomes a concern, making the LLM more likely to miss the task that actually matters. If it is compressed, the handoff becomes another lottery draw.
 
-To stabilize the results, there are usually two optimization methods:
+There are usually two ways to make the result more stable:
 
-1. Increase the number of lottery draws, such as multiple LLM reviews or loops.
-2. Reduce the lottery steps.
+1. Increase the number of draws, through multiple LLM reviewers or loops.
+2. Reduce the number of draws.
 
-The former is expert review and loop programming that burns tokens, relying on "brute force miracles"; the second is: **by default, avoid unconscious and unnecessary subagent handoffs.** If a task can be completed continuously in the current context, don't forcibly split it just to look like a multi-agent system. Every takeover may over-compress the context, eventually forcing the new Agent to rediscover the full background; this is why many people find it faster without subagents.
+The first is token-burning expert review and loop programming: brute force in the hope of a miracle. The second is to **avoid unconscious, unnecessary subagent handoffs by default.** If a piece of work can be completed continuously in the current context, do not split it merely to resemble a multi-Agent system. Every takeover may compress the context too aggressively and force the new Agent to rediscover the entire background. This is why many people find that not using a subagent is sometimes faster.
 
-### New Paradigm: Treating Skills as Programmatic Control Flow
+### The New Paradigm: Treating Skills as Programmatic Control Flow
 
-Since the LLM itself can be seen as an interpreter, prompts are the code to be run.
+If the LLM can be understood as an interpreter, then prompts are the code it executes.
 
-Rather than writing a "dissertation-style" mega skill or prompt that covers all situations, it's better to break it into multiple skills and chain them as control flow: load a certain skill when a condition is met, otherwise take another path. This way, the AI only needs to read the content corresponding to the current branch, directly avoiding context pollution from irrelevant information.
+Instead of writing one enormous, essay-like skill or prompt that contains every possible case, split it into multiple skills and chain them as control flow: when a condition holds, load one skill; otherwise, follow another branch. The AI then needs to read only the content for the current branch, directly avoiding context pollution from irrelevant information.
 
-This approach has requirements for the AI's own capabilities and training methods. If the model habitually reads all files mindlessly, the control flow will fail. Fortunately, the engineering of Agents in this regard is already quite good.
+> Stuffing every branch into one gigantic prompt is like writing all your control flow as spaghetti code.
 
-In the industry, subagents appeared first, and skills gradually formed later, because subagents naturally bring context isolation. But skills are more suitable for carrying mature, stable handoffs: whether written by humans or AI, they are essentially reusable, reviewable, and continuously improvable handoff documents. A new Agent or session can start directly from a mature process, without having to go through the entire process of discovering problems, exploring tools, and confirming constraints again, and without mixing the process noise of "how to find the answer" into the actual working context.
+This approach places demands on the AI’s capabilities and training. If a model habitually reads every file without discrimination, the control flow collapses. Fortunately, current Agent engineering is already quite good in this respect.
 
-Superpowers is a concrete example. It has more than just this meaning, but a very important part of its value is precisely writing already mature working methods into skills and process documents, providing a complete handoff for the receiving Agent, reducing the time and lottery draws needed to rediscover the context.
+Subagents appeared in the industry before skills gradually took shape because subagents provide context isolation naturally. Skills, however, are better suited to mature, stable handoffs. Whether written by a human or an AI, a skill is fundamentally a handoff document that can be reused, reviewed, and continually refined. A new Agent or session can begin from a mature process instead of repeating the entire journey of discovering the problem, exploring the tools, and confirming the constraints—and without mixing the noise of “how the answer was discovered” into the context where the actual work happens.
 
-### Context Control Workflow in the New Paradigm
+[Superpowers](https://github.com/obra/superpowers) is one concrete example. Its significance is broader than this, but an important part of its value lies precisely in encoding mature working methods as skills and process documents, giving the receiving Agent a complete handoff and reducing both the time and the lottery draws required to rediscover the context.
 
-When it comes to actual workflows, three things need to be distinguished: mature, linear execution processes, and transferable, clearly expressible thinking methods, are given to skills; non-linear knowledge such as user habits, historical states, and interpersonal relationships is given to memory; execution work that truly deserves isolation, tree-like splitting, or independent review is given to subagents.
+### A Context-Control Workflow for the New Paradigm
 
-#### Skill
+In an actual workflow, three things must be kept distinct. Give mature, linear execution processes—and transferable, clearly expressible ways of thinking—to skills. Give nonlinear knowledge such as user habits, historical state, and relationships to memory. Give execution work to subagents only when it genuinely deserves isolation, tree-shaped decomposition, or independent review.
 
-Skills can solidify two different types of things. The first type is linear, fixed, reusable, and reviewable task processes, including control flow and mature handoffs; it's like human-readable pseudocode, and also like a stable requirements document. The second type is not specific task steps, but transferable methodologies or personal problem-solving approaches.
+#### Skills
 
-Many people feel that skills like [Superpowers](https://github.com/obra/superpowers) are too "overbearing." The problem often isn't that the methods it provides are valueless, but that when the entire skill is directly handed to the Agent for discovery, an overly broad or mismatched description brings the preset working style into the task. It brings not only control flow but also the author's entire set of work habits regarding when to plan, how to test, and what counts as done. As long as some of these judgments don't fit the current user and project, the Agent will seriously write your code using someone else's methods; the more complete the skill, the more pronounced this personality becomes.
+A skill can codify two different kinds of things. The first is a linear, fixed, reusable, reviewable task process, including control flow and a mature handoff. It resembles both human-readable pseudocode and a stable requirements document. The second is not a sequence of task steps, but a transferable methodology or a personal approach to solving problems.
 
-My approach is to only let the Agent directly see the entry skill I wrote myself, such as `coding-in-project`, and then adopt narrower external capabilities from it as needed: use Superpowers' `subagent-driven-development` to orchestrate subagents, and use the [BDD skill](https://github.com/xz-dev/bdd-skill) to design and write tests. This way, I can absorb Superpowers' unparalleled efficiency in subagent orchestration without having to inherit its entire style and code taste.
+Many people find skills such as [Superpowers](https://github.com/obra/superpowers) too “overbearing.” The problem is often not that its methods lack value, but that exposing the entire collection for the Agent to discover allows descriptions that are too broad or ill-suited to the task to bring a preset working style along with them. What arrives is not only control flow, but the author’s complete set of habits about when to plan, how to test, and what counts as done. If some of those judgments do not suit the current user or project, the Agent will diligently write your code according to someone else’s methods. The more complete the skill, the more pronounced this personality becomes.
 
-> This is the "library call" familiar to programmers: your own code only calls a certain capability from the library when needed, rather than letting the library decide how the entire program is written. When it comes to Agents, classic concepts like libraries, interfaces, and composition are already sufficient. What really makes the difference is whether you can re-recognize them in new things, understand them deeply enough, and then combine them well.
+My approach is to expose only our own entry-point skill directly to the Agent—`coding-in-project`, for example—and adopt narrower external capabilities through it as needed: [Superpowers](https://github.com/obra/superpowers)’s `subagent-driven-development` to orchestrate subagents, and [my own BDD skill](https://github.com/xz-dev/bdd-skill) to design and write tests. This captures [Superpowers](https://github.com/obra/superpowers)’s unmatched efficiency at subagent orchestration without inheriting its entire style and taste in code.
+
+> *I can already imagine someone calling this a skill tree.*
 >
-> The Agent field is also repeating the long-standing habit of the computer world of coining new terms. For example, splitting prompts and processes into files is called a `skill`. This term has now become standard, and there's no harm in continuing to use it, but a new name hasn't created a brand-new computer concept. This article uses "library call" to explain it precisely because the old concepts familiar to programmers are already sufficient to illustrate this composition method.
+> This is the “library call” programmers already know: your code invokes one capability from a library when it needs it, rather than letting the library decide how the entire program should be written. For Agents, the classic concepts of libraries, interfaces, and composition are already sufficient. What truly separates people is whether they can recognize those concepts again in something new, understand them deeply enough, and compose them well.
 >
-> Words like `harness` expose this problem even more easily. In the Agent context, `harness` often wraps existing things like context assembly, tool call loops, state management, and execution control; divorced from specific context and prior knowledge, a reader has no idea what it actually does just from the name. Questions like "Can skill replace MCP Tool?" or "What's the difference between MCP Tool and function call?" originally have clear answers: skills organize the methods and processes used by the Agent, MCP Tools expose executable capabilities to the Agent host, and the host can then convert MCP Tools into model-visible tools and call them based on the function calls generated by the model. Once these names are lined up as if they are parallel and interchangeable, many unnecessary comparisons arise. Just because skill, MCP Tool, and function call are all used by the Agent, continuing to ask who can replace whom is no different from pointing at an apple tree and asking, "Why doesn't the apple tree grow pears?"
+> The Agent field is also repeating computing’s long-standing habit of coining terms. Split prompts and processes into files, for example, and call them `skills`. The term is now standard and there is no harm in continuing to use it, but a new name has not created an entirely new computing concept. This article explains it as a “library call” precisely because an old concept familiar to programmers already describes the composition involved.
 >
-> Not proposing new distinctions but coining new terms to appear profound is not innovation; it's passing the author's unclear problems onto the reader. The author's shallow understanding and poor expression ultimately become extra comprehension costs for the reader, forcing them to translate the new terms back into existing concepts.
+> Words such as `harness` expose the problem even more clearly. In Agent discourse, a `harness` often wraps existing things such as context assembly, the tool-call loop, state management, and execution control. Removed from a specific context and the reader’s prior knowledge, the name alone says nothing about what it actually does. Questions such as “can a skill replace an MCP Tool?” and “what is the difference between an MCP Tool and a function call?” once had straightforward answers: a skill organizes methods and workflows for an Agent; an MCP Tool exposes executable capabilities to the Agent host; the host can then turn an MCP Tool into a model-visible tool and invoke it in response to a function call generated by the model. Once these names are lined up beside one another, they begin to look like peers that might replace each other, and a host of unnecessary comparisons follows. Asking which can replace which merely because skills, MCP Tools, and function calls are all used by Agents is like pointing at an apple tree and asking, “Why doesn’t it grow pears?”
+>
+> Coining a new term without identifying a new distinction, merely to sound profound, is not innovation. It transfers the author’s unfinished thinking to the reader. Shallow understanding and impoverished expression both become additional costs for the reader, who is then forced to translate the new term back into concepts that already existed.
 
-Back to skills, the first type of process-oriented skills should grow out of actual work. Which processes are worth solidifying, how to use and modify them after writing, and how to supervise the AI during work can be summarized into four points:
+Returning to skills: the first kind, process skills, should grow out of real work. Which processes deserve to be codified, how a skill should be used and revised after it is written, and how the AI should be supervised while it works can be reduced to four points:
 
-1. Processes worth solidifying into skills should be identified from real work, not let the AI indiscriminately summarize on its own. The skill description will enter every Agent's initial context; you wouldn't want a programming Agent to always carry a recipe-searching skill.
-2. For stable processes, prioritize using skills to control the AI, rather than continuing to bloat user prompts or system prompts. A large and comprehensive prompt is like a student handbook: even if every rule is reasonable, together they dilute the task focus and shape unpredictable personalities in different models.
-3. After writing a skill, have the AI review it, and repeatedly delete and modify based on real failures. Perfecting a skill does not mean constantly adding details: you should add necessary control flow, and also delete repetitive explanations and imagined defensive prohibitions.
-4. When the AI is working, you must watch it: why did it open a subagent here, why did it call that tool there? Today's Agents are increasingly "hyperactive." If you don't stop detours in time, the LLM is very willing to spend time reinventing the wheel, or even bypass problems by exploiting loopholes in the rules. Monitoring is not optional companionship; it's the prerequisite for the entire control system to hold.
+1. A process worth codifying as a skill should be identified through real work, not indiscriminately summarized by AI. Skill descriptions enter every Agent’s initial context; you do not want a coding Agent to carry a skill containing a search recipe everywhere it goes.
+2. For stable processes, prefer controlling the AI with skills rather than continuing to inflate the user prompt or system prompt. An all-encompassing prompt resembles a student handbook: even if every rule is reasonable on its own, together they dilute the task’s priorities and create an unpredictable personality in different models.
+3. Once a skill is written, have AI review it, then repeatedly remove or revise material in response to real failures. Improving a skill does not mean endlessly adding detail. Necessary control flow should be added, but repeated explanations and imagined defensive prohibitions should also be deleted.
+4. You must watch AI while it works: why did it start a subagent here, and why did it call that tool there? Today’s LLMs are becoming somewhat over-optimized for agentic work—and increasingly hyperactive. Unless detours are stopped promptly, an LLM will happily spend its time reinventing the wheel or even exploiting loopholes in the rules to evade the problem. Monitoring is not optional companionship; it is what makes the entire system of control possible.
 
-The second type of skill is suitable for writing lightweight prompts based on the user's own exploration of "how to think, how to ask, how to break down problems." It has a similar effect to memory: both give the AI's answers a relatively stable tendency, closer to the thinking perspective the user wants it to adopt.
+The second kind of skill is suited to expressing the user’s own hard-won ways of thinking, probing, and decomposing problems as lightweight prompts. It resembles memory in an important respect: both give AI responses a relatively stable tendency, bringing them closer to the perspective the user wants it to adopt. This is also why I advocate watching AI while it works.
 
-I habitually understand this tendency as a choice of "function space." Facing the same open question, placing it into the answer spaces of different professions like programming or medicine will generate answers in completely different directions; even within the same field, it may fall into the answer space of a senior practitioner, a novice, or the general public who haven't even started.
+I tend to understand this tendency as a choice of “function space.” Put the same open question into the answer space of programming, medicine, or another profession, and it will produce answers in entirely different directions. Even within one field, it may land in the answer space of a senior practitioner, a novice, or a general audience that has not yet begun.
 
-The value of methodological skills is to use a set of specific prompts to relatively stably bias the model toward one of these spaces. For example, `grill-me` makes the AI prefer to ask follow-up questions, break down, and challenge assumptions, rather than directly giving conclusions along the question. It carries a thinking bias, not a "problem-solving program" that replicates task steps. The LLM is still a probabilistic interpreter; the skill makes this bias explicit in the context, increasing the model's tendency to choose the corresponding function space, but does not specify a certain inevitable answer.
+The value of a methodological skill is that a particular set of prompts can bias the model toward one of those spaces with relative consistency. `grill-me`, for example, makes AI more inclined to ask follow-up questions, decompose the issue, and challenge assumptions instead of simply following the question to an immediate conclusion. It carries a cognitive bias, not a “problem-solving program” that reproduces task steps. The LLM remains a probabilistic interpreter. The skill places the bias explicitly in the context, increasing the model’s tendency to select the corresponding function space without prescribing an inevitable answer.
 
-Memory can also gradually learn the same preference, but whether it is retrieved, how it is organized, and how it is finally injected into the current context can be unstable. Skills solidify the preference into explicit, fixed, reviewable prompts, with more stable triggering and easier sharing and modification. This is the most important difference between the two here.
+Memory can gradually learn the same preference, but whether it is retrieved, how it is organized, and how it is ultimately injected into the current context may all be unstable. A skill fixes the preference in an explicit, stable, reviewable prompt, making it more reliable to trigger and easier to share and revise. That is the most important distinction between the two here.
 
 #### Memory
 
-Memory is suitable for letting the AI gradually learn your habits and thinking preferences, and also for storing non-linear data such as interpersonal relationships and historical states. Its advantage is that it can form understanding from continuously accumulated context, without needing to pre-write every thing as a rule; the cost is that retrieval and effectiveness are not as certain as with skills.
+Memory is well suited both to gradually learning your habits and preferred ways of thinking and to preserving nonlinear data such as relationships and historical state. Its advantage is that it can develop an understanding from context accumulated over time, without requiring every detail to be written as a rule in advance. Its cost is that retrieval and effect are less deterministic than with a skill.
 
-Processing memory itself also requires context, so it must be isolated. **The working Agent should absolutely not summarize, filter, or delete memories on its own.** New context should automatically enter the memory queue and be processed by an independent memory Agent or proxy, such as systems like Honcho or Hindsight; the working Agent is only responsible for retrieving needed memories.
+Processing memory itself also requires context, so it must be isolated. **The working Agent must never summarize, filter, or delete memories on its own.** New context should enter a memory queue automatically and be handled by an independent memory Agent or proxy, such as Honcho or Hindsight; the working Agent should only retrieve the memories it needs.
 
-Moreover, this retrieval cannot just be the working Agent doing a crude search and then filtering the results itself. It should ask the memory proxy, and the proxy completes the retrieval and organization in an isolated context, only handing the answer to the working Agent. The same goes for deleting memories; it must go through the proxy. Otherwise, the memory management process will directly pollute the working context, and isolation loses its meaning.
+> [Remember When It Matters: Proactive Memory Agent for Long-Horizon Agents](https://arxiv.org/abs/2607.08716) adopts a similar architecture: the task-executing Agent remains unchanged, while an independently running memory Agent updates structured memory from recent trajectories and decides when to inject compressed, relevant memories into the task Agent’s context, mitigating “behavioral state decay” over long trajectories.
 
-The boundary between memory and skill cannot be simply cut by "memory content" and "methodology." Non-linear knowledge that requires continuous accumulation, such as historical states and interpersonal relationships, is more suitable for memory; mature, fixed execution processes are more suitable for skills; as for the user's preferred thinking perspective, both can carry it, just with different ways of taking effect.
+Nor should retrieval consist of having the working Agent perform a crude search and then filter the results itself. It should ask the memory proxy a question; the proxy should retrieve and organize the material in an isolated context and return only the answer to the working Agent. Deleting memory must likewise go through the proxy. Otherwise, memory management directly pollutes the active working context and defeats the purpose of isolation.
 
-Therefore, skills cannot be completely replaced by memory. For fixed processes, memory means uncontrollable search and is harder to share and review; for thinking preferences, memory can gradually learn, but does not guarantee entering the context in a suitable form every time. Skills are fixed text that humans can read, serving both as pseudocode-like requirement documents to stably trigger specific processes, and as lightweight prompts to explicitly bias the AI's thinking space.
+The boundary between memory and skills cannot be drawn simply between “remembered content” and “methodology.” Nonlinear knowledge that accumulates over time, such as historical state and relationships, belongs more naturally in memory. Mature, fixed execution processes belong more naturally in skills. A user’s preferred way of thinking can live in either; what differs is how it takes effect.
 
-#### Subagent
+A skill therefore cannot be replaced entirely by memory. For a fixed process, memory introduces uncontrolled search and is harder to share and review. For a cognitive preference, memory may learn it gradually but cannot guarantee that it will enter every context in a suitable form. A skill is fixed, human-readable text: it can serve as a pseudocode-like requirements document that reliably triggers a concrete process, or as a lightweight prompt that explicitly biases the AI’s thinking space.
 
-The value of subagents is not in the handoff itself, but in bounded orchestration: by default, reduce unconscious handoffs; when the main context is about to be compressed, use isolated branches to change the way information flows in.
+#### Subagents
 
-The wrong usage is when the main Agent hands off a task that could have been completed continuously, then receives back a compressed result, forcing the receiver to rediscover the context. The correct usage is to continuously split a giant task in a tree-like manner, letting each subagent fully handle relatively independent branches in its own context, and also letting subagents review each other. The main Agent does not receive the entire discovery process of each branch, only monitoring goals, progress, and key states. This way, local contexts don't need to be repeatedly compressed, and the main context won't be filled with all the details and trigger compression.
+The value of a subagent is not the handoff itself, but bounded orchestration: reduce unconscious handoffs by default, then, when the main context is approaching compression, use isolated branches to change how information flows back into it.
 
-This is also more natural than relying on `/goal`. If the goal is written too short, the interpretable scope is too broad; if written too long, a single task verification itself may fill the entire context, triggering compression again. Tree-like subagents are more like a company: executors complete clearly bounded work separately, and the main Agent is responsible for global scheduling and monitoring.
+The wrong approach is for the main Agent to delegate work it could have completed continuously, then receive a compressed result and force the successor to rediscover the context. The right approach is to decompose a huge task repeatedly into a tree, allowing each subagent to handle a relatively independent branch completely in its own context and allowing the subagents to review one another. The main Agent does not receive the full discovery process from every branch; it monitors only goals, progress, and critical state. Local contexts need not be repeatedly compressed, and the main context is not stuffed with every detail until compression is triggered.
 
-A company doesn't require every position to follow the same work manual; different roles in an Agent system can also have different skills. If the entire Superpowers methodology is directly applied to all roles, it often makes tasks heavier; handing it to a local subagent like `leader`, responsible for splitting a certain task segment or a local branch and orchestrating executors, can leverage its strengths. Heavier methods stay local, while the main Agent guards the overall direction with clean prompts and clear responsibilities, and the user grasps the big picture through it.
+This is also more natural than relying on `/goal`. If a goal is too short, it permits too much interpretation. If it is too long, verifying the task against it may itself fill the entire context and trigger compression again. A tree of subagents resembles a company: workers complete clearly bounded tasks, while the main Agent coordinates and monitors the whole.
 
-So, don't use subagents for form's sake, and don't create unnecessary handoffs. When the task can indeed be split in a tree-like manner, and isolation, parallelism, and cross-review allow the main Agent to only retain goals, progress, and key states, you should use subagents to avoid forced compression of the main context. The former increases lottery steps, the latter changes the way information flows into the main context.
+A company does not require every role to follow the same handbook, and different roles in an Agent system can likewise have different skills. Applying the complete [Superpowers](https://github.com/obra/superpowers) methodology directly to every role often makes the task unnecessarily heavy. Give it instead to a local subagent such as a `leader`, responsible for decomposing one segment or branch of the task and orchestrating its workers, and it can play to its strengths. Heavy methods remain local; the main Agent preserves the overall direction with a clean prompt and clear responsibilities, and the user retains command of the whole through it.
+
+Do not use subagents for appearances, and do not create unnecessary handoffs. When a task genuinely admits tree-shaped decomposition—and isolation, parallel work, and cross-review allow the main Agent to retain only the goal, progress, and critical state—subagents should be used to keep the main context from being forced into compression. The former adds lottery draws; the latter changes how information flows into the main context.
 
 ## Epilogue
 
-By viewing the Agent as an interpreter, subagents, skills, and memory become reviewable engineering choices again: which content enters the context, which knowledge stays in memory, which branches deserve isolation — all should have boundaries and be deletable and modifiable. When the model deviates, clear success and failure signals should allow it to retry, recover, or be corrected by another Agent; the real danger is errors that are silent, then repeatedly amplified in the context, dragging into a failure spiral.
+Once we view an Agent as an interpreter, subagents, skills, and memory again become reviewable engineering choices. What enters the context, what knowledge remains in memory, and which branches deserve isolation should all have boundaries and remain open to revision or deletion. When a model goes astray, clear success and failure signals should let it retry, recover, or yield to another Agent that can correct it. The real danger is an error that passes silently, then compounds again and again within the context until it becomes a failure spiral.
 
-Therefore, a good context is one that evokes and fully utilizes the skills the LLM has already learned during training, rather than relying on prompts to make it relearn and reassemble in the current context. And what better context "engineering" does is not to block all detours, but to ensure that an Agent that has gone astray still has a way back.
+A good context, then, evokes and fully uses capabilities the LLM already learned during training instead of relying on prompts to make it learn and assemble them anew in the current context. Better context engineering does not barricade every wrong turn; it ensures that an Agent that strays still has a path back.
+
+## References
+
+Wiener, N. (1948). *Cybernetics: Or Control and Communication in the Animal and the Machine*. Hermann & Cie; The Technology Press; John Wiley & Sons.
