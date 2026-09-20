@@ -1,83 +1,83 @@
 ---
-source_hash: "7b82b525"
-source_lang: "zh"
+source_hash: "563845ad"
+source_lang: "en"
 target_lang: "zh-CN"
-is_copy: true
-title: "WebM/WebP to GIF with semi-transparency"
-pubDate: "2024-09-15T00:00:00+08:00"
+lang: "zh-CN"
+title: "将带有半透明效果的 WebM/WebP 转换为 GIF"
 description: "如何将带有半透明效果的 WebM/WebP 格式转换为 GIF，并处理半透明像素的技术方案。"
+pubDate: "2024-09-15T00:00:00+08:00"
 author: "xz-dev"
 category: "算法"
 tags: ["FFMPEG", "PIL", "semi-transparent", "transparency", "WebM", "WebP"]
 ---
 
-## Preface
+## 前言
 
-Due to [Add support of animated sticker #78](https://github.com/maunium/stickerpicker/pull/78)
+由于 [Add support of animated sticker #78](https://github.com/maunium/stickerpicker/pull/78)
 
-There is currently no direct way to convert WebM to GIF this on the Internet.
+目前互联网上没有直接将 WebM 转换为 GIF 的方法。
 
-My idea is: WebM -> WebP -> GIF (due each steps have existing tools)
+我的思路是：WebM -> WebP -> GIF（因为每一步都有现成的工具）
 
-Here are the difficulties we need to overcome:
+以下是需要克服的难点：
 
-- Remove vp8/9 from WebM to let we more easy to do next (Refer [How can I convert WebM file to WebP file with transparency?](https://stackoverflow.com/questions/63554209/how-can-i-convert-webm-file-to-webp-file-with-transparency))
-- Convert WebP to GIF (Refer [How to Convert WebP image to Gif with Python?](https://stackoverflow.com/questions/52016407/how-to-convert-webp-image-to-gif-with-python)) and handling semi-transparent pixels (here is what we need to face)
+- 从 WebM 中移除 vp8/9，以便后续操作更容易（参考 [How can I convert WebM file to WebP file with transparency?](https://stackoverflow.com/questions/63554209/how-can-i-convert-webm-file-to-webp-file-with-transparency)）
+- 将 WebP 转换为 GIF（参考 [How to Convert WebP image to Gif with Python?](https://stackoverflow.com/questions/52016407/how-to-convert-webp-image-to-gif-with-python)），并处理半透明像素（这正是我们需要面对的问题）
 
-## How to handing semi-transparent in GIF
+## 如何处理 GIF 中的半透明
 
-Firstly, GIF does not support semi-transparent pixels.
+首先，GIF 不支持半透明像素。
 
-If we directly "Convert WebP to GIF" using PIL. We will see all semi-transparent pixels become white like this (you should see them in dark mode).
-
-<figure style="display: flex; gap: 1rem;">
-  <figure>
-    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/webp-example-1.webp" alt="webp example" />
-  </figure>
-  <figure>
-    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/gif-example-1.gif" alt="GIF example" />
-  </figure>
-</figure>
-
-So, we can simply let all semi-transparent pixel become transparency, like this, but we will see another problem (also dark mode pls).
+如果我们直接用 PIL 将 WebP 转换为 GIF，会看到所有半透明像素都变成白色，就像这样（建议在深色模式下查看）。
 
 <figure style="display: flex; gap: 1rem;">
   <figure>
-    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/webp-example-2.webp" alt="webp example 2" />
+    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/webp-example-1.webp" alt="webp 示例" />
   </figure>
   <figure>
-    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/gif-example-2.gif" alt="break GIF example 2" />
+    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/gif-example-1.gif" alt="GIF 示例" />
   </figure>
 </figure>
 
-Depending on your luck, you may see pixel holes or broken edges (Both of these problems exist in the example above).
+所以，我们可以简单地将所有半透明像素变为透明，就像这样，但我们会看到另一个问题（也请在深色模式下查看）。
 
-Therefore, it seems we must use something to guess the semi-transparent pixel should been look like in human eyes.
+<figure style="display: flex; gap: 1rem;">
+  <figure>
+    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/webp-example-2.webp" alt="webp 示例 2" />
+  </figure>
+  <figure>
+    <img src="/images/blog/webm-webp-to-gif-with-semi-transparency/gif-example-2.gif" alt="损坏的 GIF 示例 2" />
+  </figure>
+</figure>
 
-### Binary classification (Delete all semi-transparent pixel)
+根据运气不同，你可能会看到像素空洞或边缘破损（上面的示例中这两个问题都存在）。
 
-Treat semi-transparent pixels as fully transparent or fully opaque:
+因此，我们似乎必须用某种方法来推测半透明像素在人眼中应该是什么样子。
 
-- If the pixel's transparency (alpha value) is greater than or equal to the threshold `128`, set it to `255` (fully opaque).
-- If the pixel's transparency (alpha value) is less than the threshold `128`, set it to `0` (fully transparent).
+### 二值分类（删除所有半透明像素）
 
-This ensures that there are no semi-transparent pixels, thus preventing white or other undesirable colors from appearing at edges.
+将半透明像素视为完全透明或完全不透明：
 
-### **Erosion** then **Dilation** (Fill/Smooth edges)
+- 如果像素的透明度（alpha 值）大于或等于阈值 `128`，则将其设为 `255`（完全不透明）。
+- 如果像素的透明度（alpha 值）小于阈值 `128`，则将其设为 `0`（完全透明）。
 
-The erosion operation uses a minimum filter:
+这样可以确保没有半透明像素，从而防止边缘出现白色或其他不期望的颜色。
 
-- The middle pixel value of the mask is replaced by the minimum value of its neighborhood.
-- Erosion helps to eliminate small white noise points and shrink the edges.
+### **腐蚀**然后**膨胀**（填充/平滑边缘）
 
-The dilation operation uses a maximum filter:
+腐蚀操作使用最小值滤波器：
 
-- The middle pixel value of the mask is replaced by the maximum value in its neighborhood.
-- Dilation helps to restore the main part and expand the edges.
+- 掩码的中心像素值被其邻域的最小值替换。
+- 腐蚀有助于消除小的白色噪点并收缩边缘。
 
-By corroding and then dilating, the edges can be smoothed and small noise points that are not necessary in morphology can be filtered out while maintaining the main structure.
+膨胀操作使用最大值滤波器：
 
-### Code Fragment
+- 掩码的中心像素值被其邻域的最大值替换。
+- 膨胀有助于恢复主体部分并扩展边缘。
+
+通过先腐蚀后膨胀，可以平滑边缘，并过滤掉形态学中不必要的小噪点，同时保持主体结构。
+
+### 代码片段
 
 ```python
 def process_frame(frame):
@@ -107,13 +107,13 @@ def process_frame(frame):
     return frame
 ```
 
-### Why is it so effective?
+### 为什么如此有效？
 
-- **Eliminate semi-transparent pixels:** Threshold processing converts semi-transparent pixels into fully transparent or fully opaque pixels, respectively, thereby avoiding white or other noise at the edges.
-- **Smooth edges:** The combined operation of erosion and dilation smoothes the edges of the image by shrinking and then expanding. Erosion can remove small noise points, and dilation can restore the main part – in this way, while eliminating small noise, large blocks of image information are retained as much as possible.
-- **Keep color information:** Since only the Alpha channel is processed and the RGB color channels are not changed, the color information remains unchanged.
+- **消除半透明像素：** 阈值处理将半透明像素分别转换为完全透明或完全不透明的像素，从而避免边缘出现白色或其他噪点。
+- **平滑边缘：** 腐蚀和膨胀的组合操作通过先收缩再扩展来平滑图像边缘。腐蚀可以去除小噪点，膨胀可以恢复主体部分——这样，在消除小噪点的同时，尽可能保留大块图像信息。
+- **保留颜色信息：** 由于只处理 Alpha 通道，不改变 RGB 颜色通道，因此颜色信息保持不变。
 
-## Out-of-the-box code
+## 开箱即用的代码
 
 ```bash
 # python convert.py example.webp exanple.gif

@@ -1,18 +1,22 @@
 ---
-source_hash: "4235f043"
+source_hash: "1caf343f"
+source_lang: "en"
+target_lang: "en"
+lang: "en"
+is_copy: true
 title: "Azure Custom Vision: Use managed identity or other Azure Identity"
 pubDate: "2025-01-01T00:00:00+08:00"
-description: "Introduces how to use Managed Identity or other Azure Identity for authentication in Azure Custom Vision, replacing the traditional API Key approach."
+description: "介绍如何在 Azure Custom Vision 中使用 Managed Identity 或其他 Azure Identity 进行身份验证，替代传统的 API Key 方式。"
 author: "xz-dev"
 category: "Tips"
 tags: ["Azure", "Azure access token", "Azure Custom Vision", "Azure identity", "C#", "managed identity"]
 ---
 
-> Reference: [Custom Vision: Azure role-based access control](https://github.com/MicrosoftDocs/azure-ai-docs/blob/5abf9d69b4888324d167185b627fee73bfc08f69/articles/ai-services/custom-vision-service/role-based-access-control.md), [Custom Vision: azure.identity credentials aren't supported](https://github.com/Azure/azure-sdk-for-python/issues/33094)
+> Refer to: [Custom Vision: Azure role-based access control](https://github.com/MicrosoftDocs/azure-ai-docs/blob/5abf9d69b4888324d167185b627fee73bfc08f69/articles/ai-services/custom-vision-service/role-based-access-control.md), [Custom Vision: azure.identity credentials aren't supported](https://github.com/Azure/azure-sdk-for-python/issues/33094)
 
 ## C# Code
 
-First of all, the C# Code. You can also translate it to other languages like Python.
+First of all, the C# Code. you can also translate to other language, like Python.
 
 ```csharp
 using System;
@@ -65,12 +69,12 @@ namespace ConsoleApp1
 }
 ```
 
-### But, why does it work?
+### But, why is it work?
 
-- Use "managed identity" or other identity to "login" to Resource Manager Endpoint (cognitiveservices.azure.com)
-- Obtain token string
-- Use the token as a key to access CustomVisionTrainingClient / CustomVisionPredictionClient
-- Do anything you want!
+- Use "managed identity" or other identity to "login" Resource Manager Endpoint (cognitiveservices.azure.com)
+- Got token string
+- Use the token as key to access CustomVisionTrainingClient / CustomVisionPredictionClient.
+- Do anything what you want!
 
 ## Setting in Azure portal
 

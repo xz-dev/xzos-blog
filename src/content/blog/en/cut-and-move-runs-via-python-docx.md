@@ -1,8 +1,12 @@
 ---
-source_hash: "5e514454"
+source_hash: "55d6dedb"
+source_lang: "en"
+target_lang: "en"
+lang: "en"
+is_copy: true
 title: "Cut and move Runs via python-docx"
 pubDate: "2024-03-19T00:00:00+08:00"
-description: "How to implement cutting and moving Run objects in python-docx, solving the problem that the library itself doesn't support this feature."
+description: "如何在 python-docx 中实现 Run 对象的剪切和移动操作，解决库本身不支持的问题。"
 author: "xz-dev"
 category: "Tips"
 tags: ["oxml", "python", "python-docx"]

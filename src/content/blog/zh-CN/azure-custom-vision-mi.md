@@ -1,9 +1,9 @@
 ---
-source_hash: "4235f043"
-source_lang: "zh"
+source_hash: "1caf343f"
+source_lang: "en"
 target_lang: "zh-CN"
-is_copy: true
-title: "Azure Custom Vision: Use managed identity or other Azure Identity"
+lang: "zh-CN"
+title: "Azure Custom Vision：使用托管标识或其他 Azure 标识"
 pubDate: "2025-01-01T00:00:00+08:00"
 description: "介绍如何在 Azure Custom Vision 中使用 Managed Identity 或其他 Azure Identity 进行身份验证，替代传统的 API Key 方式。"
 author: "xz-dev"
@@ -11,11 +11,11 @@ category: "Tips"
 tags: ["Azure", "Azure access token", "Azure Custom Vision", "Azure identity", "C#", "managed identity"]
 ---
 
-> Refer to: [Custom Vision: Azure role-based access control](https://github.com/MicrosoftDocs/azure-ai-docs/blob/5abf9d69b4888324d167185b627fee73bfc08f69/articles/ai-services/custom-vision-service/role-based-access-control.md), [Custom Vision: azure.identity credentials aren't supported](https://github.com/Azure/azure-sdk-for-python/issues/33094)
+> 参考：[Custom Vision: Azure role-based access control](https://github.com/MicrosoftDocs/azure-ai-docs/blob/5abf9d69b4888324d167185b627fee73bfc08f69/articles/ai-services/custom-vision-service/role-based-access-control.md)、[Custom Vision: azure.identity credentials aren't supported](https://github.com/Azure/azure-sdk-for-python/issues/33094)
 
-## C# Code
+## C# 代码
 
-First of all, the C# Code. you can also translate to other language, like Python.
+首先，是 C# 代码。你也可以将其翻译成其他语言，比如 Python。
 
 ```csharp
 using System;
@@ -68,13 +68,13 @@ namespace ConsoleApp1
 }
 ```
 
-### But, why is it work?
+### 但是，它为什么能工作？
 
-- Use "managed identity" or other identity to "login" Resource Manager Endpoint (cognitiveservices.azure.com)
-- Got token string
-- Use the token as key to access CustomVisionTrainingClient / CustomVisionPredictionClient.
-- Do anything what you want!
+- 使用“托管标识”或其他标识“登录”到 Resource Manager 终结点 (cognitiveservices.azure.com)
+- 获取令牌字符串
+- 将该令牌用作密钥来访问 CustomVisionTrainingClient / CustomVisionPredictionClient。
+- 做任何你想做的事！
 
-## Setting in Azure portal
+## 在 Azure 门户中设置
 
-Follow [Custom Vision: Azure role-based access control](https://github.com/MicrosoftDocs/azure-ai-docs/blob/5abf9d69b4888324d167185b627fee73bfc08f69/articles/ai-services/custom-vision-service/role-based-access-control.md), add a role for your Managed Identity or a user like yourself.
+按照 [Custom Vision: Azure role-based access control](https://github.com/MicrosoftDocs/azure-ai-docs/blob/5abf9d69b4888324d167185b627fee73bfc08f69/articles/ai-services/custom-vision-service/role-based-access-control.md)，为你的托管标识或像你这样的用户添加角色。

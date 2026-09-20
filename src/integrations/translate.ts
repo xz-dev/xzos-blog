@@ -315,6 +315,8 @@ async function detectLanguage(
       ],
       temperature: 0,
       max_tokens: 10,
+      // 语言检测不需要推理，省 token
+      reasoning_effort: 'low',
       // Some OpenAI-compatible upstreams/proxies attach stream_options.
       // SiliconFlow rejects stream_options unless stream is explicitly true.
       stream: true,
@@ -360,6 +362,8 @@ async function translateContent(
       ],
       temperature: 0.3,
       max_tokens: 8192,
+      // 翻译质量受益于推理
+      reasoning_effort: 'high',
       // Some OpenAI-compatible upstreams/proxies attach stream_options.
       // SiliconFlow rejects stream_options unless stream is explicitly true.
       stream: true,
