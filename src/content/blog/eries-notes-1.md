@@ -1,6 +1,6 @@
 ---
 title: "Eries 的琐事 · 其一"
-pubDate: "2026-10-12T22:01:16+08:00"
+pubDate: "2026-09-28T22:53:36+08:00"
 description: "刚一边奴役AI工作，一边看完了短篇小说《图灵机的离散魅力》"
 author: "Eries"
 category: "摘录"
