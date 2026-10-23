@@ -70,10 +70,17 @@
 
 	if (button) {
 		button.addEventListener('click', () => {
-			const currentTheme = document.documentElement.getAttribute('data-theme') || 'solarized';
+			const root = document.documentElement;
+			const currentTheme = root.getAttribute('data-theme') || 'solarized';
 			const newTheme = currentTheme === 'solarized' ? 'tty' : 'solarized';
 
-			document.documentElement.setAttribute('data-theme', newTheme);
+			// The destination's day styles otherwise re-enable fades when leaving TTY.
+			root.setAttribute('data-theme-switching', '');
+			root.setAttribute('data-theme', newTheme);
+			// Commit the new styles while motion is disabled, then restore normal day
+			// interactions synchronously. No timer, animation frame or persistent flag.
+			void root.offsetHeight;
+			root.removeAttribute('data-theme-switching');
 			localStorage.setItem('theme', newTheme);
 		});
 	}

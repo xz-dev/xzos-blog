@@ -59,8 +59,31 @@
 :root[data-theme="tty"] *::before,
 :root[data-theme="tty"] *::after {
   border-radius: 0 !important;
-  /* Component-scoped transitions (including the toggle's ID) must not win. */
+}
+
+/* No motion, including the document root and generated content. The temporary
+ * switch guard also prevents the outgoing night theme from fading into day.
+ * Component-scoped rules (including the toggle's ID) must not win. */
+:root[data-theme="tty"],
+:root[data-theme="tty"]::before,
+:root[data-theme="tty"]::after,
+:root[data-theme="tty"] *,
+:root[data-theme="tty"] *::before,
+:root[data-theme="tty"] *::after,
+:root[data-theme-switching],
+:root[data-theme-switching]::before,
+:root[data-theme-switching]::after,
+:root[data-theme-switching] *,
+:root[data-theme-switching] *::before,
+:root[data-theme-switching] *::after {
+  animation: none !important;
   transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* A decorative thumbnail must not jump/rotate on hover, even without a tween. */
+:root[data-theme="tty"] .post-thumbnail:hover .placeholder-logo {
+  transform: none !important;
 }
 
 :root[data-theme="tty"] main {
