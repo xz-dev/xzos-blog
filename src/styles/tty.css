@@ -1,0 +1,339 @@
+/*
+ * Night mode: a phosphor terminal, not a simulated damaged screen.
+ * Flat documents; shallow, hard-edged relief only where it explains a control.
+ * Keep every visual rule scoped to TTY so Solarized day mode is untouched.
+ */
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+}
+
+:root[data-theme="tty"] {
+  color-scheme: dark;
+  --background: #050805;
+  --surface: #0c150d;
+  --foreground: #9ad6a3;
+  --emphasized: #c0f7c7;
+  --accent: #7fe58c;
+  --secondary: #7fa987;
+  --border-color: #31523a;
+  --control-face: #142619;
+  --control-hover: #1d3623;
+  --edge-light: #608b68;
+  --edge-dark: #020603;
+  --edge-inner: #243e2b;
+  --tty-font: "IBM Plex Mono", "Noto Sans Mono CJK SC", "Noto Sans CJK SC",
+    "Microsoft YaHei", "PingFang SC", monospace;
+
+  /* Bridge older list/layout tokens without changing their day-mode values. */
+  --bg-primary: var(--background);
+  --bg-secondary: var(--surface);
+  --fg-primary: var(--foreground);
+  --fg-emphasized: var(--emphasized);
+  --fg-secondary: var(--secondary);
+  --gray: 127, 169, 135;
+  --gray-dark: 154, 214, 163;
+  --gray-light: 49, 82, 58;
+  --black: 192, 247, 199;
+}
+
+:root[data-theme="tty"] body {
+  font-family: var(--tty-font);
+  line-height: 1.75;
+  font-variant-ligatures: none;
+  text-shadow: none;
+}
+
+:root[data-theme="tty"] *,
+:root[data-theme="tty"] *::before,
+:root[data-theme="tty"] *::after {
+  border-radius: 0 !important;
+  /* Component-scoped transitions (including the toggle's ID) must not win. */
+  transition: none !important;
+}
+
+:root[data-theme="tty"] main {
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+:root[data-theme="tty"] .prose {
+  width: 48rem;
+  max-width: 100%;
+  padding: 1.5rem 1.25rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+:root[data-theme="tty"] main:has(> article) {
+  width: 100%;
+}
+
+:root[data-theme="tty"] h1,
+:root[data-theme="tty"] h2,
+:root[data-theme="tty"] h3,
+:root[data-theme="tty"] h4,
+:root[data-theme="tty"] h5,
+:root[data-theme="tty"] h6,
+:root[data-theme="tty"] strong,
+:root[data-theme="tty"] b {
+  color: var(--emphasized);
+  line-height: 1.5;
+}
+
+:root[data-theme="tty"] main > h1 {
+  font-size: 1.75rem;
+}
+
+:root[data-theme="tty"] .prose .title {
+  text-align: left;
+  line-height: 1.5;
+}
+
+:root[data-theme="tty"] .prose h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+:root[data-theme="tty"] .post-title {
+  font-size: 1.375rem;
+}
+
+:root[data-theme="tty"] .post-title a {
+  background: transparent;
+  color: var(--emphasized);
+}
+
+:root[data-theme="tty"] .post-item {
+  border-bottom-color: var(--border-color);
+}
+
+:root[data-theme="tty"] .post-excerpt {
+  overflow-wrap: anywhere;
+}
+
+:root[data-theme="tty"] .post-meta,
+:root[data-theme="tty"] .date,
+:root[data-theme="tty"] .tagline {
+  color: var(--secondary);
+}
+
+:root[data-theme="tty"] :is(.prose, .post-excerpt) a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  overflow-wrap: anywhere;
+}
+
+:root[data-theme="tty"] a:hover {
+  color: var(--emphasized);
+  background: transparent;
+}
+
+:root[data-theme="tty"] .post-title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+:root[data-theme="tty"] blockquote,
+:root[data-theme="tty"] .post-excerpt blockquote {
+  border: 0;
+  border-left: 2px solid var(--border-color);
+  padding: 0.25rem 0 0.25rem 1rem;
+  color: var(--foreground);
+  font-style: normal;
+}
+
+:root[data-theme="tty"] blockquote::before {
+  content: none;
+}
+
+:root[data-theme="tty"] hr {
+  height: 1px;
+  background: var(--border-color);
+}
+
+:root[data-theme="tty"] .toc {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+}
+
+/* Natural text wrapping, not a flex row that splits language names on phones. */
+:root[data-theme="tty"] .language-notice,
+:root[data-theme="tty"] .translation-notice {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  color: var(--foreground);
+}
+
+:root[data-theme="tty"] .language-notice a,
+:root[data-theme="tty"] .translation-notice a {
+  display: inline-block;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+:root[data-theme="tty"] .notice-icon {
+  display: none;
+}
+
+/* These are controls, not cards: hard pixel edges, no gradients or soft shadows. */
+:root[data-theme="tty"] button,
+:root[data-theme="tty"] #theme-toggle,
+:root[data-theme="tty"] .internal-links a,
+:root[data-theme="tty"] .lang-link,
+:root[data-theme="tty"] .social-links a,
+:root[data-theme="tty"] .pagination a,
+:root[data-theme="tty"] .pagination .current,
+:root[data-theme="tty"] .toc summary {
+  color: var(--foreground);
+  background: var(--control-face);
+  border: 2px solid;
+  border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
+  box-shadow: inset 1px 1px 0 var(--edge-inner), inset -1px -1px 0 var(--edge-dark);
+  border-radius: 0;
+  font: inherit;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+:root[data-theme="tty"] .internal-links a,
+:root[data-theme="tty"] .lang-link {
+  padding: 0.35rem 0.6rem;
+}
+
+:root[data-theme="tty"] .lang-link {
+  font-size: 0.875rem;
+}
+
+:root[data-theme="tty"] .toc summary {
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+}
+
+:root[data-theme="tty"] button:hover,
+:root[data-theme="tty"] #theme-toggle:hover,
+:root[data-theme="tty"] .internal-links a:hover,
+:root[data-theme="tty"] .lang-link:hover,
+:root[data-theme="tty"] .social-links a:hover,
+:root[data-theme="tty"] .pagination a:hover,
+:root[data-theme="tty"] .toc summary:hover {
+  background: var(--control-hover);
+  color: var(--emphasized);
+}
+
+:root[data-theme="tty"] button:active,
+:root[data-theme="tty"] #theme-toggle:active,
+:root[data-theme="tty"] .internal-links a:active,
+:root[data-theme="tty"] .lang-link:active,
+:root[data-theme="tty"] .social-links a:active,
+:root[data-theme="tty"] .pagination a:active,
+:root[data-theme="tty"] .toc summary:active,
+:root[data-theme="tty"] .internal-links a.active,
+:root[data-theme="tty"] .lang-link.active,
+:root[data-theme="tty"] .pagination .current {
+  color: var(--emphasized);
+  background: var(--surface);
+  border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
+  box-shadow: inset 1px 1px 0 var(--edge-dark), inset -1px -1px 0 var(--edge-inner);
+}
+
+:root[data-theme="tty"] .internal-links a.active,
+:root[data-theme="tty"] .lang-link.active,
+:root[data-theme="tty"] .pagination .current {
+  font-weight: 600;
+}
+
+:root[data-theme="tty"] .pagination span:not(.current) {
+  border: 0;
+  color: var(--secondary);
+}
+
+:root[data-theme="tty"] :is(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+:root[data-theme="tty"] input,
+:root[data-theme="tty"] textarea,
+:root[data-theme="tty"] select {
+  color: var(--foreground);
+  background-color: var(--surface);
+  border: 1px solid;
+  border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
+  box-shadow: inset 1px 1px 0 var(--edge-dark);
+}
+
+:root[data-theme="tty"] code,
+:root[data-theme="tty"] kbd {
+  font-family: var(--tty-font) !important;
+  font-variant-ligatures: none;
+}
+
+:root[data-theme="tty"] code,
+:root[data-theme="tty"] .post-excerpt code {
+  background-color: var(--surface);
+  color: var(--foreground);
+  border-color: var(--border-color);
+}
+
+:root[data-theme="tty"] pre {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-color);
+  line-height: 1.65;
+}
+
+:root[data-theme="tty"] pre code,
+:root[data-theme="tty"] .post-excerpt pre code {
+  background: transparent;
+}
+
+:root[data-theme="tty"] kbd {
+  background: var(--control-face);
+  border: 1px solid;
+  border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
+  box-shadow: inset 1px 1px 0 var(--edge-inner), inset -1px -1px 0 var(--edge-dark);
+}
+
+:root[data-theme="tty"] table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+:root[data-theme="tty"] table,
+:root[data-theme="tty"] th,
+:root[data-theme="tty"] td {
+  border: 1px solid var(--border-color);
+}
+
+:root[data-theme="tty"] th {
+  background: var(--surface);
+  color: var(--emphasized);
+}
+
+:root[data-theme="tty"] img {
+  border-color: var(--border-color);
+}
+
+/* Tint the site mark only. Article photographs/diagrams keep their own colors. */
+:root[data-theme="tty"] .site-logo {
+  filter: grayscale(1) brightness(1.4) sepia(1) saturate(4) hue-rotate(65deg);
+}
+
+:root[data-theme="tty"] ::selection {
+  background: var(--accent);
+  color: var(--background);
+  text-shadow: none;
+}
