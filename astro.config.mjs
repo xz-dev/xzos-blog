@@ -34,20 +34,22 @@ export default defineConfig({
     shikiConfig: {
       themes: {
         light: 'github-light',
-        // Green-only syntax hierarchy; the daytime GitHub theme is unchanged.
+        // Reference-B emission scaled in linear light, without adding white.
+        // docs/theme/tektronix-4052-b.json records the source and derivation.
+        // The daytime GitHub theme is unchanged.
         dark: {
           name: 'tty-phosphor',
           type: 'dark',
           colors: {
-            'editor.background': '#0c150d',
-            'editor.foreground': '#9ad6a3',
+            'editor.background': '#10502d',
+            'editor.foreground': '#31fea8',
           },
           tokenColors: [
-            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#7fa987' } },
-            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#c0f7c7' } },
-            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#7fe58c' } },
-            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#b0e8b7' } },
-            { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#a0cba8' } },
+            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#28d98f' } },
+            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#31fea8' } },
+            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#30f8a4' } },
+            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#2ef2a0' } },
+            { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#2dec9c' } },
           ],
         },
       },

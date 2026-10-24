@@ -1,0 +1,94 @@
+{
+  "source": {
+    "label": "B",
+    "url": "https://www.electronixandmore.com/resources/teksystem/tek4052.gif",
+    "context": "https://www.electronixandmore.com/resources/teksystem/index.html",
+    "sha256": "71092ff150ff18f72d72070032d0e819c080b4052da3d51de29b0f00e80c851c",
+    "dimensions": [
+      325,
+      250
+    ],
+    "calibration": "Unknown; the user-approved photographic appearance, not physical colorimetry."
+  },
+  "sampling": {
+    "coordinates": "Original image pixels, half-open rectangles; no white-balance/exposure/saturation correction.",
+    "background": {
+      "box": [
+        205,
+        80,
+        212,
+        113
+      ],
+      "method": "Most frequent RGB in an interior unmarked patch",
+      "rgb": [
+        36,
+        141,
+        84
+      ],
+      "count": 62
+    },
+    "foreground": {
+      "box": [
+        125,
+        55,
+        212,
+        123
+      ],
+      "method": "Highest sRGB-relative luminance among pixels with G>=235, G>=2R, G>1.25B; avoids averaging line edges into the emitted color",
+      "rgb": [
+        49,
+        254,
+        168
+      ],
+      "eligiblePixels": 1403
+    }
+  },
+  "uiDerivation": {
+    "method": "Decode sRGB, multiply all linear RGB channels by the same factor, encode and round to 8-bit. No white mixing or alpha blending.",
+    "backgroundFactors": {
+      "surface": 0.3,
+      "controlFace": 0.4,
+      "controlHover": 0.55,
+      "edgeDark": 0.1,
+      "edgeInner": 0.65
+    },
+    "emissionFactors": {
+      "foreground": 1,
+      "emphasized": 1,
+      "accent": 1,
+      "secondary": 1,
+      "border": 0.7,
+      "edgeLight": 1
+    },
+    "note": "UI relief/syntax shades are functional derivatives, not additional measured CRT states. Text on the main green field is not dimmed; hierarchy uses weight and underlining."
+  },
+  "palette": {
+    "--background": "#248d54",
+    "--surface": "#10502d",
+    "--foreground": "#31fea8",
+    "--emphasized": "#31fea8",
+    "--accent": "#31fea8",
+    "--secondary": "#31fea8",
+    "--border-color": "#28d98f",
+    "--control-face": "#145c35",
+    "--control-hover": "#196b3e",
+    "--edge-light": "#31fea8",
+    "--edge-dark": "#062d18",
+    "--edge-inner": "#1c7444"
+  },
+  "syntax": {
+    "background": "#10502d",
+    "foreground": "#31fea8",
+    "comment": "#28d98f",
+    "keyword": "#31fea8",
+    "string": "#30f8a4",
+    "function": "#2ef2a0",
+    "parameter": "#2dec9c"
+  },
+  "contrast": {
+    "foregroundOnBackground": 3.166328144694197,
+    "whiteOnBackgroundCeiling": 4.189122668034014,
+    "normalTextWcagAA": false,
+    "note": "The approved photograph has an illuminated green field. Its exact background cannot support 4.5:1 light text even with pure white; do not claim AA/AAA or quietly replace the field with black."
+  }
+}

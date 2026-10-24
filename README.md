@@ -31,6 +31,23 @@ Visit `localhost:4321` to preview.
 - Documents stay flat. Hard-edged raised/pressed relief belongs to controls, with a distinct keyboard-focus outline. Code syntax uses green luminance levels configured in `astro.config.mjs`; article images retain their original colors.
 - Keep night-only changes under `:root[data-theme="tty"]`. Run `npm test` for palette/contrast and isolation regressions, then verify phone/desktop rendering, theme persistence and keyboard operation in a browser.
 
+### TTY photographic color reference
+
+The selected target is **B**, the [Electronix & More Tektronix 4052 photograph](https://www.electronixandmore.com/resources/teksystem/tek4052.gif), not a generic P1/P31 green. The image hash, original-pixel sample regions, exact RGB anchors and all derived UI/syntax shades are recorded in [`docs/theme/tektronix-4052-b.json`](docs/theme/tektronix-4052-b.json).
+
+- The unmarked screen field is `#248d54`; the brightest sampled green line core is `#31fea8`. Both are original photograph pixels, with no exposure, white-balance or saturation correction. The field is deliberately green rather than near-black.
+- Main-field text stays at the full sampled emission color. Use weight and underlining for hierarchy, not gray/white mixing or dim metadata. Control relief, code surfaces and syntax shades are explicitly derived by scaling linear-light RGB, then encoding back to sRGB.
+- **Contrast limitation:** the exact selected field/core pair is about **3.1663:1**, and even pure white on that background is only about **4.1891:1**. Normal-size text on the main field is **not WCAG AA/AAA**. Tests preserve the declared photo match and report this trade-off; they must not pretend the old 7:1 target still passes. Code and control surfaces are darker functional shades and retain a 4.5:1 text floor.
+- This is a reproducible match to a user-approved photographic appearance, **not a calibrated physical 1:1 claim** about a CRT or every viewing monitor. Do not add curvature, bloom, blur or motion to imitate the photograph's optics.
+
+To reproduce the manifest, download the linked original GIF without re-encoding it, then use the project's existing Sharp dependency:
+
+```sh
+node scripts/derive-tty-reference.mjs /path/to/tek4052.gif
+```
+
+The script refuses source bytes whose SHA-256 differs from the pinned photograph.
+
 For a deterministic local build without translation API calls or rewritten language variants:
 
 ```sh

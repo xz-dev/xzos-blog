@@ -1,5 +1,7 @@
 /*
- * Night mode: a phosphor terminal, not a simulated damaged screen.
+ * Night mode: the user-selected Tektronix 4052 reference B, not generic CRT green.
+ * Source samples and linear-light UI shades: docs/theme/tektronix-4052-b.json.
+ * The photographed screen field is green, not black. No physical calibration claim.
  * Flat documents; shallow, hard-edged relief only where it explains a control.
  * Keep every visual rule scoped to TTY so Solarized day mode is untouched.
  */
@@ -21,18 +23,18 @@
 
 :root[data-theme="tty"] {
   color-scheme: dark;
-  --background: #050805;
-  --surface: #0c150d;
-  --foreground: #9ad6a3;
-  --emphasized: #c0f7c7;
-  --accent: #7fe58c;
-  --secondary: #7fa987;
-  --border-color: #31523a;
-  --control-face: #142619;
-  --control-hover: #1d3623;
-  --edge-light: #608b68;
-  --edge-dark: #020603;
-  --edge-inner: #243e2b;
+  --background: #248d54;
+  --surface: #10502d;
+  --foreground: #31fea8;
+  --emphasized: #31fea8;
+  --accent: #31fea8;
+  --secondary: #31fea8;
+  --border-color: #28d98f;
+  --control-face: #145c35;
+  --control-hover: #196b3e;
+  --edge-light: #31fea8;
+  --edge-dark: #062d18;
+  --edge-inner: #1c7444;
   --tty-font: "IBM Plex Mono", "Noto Sans Mono CJK SC", "Noto Sans CJK SC",
     "Microsoft YaHei", "PingFang SC", monospace;
 
@@ -42,10 +44,10 @@
   --fg-primary: var(--foreground);
   --fg-emphasized: var(--emphasized);
   --fg-secondary: var(--secondary);
-  --gray: 127, 169, 135;
-  --gray-dark: 154, 214, 163;
-  --gray-light: 49, 82, 58;
-  --black: 192, 247, 199;
+  --gray: 49, 254, 168;
+  --gray-dark: 49, 254, 168;
+  --gray-light: 40, 217, 143;
+  --black: 49, 254, 168;
 }
 
 :root[data-theme="tty"] body {
@@ -97,6 +99,11 @@
   padding: 1.5rem 1.25rem;
   line-height: 1.85;
   overflow-wrap: anywhere;
+}
+
+/* Inline editorial opacity must not further dim text on the sampled green field. */
+:root[data-theme="tty"] .prose small {
+  opacity: 1 !important;
 }
 
 :root[data-theme="tty"] main:has(> article) {
