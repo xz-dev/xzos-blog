@@ -6,19 +6,20 @@
  * Keep every visual rule scoped to TTY so Solarized day mode is untouched.
  */
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "Unifont";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+  src: url('/fonts/unifont-18.0.01.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "IBM Plex Mono";
+  font-family: "Unifont Upper";
   font-style: normal;
-  font-weight: 600;
+  font-weight: 400;
   font-display: swap;
-  src: url('/fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+  src: url('/fonts/unifont-symbols-18.0.01.woff2') format('woff2');
+  unicode-range: U+1F000-1FAFF;
 }
 
 :root[data-theme="tty"] {
@@ -35,8 +36,8 @@
   --edge-light: #31fea8;
   --edge-dark: #062d18;
   --edge-inner: #1c7444;
-  --tty-font: "IBM Plex Mono", "Noto Sans Mono CJK SC", "Noto Sans CJK SC",
-    "Microsoft YaHei", "PingFang SC", monospace;
+  --tty-font: "Unifont", "Unifont Upper", monospace;
+  --font-size: 1.25rem;
 
   /* Bridge older list/layout tokens without changing their day-mode values. */
   --bg-primary: var(--background);
@@ -60,6 +61,10 @@
 :root[data-theme="tty"] *,
 :root[data-theme="tty"] *::before,
 :root[data-theme="tty"] *::after {
+  /* One bitmap-derived family for Latin AND CJK, including component overrides.
+   * Do not blur its grid with browser-generated bold or italic outlines. */
+  font-family: var(--tty-font) !important;
+  font-synthesis: none;
   border-radius: 0 !important;
 }
 
@@ -122,6 +127,15 @@
   line-height: 1.5;
 }
 
+/* The font has one real weight. Keep emphasis visible without fake bold. */
+:root[data-theme="tty"] strong,
+:root[data-theme="tty"] b,
+:root[data-theme="tty"] em {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
 :root[data-theme="tty"] main > h1 {
   font-size: 1.75rem;
 }
@@ -136,7 +150,7 @@
 }
 
 :root[data-theme="tty"] .post-title {
-  font-size: 1.375rem;
+  font-size: 1.5rem;
 }
 
 :root[data-theme="tty"] .post-title a {
@@ -243,8 +257,13 @@
   padding: 0.35rem 0.6rem;
 }
 
+/* English navigation must wrap rather than overflow a 320px viewport. */
+:root[data-theme="tty"] .internal-links {
+  flex-wrap: wrap;
+}
+
 :root[data-theme="tty"] .lang-link {
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 :root[data-theme="tty"] .toc summary {

@@ -25,11 +25,27 @@ Visit `localhost:4321` to preview.
 ## Themes
 
 - **Day / Solarized:** existing colors, typography and layout remain in `src/styles/terminal.css`.
-- **Night / TTY:** `src/styles/tty.css` owns the green-phosphor palette, self-hosted IBM Plex Mono and native CJK fallbacks. Font attribution and OFL license are in `public/fonts/ibm-plex-mono-OFL.txt`.
+- **Night / TTY:** `src/styles/tty.css` owns the green-phosphor palette and self-hosted **GNU Unifont**, including Latin, Chinese and other supported scripts. Titles, prose, navigation, form controls, code and generated text share this pixel family. Attribution and OFL license are in `public/fonts/unifont-OFL.txt`; only characters missing from the font use system glyph fallback.
 - Night mode deliberately keeps the artistic distance of a monochrome terminal, not an actual reading barrier. Keep text sharp, links recognizable and controls direct; do not add simulated curvature, blur, scanlines or glitches. Night UI states are immediate: disable CSS animations, transitions and smooth scrolling on the root, descendants and their before/after pseudo-elements. No decorative hover movement. Keep pressed/selected/focus feedback as instant state changes.
 - Both directions of the theme switch are immediate. `ThemeToggle.astro` briefly sets `data-theme-switching`, commits the destination styles and removes the guard synchronously; normal day-mode hover transitions remain unchanged. Do not leave the guard enabled or use an animation/timer to switch themes.
 - Documents stay flat. Hard-edged raised/pressed relief belongs to controls, with a distinct keyboard-focus outline. Code syntax uses green luminance levels configured in `astro.config.mjs`; article images retain their original colors.
 - Keep night-only changes under `:root[data-theme="tty"]`. Run `npm test` for palette/contrast and isolation regressions, then verify phone/desktop rendering, theme persistence and keyboard operation in a browser.
+
+### TTY pixel typography
+
+GNU Unifont 18.0.01 uses an 8×16 / 16×16 base grid and covers 58,910 code points in this build, including all 20,992 positions of the CJK Unified Ideographs block. The full WOFF2 is self-hosted: there is no external font service, per-article subsetting or CJK fallback to a modern sans face for supported characters. Ordinary body text is 1.25rem (20 CSS px at the default root size); users can still zoom normally. Browsers may antialias grid outlines at fractional scaling — do not add blur or globally disable accessibility scaling.
+
+The companion **Unifont Upper** is subset to the fixed supplementary-symbol range U+1F000–1FAFF (2,816 code points), including the site's emoji, so those also use monochrome pixel glyphs rather than the system's colored emoji. Both fonts are under the same OFL license. This is a fixed Unicode-range subset, not a per-article character list.
+
+The source hashes, webfont hashes/sizes, coverage and outline/metric conversion checks are in [`docs/theme/tty-font.json`](docs/theme/tty-font.json). The original 4052 prints a **5×8 ASCII** character set (Tektronix Technical Data, printed page 2-12): this is a multilingual pixel adaptation, **not the 4052 original character font**. No Chinese historical authenticity is implied. The chosen B palette is unchanged.
+
+Unifont has one real weight. Disable synthetic bold/italic; use title size and real underlines for emphasis instead of thickening complex Chinese glyphs. Validate actual rendered Latin and CJK fonts in Chromium via `CSS.getPlatformFontsForNode`, not just `getComputedStyle().fontFamily` or `document.fonts.check()`.
+
+To reproduce the webfont, download the pinned upstream OpenType source and its OFL text, then run this optional release-time tool (the normal Astro build has no Python dependency):
+
+```sh
+uv run --with fonttools==4.67.0 --with brotli==1.2.1 python scripts/build-tty-font.py /path/to/unifont-18.0.01.otf /path/to/OFL-1.1.txt /path/to/unifont_upper-18.0.01.otf
+```
 
 ### TTY photographic color reference
 

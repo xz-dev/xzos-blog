@@ -1,0 +1,49 @@
+{
+  "family": "Unifont",
+  "version": "18.0.01",
+  "license": "OFL-1.1",
+  "source": {
+    "url": "https://unifoundry.com/pub/unifont/unifont-18.0.01/font-builds/unifont-18.0.01.otf",
+    "sha256": "88d0a14d4aa9a96419720b39ba5da921a59560d76d4ec7d523acc06ed85cd3c2"
+  },
+  "asset": {
+    "url": "/fonts/unifont-18.0.01.woff2",
+    "bytes": 912468,
+    "sha256": "b53501274351fdfdd03906c72b73244ebe530092d0805ac0669a1e5ec69a1926"
+  },
+  "grid": {
+    "height": 16,
+    "widths": [
+      8,
+      16
+    ],
+    "unitsPerEm": 64
+  },
+  "unicodeCodepoints": 58910,
+  "cjkUnifiedIdeographs": 20992,
+  "conversion": {
+    "fontTools": "4.67.0",
+    "preservesCmap": true,
+    "preservesMetrics": true,
+    "preservesSampleOutlines": true,
+    "gridCheckedSample": "AZaz09中文汉字繁體嚷霾龘，。→─│"
+  },
+  "symbols": {
+    "family": "Unifont Upper",
+    "source": {
+      "url": "https://unifoundry.com/pub/unifont/unifont-18.0.01/font-builds/unifont_upper-18.0.01.otf",
+      "sha256": "472201e45a050bff4c7658208b8c73e34ebce3764b287a5a46c7774038ef9391"
+    },
+    "unicodeRange": "U+1F000-1FAFF",
+    "codepoints": 2816,
+    "asset": {
+      "url": "/fonts/unifont-symbols-18.0.01.woff2",
+      "bytes": 52004,
+      "sha256": "e875c81e1ea11abdad98f406672ac7157027572ec30b91cae9798aa49526d34a"
+    },
+    "preservesSampleOutlines": true,
+    "checkedSample": "🌐🎭💗😘🙁🙂🤖"
+  },
+  "scope": "Night-mode Latin, CJK, punctuation, code and controls. System glyph fallback only for missing code points.",
+  "historicalBoundary": "A CJK-capable pixel adaptation, not the Tektronix 4052 original 5x8 ASCII character generator."
+}
