@@ -43,9 +43,8 @@ test('active surfaces and emission shades use explicit linear-light factors with
   for (const [name, factor] of Object.entries(active.derivation.emissionFactors)) {
     assert.equal(palette[name], scaled(photo.palette['--foreground'], Number(factor)), name);
   }
-  for (const [role, color] of Object.entries(photo.syntax)) {
-    if (role !== 'background') assert.equal(active.syntax[role], color, role);
-  }
+  assert.match(active.derivation.syntaxPolicy, /multicolour fluorescent exception/);
+  assert.equal(active.derivation.syntaxFactors, undefined, 'code must not be forced onto the green emission axis');
 });
 
 test('the active manifest can be regenerated exactly without modifying the historical photo evidence', () => {
@@ -57,7 +56,7 @@ test('code highlighting uses the active dark surface and leaves daytime syntax u
   assert.match(config, /light:\s*'github-light'/);
   for (const color of Object.values(active.syntax)) assert.ok(config.includes(String(color)), `missing syntax color ${color}`);
   assert.match(config, /'editor\.background':\s*'#031e0e'/);
-  assert.match(config, /'editor\.foreground':\s*'#31fea8'/);
+  assert.ok(config.includes(`'editor.foreground': '${active.syntax.foreground}'`));
   assert.doesNotMatch(config, /#9ad6a3|#c0f7c7|#b0e8b7|#a0cba8/i);
 });
 

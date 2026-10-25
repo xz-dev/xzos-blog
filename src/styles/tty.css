@@ -329,7 +329,7 @@
 :root[data-theme="tty"] code,
 :root[data-theme="tty"] .post-excerpt code {
   background-color: var(--surface);
-  color: var(--foreground);
+  color: var(--shiki-dark, #e8fff0);
   border-color: var(--border-color);
 }
 
@@ -370,6 +370,11 @@
 
 :root[data-theme="tty"] img {
   border-color: var(--border-color);
+}
+
+:root[data-theme="tty"] mark {
+  background: var(--accent);
+  color: var(--background);
 }
 
 :root[data-theme="tty"] ::selection {

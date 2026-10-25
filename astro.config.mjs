@@ -34,22 +34,21 @@ export default defineConfig({
     shikiConfig: {
       themes: {
         light: 'github-light',
-        // Retain reference B's emitted green, with a deliberately dark field.
-        // docs/theme/tty-dark.json records this adaptation, not physical colorimetry.
-        // The daytime GitHub theme is unchanged.
+        // Code is the explicit multicolour fluorescent exception to the green UI.
+        // Crisp saturated accents, without glow or animation; daytime is unchanged.
         dark: {
-          name: 'tty-phosphor',
+          name: 'tty-neon',
           type: 'dark',
           colors: {
             'editor.background': '#031e0e',
-            'editor.foreground': '#31fea8',
+            'editor.foreground': '#e8fff0',
           },
           tokenColors: [
-            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#28d98f' } },
-            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#31fea8' } },
-            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#30f8a4' } },
-            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#2ef2a0' } },
-            { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#2dec9c' } },
+            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#53d98f' } },
+            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#ff79c6' } },
+            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#32eaff' } },
+            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#c58cff' } },
+            { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#f3ff57' } },
           ],
         },
       },

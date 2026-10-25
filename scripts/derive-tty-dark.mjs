@@ -16,11 +16,12 @@ const palette = Object.fromEntries([
   ...Object.entries(fieldFactors).map(([role, factor]) => [role, scale(field, factor)]),
   ...Object.entries(emissionFactors).map(([role, factor]) => [role, scale(emission, factor)]),
 ]);
-const syntax = { ...photo.syntax, background: palette['--surface'] };
+// Explicit user exception: multicolour fluorescent code, independent of green UI.
+const syntax = { background: palette['--surface'], foreground: '#e8fff0', comment: '#53d98f', keyword: '#ff79c6', string: '#32eaff', function: '#c58cff', parameter: '#f3ff57' };
 console.log(JSON.stringify({
   intent: 'Dark-green field with brighter green emission. Explicitly replaces the earlier illuminated photographic background, not a new measured CRT state.',
   reference: { manifest: 'docs/theme/tektronix-4052-b.json', sourceSha256: photo.source.sha256, retainedEmission: emission, originalPhotographicField: field },
-  derivation: { method: 'Decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.', fieldFactors, emissionFactors },
+  derivation: { method: 'UI palette only: decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.', fieldFactors, emissionFactors, syntaxPolicy: 'Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not photo-derived green shades or measured physical fluorescence.' },
   palette,
   syntax,
   contrast: {
