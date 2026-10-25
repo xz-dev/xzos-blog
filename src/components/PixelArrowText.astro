@@ -1,0 +1,10 @@
+---
+import { splitPixelArrowText } from '../lib/pixel-icons';
+import PixelIcon from './PixelIcon.astro';
+
+interface Props {
+	text: string;
+}
+const { text } = Astro.props;
+---
+<span class="tty-original-icon tty-text-label">{text}</span><span class="tty-pixel-label" aria-hidden="true">{splitPixelArrowText(text).map((part) => part.icon ? <PixelIcon name={part.icon} /> : part.text)}</span>

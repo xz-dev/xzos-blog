@@ -6,7 +6,7 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf
 const base = read('../src/styles/terminal.css');
 // Keep the night theme isolated: the Solarized stylesheet remains the baseline.
 const tty = read('../src/styles/tty.css');
-const reference = JSON.parse(read('../docs/theme/tektronix-4052-b.json'));
+const reference = JSON.parse(read('../docs/theme/tty-dark.json'));
 const palette = Object.fromEntries(
 	[...tty.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]),
 );
@@ -24,21 +24,21 @@ function contrast(a: string, b: string) {
 	return (values[0] + 0.05) / (values[1] + 0.05);
 }
 
-test('B preserves its illuminated green field and declares its actual contrast trade-off', () => {
+test('the active dark field retains green emission with AAA text contrast', () => {
 	for (const [name, value] of Object.entries(palette)) {
 		const [r, g, b] = value.match(/[\da-f]{2}/gi)!.map((v) => parseInt(v, 16));
 		assert.ok(g >= r && g >= b, `${name} must stay on the green phosphor axis`);
 	}
-	for (const name of ['--foreground', '--emphasized', '--accent']) {
-		assert.ok(contrast(palette[name], palette['--background']) >= 3, `${name}: source-relative 3:1 floor, not normal-text AA`);
+	for (const name of ['--foreground', '--emphasized', '--accent', '--secondary']) {
+		assert.ok(contrast(palette[name], palette['--background']) >= 7, `${name}: 7:1 text floor`);
 	}
+	assert.ok(luminance(palette['--background']) < 0.01);
 	assert.ok(Math.abs(contrast(palette['--foreground'], palette['--background']) - reference.contrast.foregroundOnBackground) < 1e-10);
-	assert.equal(reference.contrast.normalTextWcagAA, false);
-	assert.ok(reference.contrast.whiteOnBackgroundCeiling < 4.5);
-	assert.ok(contrast(palette['--secondary'], palette['--surface']) >= 4.5);
-	assert.ok(contrast(palette['--foreground'], palette['--control-hover']) >= 4.5);
+	assert.equal(reference.contrast.normalTextWcagAAA, true);
+	assert.ok(contrast(palette['--secondary'], palette['--surface']) >= 7);
+	assert.ok(contrast(palette['--secondary'], palette['--control-hover']) >= 7);
 	for (const [role, color] of Object.entries(reference.syntax)) {
-		if (role !== 'background') assert.ok(contrast(String(color), palette['--surface']) >= 4.5, role);
+		if (role !== 'background') assert.ok(contrast(String(color), palette['--surface']) >= 7, role);
 	}
 });
 

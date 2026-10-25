@@ -1,7 +1,7 @@
 /*
- * Night mode: the user-selected Tektronix 4052 reference B, not generic CRT green.
- * Source samples and linear-light UI shades: docs/theme/tektronix-4052-b.json.
- * The photographed screen field is green, not black. No physical calibration claim.
+ * Night mode: a dark-field adaptation retaining the selected B green emission.
+ * Active palette and derivation: docs/theme/tty-dark.json.
+ * The original photograph is preserved separately, not used as the active field.
  * Flat documents; shallow, hard-edged relief only where it explains a control.
  * Keep every visual rule scoped to TTY so Solarized day mode is untouched.
  */
@@ -24,18 +24,18 @@
 
 :root[data-theme="tty"] {
   color-scheme: dark;
-  --background: #248d54;
-  --surface: #10502d;
+  --background: #011307;
+  --surface: #031e0e;
   --foreground: #31fea8;
   --emphasized: #31fea8;
   --accent: #31fea8;
-  --secondary: #31fea8;
-  --border-color: #28d98f;
-  --control-face: #145c35;
-  --control-hover: #196b3e;
-  --edge-light: #31fea8;
-  --edge-dark: #062d18;
-  --edge-inner: #1c7444;
+  --secondary: #28d98f;
+  --border-color: #11754b;
+  --control-face: #052814;
+  --control-hover: #07321a;
+  --edge-light: #1da96e;
+  --edge-dark: #000401;
+  --edge-inner: #11754b;
   --tty-font: "Unifont", "Unifont Upper", monospace;
   --font-size: 1.25rem;
 
@@ -45,9 +45,9 @@
   --fg-primary: var(--foreground);
   --fg-emphasized: var(--emphasized);
   --fg-secondary: var(--secondary);
-  --gray: 49, 254, 168;
+  --gray: 40, 217, 143;
   --gray-dark: 49, 254, 168;
-  --gray-light: 40, 217, 143;
+  --gray-light: 17, 117, 75;
   --black: 49, 254, 168;
 }
 
@@ -106,7 +106,7 @@
   overflow-wrap: anywhere;
 }
 
-/* Inline editorial opacity must not further dim text on the sampled green field. */
+/* Editorial opacity must not silently reduce the verified text contrast. */
 :root[data-theme="tty"] .prose small {
   opacity: 1 !important;
 }
@@ -226,10 +226,6 @@
   display: inline-block;
   white-space: nowrap;
   color: var(--accent);
-}
-
-:root[data-theme="tty"] .notice-icon {
-  display: none;
 }
 
 /* These are controls, not cards: hard pixel edges, no gradients or soft shadows. */
@@ -374,11 +370,6 @@
 
 :root[data-theme="tty"] img {
   border-color: var(--border-color);
-}
-
-/* Tint the site mark only. Article photographs/diagrams keep their own colors. */
-:root[data-theme="tty"] .site-logo {
-  filter: grayscale(1) brightness(1.4) sepia(1) saturate(4) hue-rotate(65deg);
 }
 
 :root[data-theme="tty"] ::selection {

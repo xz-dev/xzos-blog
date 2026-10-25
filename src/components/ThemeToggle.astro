@@ -1,9 +1,10 @@
 ---
 // Theme Toggle Component
+import PixelIcon from './PixelIcon.astro';
 ---
 
 <button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
-	<svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+	<svg class="sun-icon tty-original-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
 		<circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
 		<line x1="10" y1="2" x2="10" y2="4" stroke="currentColor" stroke-width="2"/>
 		<line x1="10" y1="16" x2="10" y2="18" stroke="currentColor" stroke-width="2"/>
@@ -14,9 +15,11 @@
 		<line x1="4.22" y1="15.78" x2="5.64" y2="14.36" stroke="currentColor" stroke-width="2"/>
 		<line x1="14.36" y1="5.64" x2="15.78" y2="4.22" stroke="currentColor" stroke-width="2"/>
 	</svg>
-	<svg class="moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+	<svg class="moon-icon tty-original-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
 		<path d="M17 10.5C16 14.5 12 17.5 8 17C4 16.5 1 13 1 9C1 5 3.5 1.5 7.5 1C7 2 6.5 3.5 7 5.5C7.5 7.5 9 9 11 9.5C13 10 14.5 9.5 15.5 9C16 9 17 9.5 17 10.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
 	</svg>
+	<PixelIcon name="sun" class="tty-theme-sun" />
+	<PixelIcon name="moon" class="tty-theme-moon" />
 </button>
 
 <style>

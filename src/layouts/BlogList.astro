@@ -8,6 +8,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import PixelArrowText from '../components/PixelArrowText.astro';
 import { getBlogPrefix, getHomePath, getHtmlLang, getPagePrefix } from '../i18n/collections';
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
@@ -186,8 +187,8 @@ const pageTitle = isFirstPage
 								{post.data.author && <span>{t('blog.authorLabel')}{post.data.author}</span>}
 								{post.data.category && <span>{t('blog.categoryLabel')}{post.data.category}</span>}
 								{excerpt.hasMore && (
-									<a href={`${blogPrefix}/${post.id}/`} class="read-more">
-										{t('blog.continueReading')}
+									<a href={`${blogPrefix}/${post.id}/`} class="read-more" aria-label={t('blog.continueReading')}>
+										<PixelArrowText text={t('blog.continueReading')} />
 									</a>
 								)}
 							</div>
@@ -199,7 +200,7 @@ const pageTitle = isFirstPage
 			{totalPages > 1 && (
 				<nav class="pagination">
 					{currentPage > 1 && (
-						<a href={currentPage === 2 ? homePath : `${pagePrefix}/${currentPage - 1}/`}>{t('pagination.prev')}</a>
+						<a href={currentPage === 2 ? homePath : `${pagePrefix}/${currentPage - 1}/`} aria-label={t('pagination.prev')}><PixelArrowText text={t('pagination.prev')} /></a>
 					)}
 
 					{/* 始终显示第1页 */}
@@ -239,7 +240,7 @@ const pageTitle = isFirstPage
 					)}
 
 					{currentPage < totalPages && (
-						<a href={`${pagePrefix}/${currentPage + 1}/`}>{t('pagination.next')}</a>
+						<a href={`${pagePrefix}/${currentPage + 1}/`} aria-label={t('pagination.next')}><PixelArrowText text={t('pagination.next')} /></a>
 					)}
 				</nav>
 			)}
