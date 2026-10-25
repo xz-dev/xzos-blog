@@ -23,6 +23,14 @@
       "--border-color": 0.18,
       "--edge-light": 0.4,
       "--edge-inner": 0.18
+    },
+    "syntaxFactors": {
+      "foreground": 0.7,
+      "comment": 0.5,
+      "keyword": 1,
+      "string": 1,
+      "function": 0.88,
+      "parameter": 0.85
     }
   },
   "palette": {
@@ -41,11 +49,11 @@
   },
   "syntax": {
     "background": "#031e0e",
-    "foreground": "#31fea8",
-    "comment": "#28d98f",
+    "foreground": "#28d98f",
+    "comment": "#21bb7a",
     "keyword": "#31fea8",
-    "string": "#30f8a4",
-    "function": "#2ef2a0",
+    "string": "#31fea8",
+    "function": "#2ef09f",
     "parameter": "#2dec9c"
   },
   "contrast": {
@@ -55,7 +63,7 @@
     "borderOnBackground": 3.343894862377117,
     "backgroundRelativeLuminance": 0.004875379709051634,
     "originalFieldRelativeLuminance": 0.20064914140907048,
-    "minimumSyntaxOnSurface": 9.542424859375,
+    "minimumSyntaxOnSurface": 7.068874056516836,
     "normalTextWcagAAA": true,
     "note": "Calculated sRGB contrast, not measured monitor brightness or physical CRT colorimetry."
   }

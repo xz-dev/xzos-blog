@@ -372,6 +372,11 @@
   border-color: var(--border-color);
 }
 
+:root[data-theme="tty"] mark {
+  background: var(--accent);
+  color: var(--background);
+}
+
 :root[data-theme="tty"] ::selection {
   background: var(--accent);
   color: var(--background);

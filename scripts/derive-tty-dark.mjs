@@ -16,11 +16,12 @@ const palette = Object.fromEntries([
   ...Object.entries(fieldFactors).map(([role, factor]) => [role, scale(field, factor)]),
   ...Object.entries(emissionFactors).map(([role, factor]) => [role, scale(emission, factor)]),
 ]);
-const syntax = { ...photo.syntax, background: palette['--surface'] };
+const syntaxFactors = { foreground: 0.70, comment: 0.50, keyword: 1, string: 1, function: 0.88, parameter: 0.85 };
+const syntax = { background: palette['--surface'], ...Object.fromEntries(Object.entries(syntaxFactors).map(([role, factor]) => [role, scale(emission, factor)])) };
 console.log(JSON.stringify({
   intent: 'Dark-green field with brighter green emission. Explicitly replaces the earlier illuminated photographic background, not a new measured CRT state.',
   reference: { manifest: 'docs/theme/tektronix-4052-b.json', sourceSha256: photo.source.sha256, retainedEmission: emission, originalPhotographicField: field },
-  derivation: { method: 'Decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.', fieldFactors, emissionFactors },
+  derivation: { method: 'Decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.', fieldFactors, emissionFactors, syntaxFactors },
   palette,
   syntax,
   contrast: {

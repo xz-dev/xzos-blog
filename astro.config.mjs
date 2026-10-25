@@ -42,13 +42,14 @@ export default defineConfig({
           type: 'dark',
           colors: {
             'editor.background': '#031e0e',
-            'editor.foreground': '#31fea8',
+            'editor.foreground': '#28d98f',
           },
           tokenColors: [
-            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#28d98f' } },
-            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#31fea8' } },
-            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#30f8a4' } },
-            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#2ef2a0' } },
+            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#21bb7a' } },
+            // Unifont has a single real weight; use a crisp underline, not fake bold.
+            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#31fea8', fontStyle: 'underline' } },
+            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#31fea8' } },
+            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#2ef09f' } },
             { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#2dec9c' } },
           ],
         },
