@@ -43,9 +43,8 @@ test('active surfaces and emission shades use explicit linear-light factors with
   for (const [name, factor] of Object.entries(active.derivation.emissionFactors)) {
     assert.equal(palette[name], scaled(photo.palette['--foreground'], Number(factor)), name);
   }
-  for (const [role, factor] of Object.entries(active.derivation.syntaxFactors)) {
-    assert.equal(active.syntax[role], scaled(photo.palette['--foreground'], Number(factor)), role);
-  }
+  assert.match(active.derivation.syntaxPolicy, /multicolour fluorescent exception/);
+  assert.equal(active.derivation.syntaxFactors, undefined, 'code must not be forced onto the green emission axis');
 });
 
 test('the active manifest can be regenerated exactly without modifying the historical photo evidence', () => {

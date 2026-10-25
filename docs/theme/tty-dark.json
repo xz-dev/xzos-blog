@@ -7,7 +7,7 @@
     "originalPhotographicField": "#248d54"
   },
   "derivation": {
-    "method": "Decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.",
+    "method": "UI palette only: decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.",
     "fieldFactors": {
       "--background": 0.025,
       "--surface": 0.05,
@@ -24,14 +24,7 @@
       "--edge-light": 0.4,
       "--edge-inner": 0.18
     },
-    "syntaxFactors": {
-      "foreground": 0.7,
-      "comment": 0.5,
-      "keyword": 1,
-      "string": 1,
-      "function": 0.88,
-      "parameter": 0.85
-    }
+    "syntaxPolicy": "Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not photo-derived green shades or measured physical fluorescence."
   },
   "palette": {
     "--background": "#011307",
@@ -49,12 +42,12 @@
   },
   "syntax": {
     "background": "#031e0e",
-    "foreground": "#28d98f",
-    "comment": "#21bb7a",
-    "keyword": "#31fea8",
-    "string": "#31fea8",
-    "function": "#2ef09f",
-    "parameter": "#2dec9c"
+    "foreground": "#e8fff0",
+    "comment": "#53d98f",
+    "keyword": "#ff79c6",
+    "string": "#32eaff",
+    "function": "#c58cff",
+    "parameter": "#f3ff57"
   },
   "contrast": {
     "foregroundOnBackground": 14.462541035612476,
@@ -63,7 +56,7 @@
     "borderOnBackground": 3.343894862377117,
     "backgroundRelativeLuminance": 0.004875379709051634,
     "originalFieldRelativeLuminance": 0.20064914140907048,
-    "minimumSyntaxOnSurface": 7.068874056516836,
+    "minimumSyntaxOnSurface": 7.165429181858941,
     "normalTextWcagAAA": true,
     "note": "Calculated sRGB contrast, not measured monitor brightness or physical CRT colorimetry."
   }

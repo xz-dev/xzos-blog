@@ -12,7 +12,7 @@ const luminance = (hex: string) => hex.match(/[\da-f]{2}/gi)!.reduce((sum, v, i)
 }, 0);
 const contrast = (a: string, b: string) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
 
-test('night syntax retains useful hierarchy instead of nearly identical greens', () => {
+test('night syntax retains useful hierarchy and readable fluorescent accents', () => {
   const s = active.syntax;
   // These inter-token ratios are regression guards, not WCAG requirements.
   assert.ok(contrast(s.keyword, s.foreground) >= 1.35, 'keywords must differ from plain identifiers');
@@ -25,10 +25,19 @@ test('night syntax retains useful hierarchy instead of nearly identical greens',
   }
 });
 
-test('night keywords have an actual non-colour cue without synthetic font outlines', () => {
-  const rule = config.match(/\{ scope: \['keyword'[^\n]+/);
-  assert.ok(rule, 'keyword token rule exists');
-  assert.match(rule[0], /fontStyle:\s*'underline'/);
+test('code is a multi-hue fluorescent exception, not green-only syntax', () => {
+  const accents = ['keyword', 'string', 'function', 'parameter'].map(role => {
+    const [r, g, b] = active.syntax[role].match(/[\da-f]{2}/gi).map((v: string) => parseInt(v, 16) / 255);
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min;
+    const hue = delta === 0 ? 0 : 60 * (max === r ? (g - b) / delta : max === g ? (b - r) / delta + 2 : (r - g) / delta + 4);
+    return { hue: (hue + 360) % 360, saturation: delta === 0 ? 0 : delta / (1 - Math.abs(max + min - 1)) };
+  });
+  assert.equal(new Set(accents.map(c => Math.floor(c.hue / 45))).size, 4, 'four genuinely different accent hue families');
+  assert.ok(accents.every(c => c.saturation >= 0.8), 'bright saturated neon-style accents, not muted pastels');
+  assert.equal(active.palette['--foreground'], '#31fea8', 'ordinary page UI retains the selected green');
+  assert.notEqual(active.syntax.foreground, active.palette['--foreground'], 'code has its own foreground');
+  assert.match(config, /name:\s*'tty-neon'/);
+  assert.match(tty, new RegExp(`color:\\s*var\\(--shiki-dark,\\s*${active.syntax.foreground}\\)`));
   assert.match(tty, /font-synthesis:\s*none/);
 });
 
