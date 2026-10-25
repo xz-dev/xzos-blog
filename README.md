@@ -22,6 +22,14 @@ npm run dev
 
 Visit `localhost:4321` to preview.
 
+## Article timestamps
+
+Record `pubDate` and optional `updatedDate` as **quoted ISO 8601 timestamps with the actual UTC offset at the place and moment of writing**, for example `"2026-10-25T01:00+08:00"` or `"2026-12-01T09:15:12-08:00"`. Use the offset in effect then, including daylight saving time; do not recalculate old posts from a new home timezone. `Z` records a UTC source. Preserve supplied minute, second or fractional-second precision rather than inventing it.
+
+The content schema captures each original string before coercing dates. Article pages, publication/update dates, home/paginated lists and all language archives display numeric local date/time plus the recorded offset, e.g. `2026-10-25 01:00 UTC+08:00`. The `<time datetime>` value retains that original ISO timestamp. Rendering is independent of build-host and reader timezones; sorting and RSS continue to use the same absolute instant.
+
+Existing date-only records stay date-only: do not fabricate a time or offset. A legacy input already reduced to a JavaScript `Date` can only be represented in UTC, so quote new timestamps to retain the original local context. This display migration does not rewrite old Markdown or stored publication/update timestamps.
+
 ## Themes
 
 - **Day / Solarized:** existing colors, typography and layout remain in `src/styles/terminal.css`.

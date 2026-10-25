@@ -181,9 +181,7 @@ const pageTitle = isFirstPage
 							</h2>
 							<div class="post-excerpt" set:html={excerpt.html} />
 							<div class="post-meta">
-								<time>
-									<FormattedDate date={post.data.pubDate} />
-								</time>
+								<FormattedDate date={post.data.pubDate} source={post.data.pubDateSource} />
 								{post.data.author && <span>{t('blog.authorLabel')}{post.data.author}</span>}
 								{post.data.category && <span>{t('blog.categoryLabel')}{post.data.category}</span>}
 								{excerpt.hasMore && (

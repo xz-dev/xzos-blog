@@ -1,17 +1,13 @@
 ---
+import { formatPostDate } from '../lib/post-date';
+
 interface Props {
 	date: Date;
+	source?: string;
 }
 
-const { date } = Astro.props;
+const { date, source } = Astro.props;
+const formatted = formatPostDate(date, source);
 ---
 
-<time datetime={date.toISOString()}>
-	{
-		date.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
-</time>
+<time datetime={formatted.datetime}>{formatted.text}</time>

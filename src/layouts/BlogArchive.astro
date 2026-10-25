@@ -113,7 +113,7 @@ const posts = (await getCollection(collectionName as any)).sort(
 									<PostThumbnail post={post} />
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
+										<FormattedDate date={post.data.pubDate} source={post.data.pubDateSource} />
 									</p>
 								</a>
 							</li>

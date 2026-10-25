@@ -1,14 +1,17 @@
 import { defineCollection, type SchemaContext } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+import { captureDateSources } from './lib/post-date';
 
 // 博客文章 schema
 const blogSchema = ({ image }: SchemaContext) =>
-	z.object({
+	z.preprocess(captureDateSources, z.object({
 		title: z.string(),
 		description: z.string(),
 		pubDate: z.coerce.date(),
 		updatedDate: z.coerce.date().optional(),
+		pubDateSource: z.string().optional(),
+		updatedDateSource: z.string().optional(),
 		heroImage: image().optional(),
 		author: z.string().optional(),
 		category: z.string().optional(),
@@ -20,7 +23,7 @@ const blogSchema = ({ image }: SchemaContext) =>
 		source_lang: z.string().optional(),
 		target_lang: z.string().optional(),
 		is_copy: z.boolean().optional(),
-	});
+	}));
 
 // 静态页面 schema（about 等）
 const pageSchema = () =>

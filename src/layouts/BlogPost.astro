@@ -24,7 +24,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	slug?: string;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
+const { title, description, pubDate, updatedDate, pubDateSource, updatedDateSource, heroImage, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
 
 // 从 URL 提取 slug（如果没有传入）
 const actualSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
@@ -84,11 +84,11 @@ const actualSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() |
 				<div class="prose">
 					<div class="title">
 						<div class="date">
-							<FormattedDate date={pubDate} />
+							<FormattedDate date={pubDate} source={pubDateSource} />
 							{
 								updatedDate && (
 									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
+										Last updated on <FormattedDate date={updatedDate} source={updatedDateSource} />
 									</div>
 								)
 							}
