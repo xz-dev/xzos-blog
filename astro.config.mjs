@@ -34,14 +34,14 @@ export default defineConfig({
     shikiConfig: {
       themes: {
         light: 'github-light',
-        // Reference-B emission scaled in linear light, without adding white.
-        // docs/theme/tektronix-4052-b.json records the source and derivation.
+        // Retain reference B's emitted green, with a deliberately dark field.
+        // docs/theme/tty-dark.json records this adaptation, not physical colorimetry.
         // The daytime GitHub theme is unchanged.
         dark: {
           name: 'tty-phosphor',
           type: 'dark',
           colors: {
-            'editor.background': '#10502d',
+            'editor.background': '#031e0e',
             'editor.foreground': '#31fea8',
           },
           tokenColors: [

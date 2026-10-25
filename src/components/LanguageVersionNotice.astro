@@ -5,6 +5,7 @@
  * 对于翻译版本，显示 LLM 翻译声明
  */
 import { languages, defaultLang, type Lang } from '../i18n/ui';
+import PixelIcon from './PixelIcon.astro';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -57,7 +58,8 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
 
 {isTranslatedVersion && originalVersionPath && (
   <div class="translation-notice">
-    <span class="notice-icon">🤖</span>
+    <span class="notice-icon tty-original-icon">🤖</span>
+    <PixelIcon name="translation" class="tty-notice-icon" />
     <span>
       {lang === 'en' 
         ? 'This article was translated by AI (LLM). There may be errors or inaccuracies. For the original content, please refer to the '
@@ -72,7 +74,8 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
 
 {availableVersions.length > 0 && (
   <div class="language-notice">
-    <span class="notice-icon">🌐</span>
+    <span class="notice-icon tty-original-icon">🌐</span>
+    <PixelIcon name="globe" class="tty-notice-icon" />
     <span>
       {lang === 'zh' ? 'This article is also available in:' : '本文还有其他语言版本：'}
     </span>

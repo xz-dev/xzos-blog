@@ -1,0 +1,26 @@
+---
+import { pixelIconRects, type PixelIconName } from '../lib/pixel-icons';
+
+interface Props {
+	name: PixelIconName;
+	class?: string;
+	/** Omit for decorative marks inside an already-labelled control. */
+	label?: string;
+}
+
+const { name, class: className, label } = Astro.props;
+const rects = pixelIconRects(name);
+---
+<svg
+	class:list={['tty-pixel-icon', className]}
+	data-pixel-icon={name}
+	width="16"
+	height="16"
+	viewBox="0 0 16 16"
+	fill="currentColor"
+	shape-rendering="crispEdges"
+	role={label ? 'img' : undefined}
+	aria-hidden={label ? undefined : 'true'}
+	aria-label={label}
+	focusable="false"
+>{rects.map((rect) => <rect x={rect.x} y={rect.y} width={rect.width} height={rect.height} />)}</svg>

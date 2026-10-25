@@ -1,0 +1,62 @@
+{
+  "intent": "Dark-green field with brighter green emission. Explicitly replaces the earlier illuminated photographic background, not a new measured CRT state.",
+  "reference": {
+    "manifest": "docs/theme/tektronix-4052-b.json",
+    "sourceSha256": "71092ff150ff18f72d72070032d0e819c080b4052da3d51de29b0f00e80c851c",
+    "retainedEmission": "#31fea8",
+    "originalPhotographicField": "#248d54"
+  },
+  "derivation": {
+    "method": "Decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.",
+    "fieldFactors": {
+      "--background": 0.025,
+      "--surface": 0.05,
+      "--control-face": 0.08,
+      "--control-hover": 0.12,
+      "--edge-dark": 0.005
+    },
+    "emissionFactors": {
+      "--foreground": 1,
+      "--emphasized": 1,
+      "--accent": 1,
+      "--secondary": 0.7,
+      "--border-color": 0.18,
+      "--edge-light": 0.4,
+      "--edge-inner": 0.18
+    }
+  },
+  "palette": {
+    "--background": "#011307",
+    "--surface": "#031e0e",
+    "--control-face": "#052814",
+    "--control-hover": "#07321a",
+    "--edge-dark": "#000401",
+    "--foreground": "#31fea8",
+    "--emphasized": "#31fea8",
+    "--accent": "#31fea8",
+    "--secondary": "#28d98f",
+    "--border-color": "#11754b",
+    "--edge-light": "#1da96e",
+    "--edge-inner": "#11754b"
+  },
+  "syntax": {
+    "background": "#031e0e",
+    "foreground": "#31fea8",
+    "comment": "#28d98f",
+    "keyword": "#31fea8",
+    "string": "#30f8a4",
+    "function": "#2ef2a0",
+    "parameter": "#2dec9c"
+  },
+  "contrast": {
+    "foregroundOnBackground": 14.462541035612476,
+    "secondaryOnBackground": 10.398104764614676,
+    "secondaryOnControlHover": 7.7098135589045835,
+    "borderOnBackground": 3.343894862377117,
+    "backgroundRelativeLuminance": 0.004875379709051634,
+    "originalFieldRelativeLuminance": 0.20064914140907048,
+    "minimumSyntaxOnSurface": 9.542424859375,
+    "normalTextWcagAAA": true,
+    "note": "Calculated sRGB contrast, not measured monitor brightness or physical CRT colorimetry."
+  }
+}

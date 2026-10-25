@@ -37,7 +37,7 @@ GNU Unifont 18.0.01 uses an 8×16 / 16×16 base grid and covers 58,910 code poin
 
 The companion **Unifont Upper** is subset to the fixed supplementary-symbol range U+1F000–1FAFF (2,816 code points), including the site's emoji, so those also use monochrome pixel glyphs rather than the system's colored emoji. Both fonts are under the same OFL license. This is a fixed Unicode-range subset, not a per-article character list.
 
-The source hashes, webfont hashes/sizes, coverage and outline/metric conversion checks are in [`docs/theme/tty-font.json`](docs/theme/tty-font.json). The original 4052 prints a **5×8 ASCII** character set (Tektronix Technical Data, printed page 2-12): this is a multilingual pixel adaptation, **not the 4052 original character font**. No Chinese historical authenticity is implied. The chosen B palette is unchanged.
+The source hashes, webfont hashes/sizes, coverage and outline/metric conversion checks are in [`docs/theme/tty-font.json`](docs/theme/tty-font.json). The original 4052 prints a **5×8 ASCII** character set (Tektronix Technical Data, printed page 2-12): this is a multilingual pixel adaptation, **not the 4052 original character font**. No Chinese historical authenticity is implied. The active theme retains B's emission color but now uses an explicitly darkened field.
 
 Unifont has one real weight. Disable synthetic bold/italic; use title size and real underlines for emphasis instead of thickening complex Chinese glyphs. Validate actual rendered Latin and CJK fonts in Chromium via `CSS.getPlatformFontsForNode`, not just `getComputedStyle().fontFamily` or `document.fonts.check()`.
 
@@ -47,22 +47,24 @@ To reproduce the webfont, download the pinned upstream OpenType source and its O
 uv run --with fonttools==4.67.0 --with brotli==1.2.1 python scripts/build-tty-font.py /path/to/unifont-18.0.01.otf /path/to/OFL-1.1.txt /path/to/unifont_upper-18.0.01.otf
 ```
 
-### TTY photographic color reference
+### TTY active dark field and photographic provenance
 
-The selected target is **B**, the [Electronix & More Tektronix 4052 photograph](https://www.electronixandmore.com/resources/teksystem/tek4052.gif), not a generic P1/P31 green. The image hash, original-pixel sample regions, exact RGB anchors and all derived UI/syntax shades are recorded in [`docs/theme/tektronix-4052-b.json`](docs/theme/tektronix-4052-b.json).
+The active theme is **dark-green background + brighter green text**, not a reproduction of an illuminated photographic field. [`docs/theme/tty-dark.json`](docs/theme/tty-dark.json) records the palette, derivation and calculated contrast.
 
-- The unmarked screen field is `#248d54`; the brightest sampled green line core is `#31fea8`. Both are original photograph pixels, with no exposure, white-balance or saturation correction. The field is deliberately green rather than near-black.
-- Main-field text stays at the full sampled emission color. Use weight and underlining for hierarchy, not gray/white mixing or dim metadata. Control relief, code surfaces and syntax shades are explicitly derived by scaling linear-light RGB, then encoding back to sRGB.
-- **Contrast limitation:** the exact selected field/core pair is about **3.1663:1**, and even pure white on that background is only about **4.1891:1**. Normal-size text on the main field is **not WCAG AA/AAA**. Tests preserve the declared photo match and report this trade-off; they must not pretend the old 7:1 target still passes. Code and control surfaces are darker functional shades and retain a 4.5:1 text floor.
-- This is a reproducible match to a user-approved photographic appearance, **not a calibrated physical 1:1 claim** about a CRT or every viewing monitor. Do not add curvature, bloom, blur or motion to imitate the photograph's optics.
+- Background: `#011307`; text/emission: `#31fea8`. Surfaces, controls and code are also dark, not bright green panels.
+- The emitted green is retained from **B**, the [Electronix & More Tektronix 4052 photograph](https://www.electronixandmore.com/resources/teksystem/tek4052.gif). The original `#248d54` photo field is kept only in the unchanged historical [`docs/theme/tektronix-4052-b.json`](docs/theme/tektronix-4052-b.json), with its hash and pixel rectangles. It is no longer the active background.
+- Active colors scale the recorded photo colors in linear light, without adding white or replacing them with gray/mint. Text on the background has about **14.46:1** contrast; secondary text about **10.40:1**. The lowest declared secondary-text/control combination is about **7.71:1**. These are calculated sRGB color-pair contrasts, not a full accessibility certification or measured display brightness.
+- A photograph's background is affected by lighting, exposure, filters and operating conditions. Neither the historical photo nor this deliberately darker adaptation establishes the only healthy/factory appearance of a 4052. No physical 1:1 colorimetry claim is made.
+- Keep no motion, no curvature/bloom/blur and the existing CJK pixel type. Article pictures, diagrams, screenshots and genuine image thumbnails keep their original assets and rendering.
+- Hand-drawn night UI icons are documented in [`docs/theme/tty-icons.md`](docs/theme/tty-icons.md). Day mode retains its original artwork and favicon.
 
-To reproduce the manifest, download the linked original GIF without re-encoding it, then use the project's existing Sharp dependency:
+Reproduce the active manifest without a network request:
 
 ```sh
-node scripts/derive-tty-reference.mjs /path/to/tek4052.gif
+node scripts/derive-tty-dark.mjs
 ```
 
-The script refuses source bytes whose SHA-256 differs from the pinned photograph.
+The original photo manifest can still be reproduced with `node scripts/derive-tty-reference.mjs /path/to/tek4052.gif`; it refuses source bytes that do not match the pinned hash. It is historical evidence, not the active palette.
 
 For a deterministic local build without translation API calls or rewritten language variants:
 

@@ -1,0 +1,100 @@
+/* Night-only hand-drawn UI marks; do not rasterize photographs or article SVGs.
+ * The only day rules hide the additions and keep original arrow text boxless.
+ * !important beats component-scoped SVG sizing without touching day layout. */
+.tty-pixel-icon {
+  display: none !important;
+}
+
+/* Preserve each complete day text run. Splitting a single arrow into another
+ * span can change fractional font advance even with display:contents. */
+.tty-original-icon.tty-text-label {
+  display: contents !important;
+  color: inherit !important;
+  transition: none !important;
+}
+
+.tty-pixel-label {
+  display: none !important;
+}
+
+:root[data-theme="tty"] .tty-pixel-label {
+  display: contents !important;
+  color: inherit !important;
+  transition: none !important;
+}
+
+:root[data-theme="tty"] .tty-original-icon {
+  display: none !important;
+}
+
+:root[data-theme="tty"] .tty-pixel-icon {
+  display: inline-block !important;
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0;
+  vertical-align: -2px;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+  opacity: 1 !important;
+  filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+:root[data-theme="tty"] .tty-pixel-icon.tty-site-logo {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+:root[data-theme="tty"] .tty-pixel-icon.tty-placeholder-logo {
+  width: 80px !important;
+  height: 80px !important;
+}
+
+/* PixelIcon is a separate Astro component, so do not rely on the parent's
+ * scoped `#theme-toggle svg` rule reaching its root element. */
+:root[data-theme="tty"] #theme-toggle .tty-pixel-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Keep the existing current-theme indicator convention: sun in day, moon at
+ * night. Both manual drawings exist; the original day sun stays untouched. */
+:root[data-theme="tty"] #theme-toggle .tty-theme-sun {
+  display: none !important;
+}
+
+:root[data-theme="tty"] #theme-toggle .tty-theme-moon {
+  display: inline-block !important;
+}
+
+/* Separate manual marks from the original emoji; preserve natural wrapping. */
+:root[data-theme="tty"] .tty-notice-icon {
+  margin-inline-end: 8px;
+}
+
+/* Leave the native day disclosure marker and its exact text spacing alone. */
+:root[data-theme="tty"] .toc summary {
+  list-style: none;
+}
+
+:root[data-theme="tty"] .toc summary::marker {
+  content: '';
+}
+
+:root[data-theme="tty"] .toc summary::-webkit-details-marker {
+  display: none;
+}
+
+:root[data-theme="tty"] .toc .tty-pixel-icon {
+  margin-inline-end: 8px;
+}
+
+:root[data-theme="tty"] .toc details[open] .tty-toc-closed,
+:root[data-theme="tty"] .toc details:not([open]) .tty-toc-open {
+  display: none !important;
+}

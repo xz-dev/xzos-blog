@@ -1,4 +1,6 @@
 ---
+import PixelIcon from './PixelIcon.astro';
+
 interface Heading {
 	depth: number;
 	slug: string;
@@ -18,7 +20,7 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 {filteredHeadings.length > 0 && (
 	<nav class="toc">
 		<details open>
-			<summary>目录</summary>
+			<summary><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />目录</summary>
 			<ul>
 				{filteredHeadings.map((heading) => (
 					<li class={`toc-level-${heading.depth}`}>
