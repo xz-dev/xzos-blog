@@ -30,6 +30,10 @@ prevent a maintenance build from regenerating article translations.
 
 Changes to Satori, its font/decompression dependencies, or Sharp also require
 checking actual generated 1200×630 PNG social cards in all site languages.
+The root card explicitly uses `boxSizing: 'border-box'`: current Satori/Yoga
+would otherwise add padding outside the fixed canvas and clip the logo and
+footer. The PNG-content regression test checks their original canvas regions;
+PNG dimensions alone are insufficient to detect that failure.
 Check representative desktop/narrow pages in both themes and verify theme
 switching, favicon, fonts, article images, RSS and sitemap. Confirm the exact
 merged commit's Cloudflare Pages check and read back the production site;

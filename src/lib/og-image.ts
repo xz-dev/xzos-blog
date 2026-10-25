@@ -96,6 +96,8 @@ export async function renderOgImage({ title, brand, footer }: OgImageContent): P
 			type: 'div',
 			props: {
 				style: {
+					// Keep padding inside the fixed canvas across Satori/Yoga defaults.
+					boxSizing: 'border-box',
 					width: '100%',
 					height: '100%',
 					display: 'flex',

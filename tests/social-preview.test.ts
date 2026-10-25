@@ -7,6 +7,7 @@ import {
 	selectPostSocialImage,
 } from '../src/lib/social-preview.ts';
 import { renderOgImage } from '../src/lib/og-image.ts';
+import sharp from 'sharp';
 
 test('localized posts receive distinct generated social image paths', () => {
 	const id = 'same-post';
@@ -88,4 +89,32 @@ test('the shared renderer returns a valid 1200 by 630 PNG', async () => {
 	assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
 	assert.equal(png.readUInt32BE(16), 1200);
 	assert.equal(png.readUInt32BE(20), 630);
+});
+
+test('the social card keeps its logo and both footer labels inside the fixed canvas', async () => {
+	const png = await renderOgImage({
+		title: 'AI 时代的脑腐症 / Brain Rot in the AI Era',
+		brand: 'xzOS / BLOG',
+		footer: 'AI / EN',
+	});
+	const { data, info } = await sharp(png).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+	// The grid is deliberately very dark. Count visible blue/logo or light/text
+	// pixels in the original content regions, not exact antialiased glyph pixels.
+	const regions = {
+		logo: { left: 1048, top: 60, width: 90, height: 90 },
+		footerLabel: { left: 76, top: 500, width: 350, height: 90 },
+		siteUrl: { left: 900, top: 500, width: 224, height: 90 },
+	};
+	const visible: Record<string, boolean> = {};
+	for (const [name, region] of Object.entries(regions)) {
+		let count = 0;
+		for (let y = region.top; y < region.top + region.height; y++) {
+			for (let x = region.left; x < region.left + region.width; x++) {
+				const i = (y * info.width + x) * info.channels;
+				if (data[i + 2] > 90 && data[i] + data[i + 1] + data[i + 2] > 150) count++;
+			}
+		}
+		visible[name] = count > 20;
+	}
+	assert.deepEqual(visible, { logo: true, footerLabel: true, siteUrl: true });
 });
