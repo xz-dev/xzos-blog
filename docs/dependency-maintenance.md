@@ -7,16 +7,17 @@ across major versions merely to satisfy a suggested audit remediation.
 
 ## Security overrides
 
-- `wrangler` and `esbuild` retain the repository's existing overrides, with
-  updated minimum versions. Keep the Cloudflare packages and their tooling
-  compatible when refreshing the lockfile.
+- `esbuild` retains the repository's existing override, with an updated
+  minimum version.
+- Do not override `wrangler` or its Miniflare subtree. `@cloudflare/vite-plugin`
+  pins exact `wrangler` and `miniflare` versions; a global `wrangler`
+  override splits Wrangler, Miniflare and workerd into duplicate copies, and
+  a scoped `miniflare > undici` override across those copies produced a
+  lockfile that npm 10 (used by Cloudflare Pages) rejects in `npm ci`.
+  Check `npm ci` with Node 22/npm 10 after every lockfile refresh.
 - `satori > fflate`: Satori 0.63.2 still pins fflate 0.7.3, which is affected
   by the fflate advisory reported by `npm audit`. Scope the patched 0.8.3
   dependency to Satori's subtree instead of changing unrelated consumers.
-- `miniflare > undici`: the current Miniflare dependency pins undici 7.29.1;
-  the EventSource memory-exhaustion, integrity-token and content-encoding
-  advisories are fixed in 7.30.1. Keep this override within undici major 7
-  instead of forcing Miniflare onto undici major 8.
 
 Re-evaluate scoped overrides when the corresponding upstream releases
 adopt patched versions. Remove an override only after a fresh lockfile
