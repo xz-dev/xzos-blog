@@ -1,6 +1,7 @@
 # Dependency maintenance
 
-Use `npm ci --no-audit --no-fund` to reproduce the committed lockfile. Run
+Use the Node.js major in `.node-version` (also read by the Cloudflare Pages
+build), and `npm ci --no-audit --no-fund` to reproduce the committed lockfile. Run
 `npm outdated` and `npm audit` before and after an intentional dependency
 refresh; do not apply `npm audit fix --force` to downgrade the Astro adapter
 across major versions merely to satisfy a suggested audit remediation.
@@ -13,8 +14,8 @@ across major versions merely to satisfy a suggested audit remediation.
   pins exact `wrangler` and `miniflare` versions; a global `wrangler`
   override splits Wrangler, Miniflare and workerd into duplicate copies, and
   a scoped `miniflare > undici` override across those copies produced a
-  lockfile that npm 10 (used by Cloudflare Pages) rejects in `npm ci`.
-  Check `npm ci` with Node 22/npm 10 after every lockfile refresh.
+  lockfile that npm 10 (then the Cloudflare Pages default) rejected in
+  `npm ci`.
 - `satori > fflate`: Satori 0.63.2 still pins fflate 0.7.3, which is affected
   by the fflate advisory reported by `npm audit`. Scope the patched 0.8.3
   dependency to Satori's subtree instead of changing unrelated consumers.
