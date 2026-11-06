@@ -1,7 +1,8 @@
 ---
-source_hash: "ace36eaf"
+source_hash: "fe56adce"
 source_lang: "zh"
 target_lang: "zh-CN"
+lang: "zh-CN"
 is_copy: true
 title: "守着 AI 工作的人"
 pubDate: "2026-02-09T00:00:00+08:00"
@@ -9,7 +10,6 @@ description: "当工具不再需要人来驱动，而是人需要守着工具—
 author: "xz-dev"
 category: "随想"
 tags: ["AI", "随想", "诗"]
-lang: "zh-CN"
 ---
 
 > 守着 AI 工作的人，闭上眼，思绪逐渐飘走了。
@@ -34,3 +34,7 @@ AI 还没有逻辑，是巧妙设计的"鹦鹉"；
 
 曾经的白领工作，公司需要他的知识  
 未来的白领存在，AI 需要能逻辑思考的脑子  
+
+---
+
+[Eries 的琐事 · 其一](/blog/eries-notes-1/)

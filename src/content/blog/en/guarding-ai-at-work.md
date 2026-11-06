@@ -1,35 +1,39 @@
 ---
-source_hash: "ace36eaf"
+source_hash: "fe56adce"
 source_lang: "zh"
 target_lang: "en"
-title: "People Watching Over AI at Work"
-pubDate: "2026-02-09T00:00:00+08:00"
-description: "When tools no longer require human operation, but humans need to watch over the tools—our relationship with AI is quietly reversing."
-author: "xz-dev"
-category: "Musings"
-tags: ["AI", "Musings", "Poetry"]
 lang: "en"
+title: "People Who Keep Watch While AI Works"
+pubDate: "2026-02-09T00:00:00+08:00"
+description: "When the tool no longer needs a person to drive it, but the person needs to keep watch over the tool—our relationship with AI is quietly undergoing an inversion."
+author: "xz-dev"
+category: "随想"
+tags: ["AI", "随想", "诗"]
 ---
 
-> People watching over AI at work, closing their eyes, thoughts gradually drift away.
+> People who keep watch while AI works close their eyes, and their thoughts gradually drift away.
 
-People watching over AI at work,  
-Closing their eyes, thoughts gradually drift away.
+People who keep watch while AI works,  
+close their eyes, and their thoughts gradually drift away.
 
-They recall centuries past—  
-Farmers watching over rice fields and harvesters,  
-Workers tending lathes and robotic arms.
+He thinks back through the ages—  
+the farmers who kept watch over rice paddies and reapers,  
+the workers who kept watch over lathes and robotic arms.
 
-They wait for AI's notification requesting assistance.  
-The AI keeps working, but they're only there to supervise its correctness.
+He is waiting for a notification that the AI needs assistance.  
+The AI is still working, but he is only there to supervise whether the AI is working correctly.
 
-Before, tools derived value from human use;  
-Now, humans derive value merely from assisting AI.
+Once, a tool had value because a person used it;  
+now, a person has value only because the AI needs human assistance.
 
-AI lacks logic, being cleverly designed "parrots";  
-Humans possess logic but have been reduced to AI's tools.
+The AI has no logic yet; it is a cleverly designed "parrot."  
+The human has logic, but to no avail—already reduced to a tool of the AI.
 
-> Is this the future of office cubicles?
+> Is this the future of the office cubicle?
 
-Once white-collar jobs required human knowledge,  
-In the future, white-collar existence means AI needs logically thinking minds.
+The white-collar job of the past: the company needed his knowledge.  
+The white-collar existence of the future: the AI needs a brain that can think logically.
+
+---
+
+[Eries's Miscellany · No. 1](/blog/eries-notes-1/)

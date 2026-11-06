@@ -7,7 +7,7 @@
  * 3. 智能生成副本：英文原文生成英文副本，中文原文生成中文副本
  * 4. 增量翻译：通过源文件哈希避免重复翻译
  * 
- * 使用 OpenAI-compatible API
+ * 通过本机 pi CLI 调用模型（见 pi-translate.ts），不持有 API Key
  * 支持多个 content collection（blog, pages 等）
  */
 import type { AstroIntegration } from 'astro';
@@ -16,81 +16,15 @@ import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { loadEnv } from 'vite';
-
-// ============ 配置 ============
-const DEFAULT_OPENAI_BASE_URL = 'https://omniroute.xzos.net/v1';
-
-// ============ 提示词配置 ============
-
-/** 语言检测提示词 */
-const LANGUAGE_DETECTION_PROMPT = `请判断下面 Markdown 文章正文的主要自然语言。
-
-只输出一个词："zh"、"en" 或 "other"。
-
-规则：
-- "zh" = 中文正文，包括简体中文、繁体中文，以及中文句子夹杂英文技术词的文章
-- "en" = 英文正文
-- "other" = 非中文、非英文正文
-- 忽略 frontmatter、tags、代码块、URL、产品名、协议名、技术标识符
-- AI、LLM、API、MCP、RAG、OAuth、RBAC、JSON、token、OWASP 等英文技术词不影响判断
-- 只根据正文自然语言判断，不根据关键词判断
-
-输出：只输出 zh、en 或 other，不要解释。`;
-
-/** 中文翻译成英文的提示词 */
-const ZH_TO_EN_PROMPT = `You are a professional translator. Translate the Chinese markdown content to English.
-
-OUTPUT: Return a COMPLETE, valid markdown file with frontmatter.
-
-RULES:
-1. Output must start with --- and end frontmatter with --- on its own line
-2. Translate title and description to English
-3. Keep these values EXACTLY as-is: pubDate, updatedDate, author, category, tags, heroImage
-4. Do NOT output these metadata fields: source_hash, source_lang, target_lang, is_copy, lang
-5. Preserve ALL markdown formatting (headers, code blocks, links, images)
-6. Keep code snippets, URLs, file paths, Base64 strings UNCHANGED
-7. Output ONLY the markdown file, no explanations or comments
-
-Example output format:
----
-title: "Translated Title"
-description: "Translated description"
-pubDate: "2024-01-01"
-author: "original"
-tags: ["tag1", "tag2"]
----
-
-Translated content here...`;
-
-/** 英文翻译成中文的提示词 */
-const EN_TO_ZH_PROMPT = `You are a professional translator. Translate the English markdown content to Simplified Chinese (简体中文).
-
-OUTPUT: Return a COMPLETE, valid markdown file with frontmatter.
-
-RULES:
-1. Output must start with --- and end frontmatter with --- on its own line
-2. Translate title and description to Simplified Chinese (简体中文)
-3. Keep these values EXACTLY as-is: pubDate, updatedDate, author, category, tags, heroImage
-4. Do NOT output these metadata fields: source_hash, source_lang, target_lang, is_copy, lang
-5. Preserve ALL markdown formatting (headers, code blocks, links, images)
-6. Keep code snippets, URLs, file paths, Base64 strings UNCHANGED
-7. Output ONLY the markdown file, no explanations or comments
-
-Example output format:
----
-title: "翻译后的标题"
-description: "翻译后的描述"
-pubDate: "2024-01-01"
-author: "original"
-tags: ["tag1", "tag2"]
----
-
-翻译后的内容...`;
+import {
+  detectLanguage,
+  resolvePiConfig,
+  translateMarkdown,
+  type Language,
+  type PiConfig,
+} from './pi-translate';
 
 // ============ 类型定义 ============
-
-/** 语言类型 */
-type Language = 'zh' | 'en' | 'zh-CN' | 'other';
 
 /** 翻译目录配置 */
 interface TranslateDir {
@@ -105,11 +39,7 @@ interface TranslateDir {
 }
 
 interface TranslateOptions {
-  /** OpenAI-compatible API Key（默认从环境变量 OPENAI_API_KEY 读取） */
-  apiKey?: string;
-  /** OpenAI-compatible API Base URL（默认从环境变量 OPENAI_BASE_URL 读取） */
-  baseUrl?: string;
-  /** 使用的模型（默认从环境变量 OPENAI_MODEL 读取） */
+  /** pi 模型（默认从环境变量 PI_TRANSLATE_MODEL 读取，否则 deepseek-v4.1-flash） */
   model?: string;
   /** 要翻译的目录列表 */
   directories?: TranslateDir[];
@@ -219,171 +149,6 @@ function insertMetadata(
   return `---\n${metadataLines.join('\n')}\n---\n\n${content}`;
 }
 
-// ============ API 调用函数 ============
-
-/** 解析 OpenAI-compatible chat completions 响应（兼容 JSON 与 data: SSE 格式） */
-async function parseChatCompletionResponse(
-  response: Response,
-  errorPrefix: string
-): Promise<{ content: string; usage?: { prompt_tokens?: number; completion_tokens?: number } }> {
-  const body = await response.text();
-
-  if (!response.ok) {
-    throw new Error(`${errorPrefix}: ${response.status} - ${body}`);
-  }
-
-  const text = body.trim();
-
-  if (text.startsWith('data:')) {
-    let content = '';
-    let usage: { prompt_tokens?: number; completion_tokens?: number } | undefined;
-
-    for (const line of text.split(/\r?\n/)) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith('data:')) continue;
-
-      const payload = trimmed.slice('data:'.length).trim();
-      if (!payload || payload === '[DONE]') continue;
-
-      let chunk: any;
-      try {
-        chunk = JSON.parse(payload);
-      } catch {
-        continue;
-      }
-
-      const choice = chunk.choices?.[0];
-      content += choice?.delta?.content ?? choice?.message?.content ?? '';
-
-      if (chunk.usage) {
-        usage = chunk.usage;
-      }
-    }
-
-    return { content: content.trim(), usage };
-  }
-
-  let data: any;
-  try {
-    data = JSON.parse(text);
-  } catch (error) {
-    throw new Error(`${errorPrefix}: invalid JSON response - ${error instanceof Error ? error.message : error}`);
-  }
-
-  return {
-    content: data.choices?.[0]?.message?.content?.trim() ?? '',
-    usage: data.usage,
-  };
-}
-
-
-/**
- * 检测文章的主要语言
- * 优先读取 frontmatter 的 lang 字段，否则使用 AI 检测
- */
-async function detectLanguage(
-  content: string,
-  apiKey: string,
-  baseUrl: string,
-  model: string
-): Promise<Language> {
-  // 1. 尝试从 frontmatter 读取 lang
-  const langMatch = content.match(/^lang:\s*["']?(zh|en|zh-CN|zh-TW|other)["']?\s*$/m);
-  if (langMatch) {
-    const lang = langMatch[1];
-    if (lang.startsWith('zh')) return 'zh';
-    if (lang === 'en') return 'en';
-    return 'other';
-  }
-  
-  // 2. 使用 AI 检测（去掉 frontmatter，只取前 4000 字符以节省 token）
-  const sampleContent = content
-    .replace(/^---\r?\n[\s\S]*?\r?\n---/, '')
-    .slice(0, 4000);
-  
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: LANGUAGE_DETECTION_PROMPT },
-        { role: 'user', content: sampleContent },
-      ],
-      temperature: 0,
-      max_tokens: 10,
-      // 语言检测不需要推理，省 token
-      reasoning_effort: 'low',
-      // Some OpenAI-compatible upstreams/proxies attach stream_options.
-      // SiliconFlow rejects stream_options unless stream is explicitly true.
-      stream: true,
-    }),
-  });
-  
-  const { content: detectedLanguage } = await parseChatCompletionResponse(response, 'Language detection API error');
-  const result = detectedLanguage.trim().toLowerCase();
-  
-  if (result === 'zh') return 'zh';
-  if (result === 'en') return 'en';
-  return 'other';
-}
-
-/** 调用 API 翻译内容 */
-async function translateContent(
-  content: string,
-  apiKey: string,
-  baseUrl: string,
-  model: string,
-  sourceLang: Language,
-  targetLang: Language
-): Promise<string> {
-  // 选择合适的提示词
-  let systemPrompt: string;
-  if (targetLang === 'en') {
-    systemPrompt = ZH_TO_EN_PROMPT;
-  } else {
-    systemPrompt = EN_TO_ZH_PROMPT;
-  }
-  
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content },
-      ],
-      temperature: 0.3,
-      max_tokens: 8192,
-      // 翻译质量受益于推理
-      reasoning_effort: 'high',
-      // Some OpenAI-compatible upstreams/proxies attach stream_options.
-      // SiliconFlow rejects stream_options unless stream is explicitly true.
-      stream: true,
-    }),
-  });
-
-  const { content: result, usage } = await parseChatCompletionResponse(response, 'Translation API error');
-  
-  if (!result) {
-    throw new Error('Empty translation result');
-  }
-
-  // 打印 token 使用情况
-  if (usage) {
-    console.log(`    Tokens: ${usage.prompt_tokens} in / ${usage.completion_tokens} out`);
-  }
-
-  return result;
-}
-
 // ============ 文件操作函数 ============
 
 /** 检查是否需要翻译 */
@@ -461,25 +226,16 @@ async function shouldCopy(
 async function translateFile(
   sourcePath: string,
   targetPath: string,
-  apiKey: string,
-  baseUrl: string,
-  model: string,
+  pi: PiConfig,
   sourceLang: Language,
   targetLang: Language,
   sourceHash: string
 ): Promise<void> {
   const sourceContent = await readFile(sourcePath, 'utf-8');
   
-  console.log(`    Translating ${sourceLang} → ${targetLang} with ${model}...`);
+  console.log(`    Translating ${sourceLang} → ${targetLang} with pi:${pi.model}...`);
   
-  const translated = await translateContent(
-    sourceContent,
-    apiKey,
-    baseUrl,
-    model,
-    sourceLang,
-    targetLang
-  );
+  const translated = await translateMarkdown(sourceContent, pi, targetLang);
 
   // 程序化插入元数据，确保稳定性
   const result = insertMetadata(translated, {
@@ -545,9 +301,7 @@ async function needsProcessing(
 async function processFile(
   sourcePath: string,
   targetDirs: { en: string; zhCN: string },
-  apiKey: string,
-  baseUrl: string,
-  model: string,
+  pi: PiConfig,
   force: boolean
 ): Promise<{ translated: number; copied: number; skipped: number }> {
   const filename = basename(sourcePath);
@@ -565,7 +319,7 @@ async function processFile(
   
   // 需要处理，才检测语言
   console.log(`  🔍 ${filename}: Detecting language...`);
-  const sourceLang = await detectLanguage(sourceContent, apiKey, baseUrl, model);
+  const sourceLang = await detectLanguage(sourceContent, pi);
   console.log(`     Detected: ${sourceLang}`);
   
   let translated = 0;
@@ -577,7 +331,7 @@ async function processFile(
     // 中文原文：翻译成英文，复制到 zh-CN
     const translateCheck = await shouldTranslate(sourceContent, enPath, force, sourceLang, 'en');
     if (translateCheck.needed) {
-      await translateFile(sourcePath, enPath, apiKey, baseUrl, model, sourceLang, 'en', sourceHash);
+      await translateFile(sourcePath, enPath, pi, sourceLang, 'en', sourceHash);
       translated++;
       await new Promise(resolve => setTimeout(resolve, 1000)); // API 延迟
     } else {
@@ -607,7 +361,7 @@ async function processFile(
     
     const translateCheck = await shouldTranslate(sourceContent, zhCNPath, force, sourceLang, 'zh-CN');
     if (translateCheck.needed) {
-      await translateFile(sourcePath, zhCNPath, apiKey, baseUrl, model, sourceLang, 'zh-CN', sourceHash);
+      await translateFile(sourcePath, zhCNPath, pi, sourceLang, 'zh-CN', sourceHash);
       translated++;
       await new Promise(resolve => setTimeout(resolve, 1000)); // API 延迟
     } else {
@@ -619,7 +373,7 @@ async function processFile(
     // 其他语言：翻译成英文和简中
     const translateEnCheck = await shouldTranslate(sourceContent, enPath, force, sourceLang, 'en');
     if (translateEnCheck.needed) {
-      await translateFile(sourcePath, enPath, apiKey, baseUrl, model, sourceLang, 'en', sourceHash);
+      await translateFile(sourcePath, enPath, pi, sourceLang, 'en', sourceHash);
       translated++;
       await new Promise(resolve => setTimeout(resolve, 1000)); // API 延迟
     } else {
@@ -629,7 +383,7 @@ async function processFile(
     
     const translateZhCheck = await shouldTranslate(sourceContent, zhCNPath, force, sourceLang, 'zh-CN');
     if (translateZhCheck.needed) {
-      await translateFile(sourcePath, zhCNPath, apiKey, baseUrl, model, sourceLang, 'zh-CN', sourceHash);
+      await translateFile(sourcePath, zhCNPath, pi, sourceLang, 'zh-CN', sourceHash);
       translated++;
       await new Promise(resolve => setTimeout(resolve, 1000)); // API 延迟
     } else {
@@ -644,9 +398,7 @@ async function processFile(
 /** 翻译一个目录 */
 async function translateDirectory(
   dir: TranslateDir,
-  apiKey: string,
-  baseUrl: string,
-  model: string,
+  pi: PiConfig,
   force: boolean
 ): Promise<{ translated: number; copied: number; skipped: number }> {
   const { source: sourceDir, targetEn, targetZhCN, name } = dir;
@@ -695,9 +447,7 @@ async function translateDirectory(
       const { translated, copied, skipped } = await processFile(
         sourcePath,
         { en: targetEn, zhCN: targetZhCN },
-        apiKey,
-        baseUrl,
-        model,
+        pi,
         force
       );
       
@@ -739,25 +489,16 @@ export default function translateIntegration(options: TranslateOptions = {}): As
 
         // 加载 .env 文件
         const env = loadEnv('production', process.cwd(), '');
-        const apiKey = options.apiKey || env.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-        const baseUrl = (options.baseUrl || env.OPENAI_BASE_URL || process.env.OPENAI_BASE_URL || DEFAULT_OPENAI_BASE_URL).replace(/\/+$/, '');
-        const model = options.model || env.OPENAI_MODEL || process.env.OPENAI_MODEL;
+        const pi = resolvePiConfig({ ...env, ...process.env, ...(options.model ? { PI_TRANSLATE_MODEL: options.model } : {}) });
 
-        if (!apiKey) {
-          console.log('[translate] No OPENAI_API_KEY found, skipping translation...');
-          console.log('[translate] Set OPENAI_API_KEY in .env or env var to enable auto-translation');
-          return;
-        }
-
-        if (!model) {
-          console.log('[translate] No OPENAI_MODEL found, skipping translation...');
-          console.log('[translate] Set OPENAI_MODEL in .env or env var to enable auto-translation');
+        if (!pi) {
+          console.log('[translate] pi CLI not found, skipping translation (committed translations are used as-is)...');
           return;
         }
 
         console.log('\n[translate] Starting content translation...');
-        console.log(`[translate] Base URL: ${baseUrl}`);
-        console.log(`[translate] Model: ${model}`);
+        console.log(`[translate] Engine: pi --model ${pi.model}`);
+        console.log(`[translate] Extensions: ${pi.extensions.join(', ') || '(none)'}`);
         console.log(`[translate] Directories: ${directories.length}`);
         console.log(`[translate] Mode: ${force ? 'Force (re-translate all)' : 'Incremental'}`);
 
@@ -768,9 +509,7 @@ export default function translateIntegration(options: TranslateOptions = {}): As
         for (const dir of directories) {
           const { translated, copied, skipped } = await translateDirectory(
             dir,
-            apiKey,
-            baseUrl,
-            model,
+            pi,
             force
           );
           totalTranslated += translated;

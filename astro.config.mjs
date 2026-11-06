@@ -10,7 +10,7 @@ export default defineConfig({
   site: 'https://xzos.net',
   integrations: [
     // 翻译集成：在 build 开始前自动翻译博客文章
-    // 需要设置环境变量 OPENAI_API_KEY、OPENAI_MODEL；可选 OPENAI_BASE_URL
+    // 通过本机 pi CLI 翻译（无 pi 时跳过）；可选 PI_TRANSLATE_MODEL / PI_TRANSLATE_EXTENSIONS / PI_TRANSLATE_BIN
     translate({
       // force: true,  // 强制重新翻译所有文件
       // enabled: false, // 取消注释可禁用翻译
