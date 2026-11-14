@@ -81,7 +81,3 @@ export async function buildPostOgStaticPaths<Post extends SocialPreviewPost>(
 
 	return paths;
 }
-
-export function getOgLocaleLabel(lang: BlogLang): string {
-	return lang === 'zh-CN' ? 'ZH-CN' : lang.toUpperCase();
-}
