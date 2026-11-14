@@ -1,128 +1,74 @@
 ---
 /**
- * 语言版本提示组件
- * 显示在博客文章顶部，提示用户可以切换到其他语言版本
- * 对于翻译版本，显示 LLM 翻译声明
+ * 文章标题下的语言版本说明：译文注明译自中文原文，并列出其他语言版本
  */
-import { languages, defaultLang, type Lang } from '../i18n/ui';
+import { getEntry } from 'astro:content';
+import { getBlogCollection, getBlogPrefix } from '../i18n/collections';
+import { defaultLang, languages, type Lang } from '../i18n/ui';
+import { isMachineTranslation, useTranslations } from '../i18n/utils';
 import PixelIcon from './PixelIcon.astro';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 
 interface Props {
-  /** 当前文章的 slug (文件名，不含扩展名) */
   slug: string;
-  /** 当前语言 */
   lang?: Lang;
 }
 
 const { slug, lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
+// Only machine translations carry the notice; a copy (is_copy) is the original text.
+const entry = lang === defaultLang ? undefined : await getEntry(getBlogCollection(lang) as any, slug);
+const isTranslation = isMachineTranslation(lang, (entry as any)?.data);
 
-// 检查其他语言版本是否存在
-const availableVersions: { lang: Lang; path: string; label: string }[] = [];
-
-// 检查原文（中文）
-const zhPath = join(process.cwd(), 'src/content/blog', `${slug}.md`);
-if (existsSync(zhPath) && lang !== 'zh') {
-  availableVersions.push({
-    lang: 'zh',
-    path: `/blog/${slug}`,
-    label: languages.zh,
-  });
+const otherLangs = (Object.keys(languages) as Lang[]).filter((other) => other !== lang);
+const versions = [];
+for (const other of otherLangs) {
+  if (await getEntry(getBlogCollection(other) as any, slug)) {
+    versions.push({ lang: other, path: `${getBlogPrefix(other)}/${slug}`, label: languages[other] });
+  }
 }
-
-// 检查英文版本
-const enPath = join(process.cwd(), 'src/content/blog/en', `${slug}.md`);
-if (existsSync(enPath) && lang !== 'en') {
-  availableVersions.push({
-    lang: 'en',
-    path: `/en/blog/${slug}`,
-    label: languages.en,
-  });
-}
-
-// 检查简中版本
-const zhCNPath = join(process.cwd(), 'src/content/blog/zh-CN', `${slug}.md`);
-if (existsSync(zhCNPath) && lang !== 'zh-CN') {
-  availableVersions.push({
-    lang: 'zh-CN',
-    path: `/zh-CN/blog/${slug}`,
-    label: languages['zh-CN'],
-  });
-}
-
-// 检查是否为翻译版本（英文或简中）
-const isTranslatedVersion = lang === 'en' || lang === 'zh-CN';
-const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
 ---
 
-{isTranslatedVersion && originalVersionPath && (
-  <div class="translation-notice">
-    <span class="notice-icon tty-original-icon">🤖</span>
-    <PixelIcon name="translation" class="tty-notice-icon" />
-    <span>
-      {lang === 'en' 
-        ? 'This article was translated by AI (LLM). There may be errors or inaccuracies. For the original content, please refer to the '
-        : '本文由 AI（大语言模型）翻译。可能存在错误或不准确之处。如需查看原文，请参阅'
-      }
-      <a href={originalVersionPath} hreflang="zh">
-        {lang === 'en' ? 'original version' : '原文'}
-      </a>。
-    </span>
-  </div>
-)}
-
-{availableVersions.length > 0 && (
-  <div class="language-notice">
-    <span class="notice-icon tty-original-icon">🌐</span>
-    <PixelIcon name="globe" class="tty-notice-icon" />
-    <span>
-      {lang === 'zh' ? 'This article is also available in:' : '本文还有其他语言版本：'}
-    </span>
-    {availableVersions.map((version, index) => (
-      <>
-        <a href={version.path} hreflang={version.lang}>
-          {version.label}
-        </a>
-        {index < availableVersions.length - 1 && <span> / </span>}
-      </>
-    ))}
+{(isTranslation || versions.length > 0) && (
+  <div class="version-notices">
+    {isTranslation && (
+      <p>
+        <PixelIcon name="translation" class="notice-mark" />
+        {t('notice.translatedBefore')}<a href={`${getBlogPrefix(defaultLang)}/${slug}`} hreflang="zh">{t('notice.translatedLink')}</a>{t('notice.translatedAfter')}
+      </p>
+    )}
+    {versions.length > 0 && (
+      <p>
+        <PixelIcon name="globe" class="notice-mark" />
+        {t('notice.alsoIn')}
+        {versions.map((version, index) => (
+          <>
+            {index > 0 && ' / '}
+            <a href={version.path} hreflang={version.lang}>{version.label}</a>
+          </>
+        ))}
+      </p>
+    )}
   </div>
 )}
 
 <style>
-  .language-notice,
-  .translation-notice {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.5rem;
-    background: var(--card-background, rgba(var(--gray-light), 0.3));
-    border-radius: 8px;
-    border-left: 4px solid var(--accent);
-    font-size: 0.9rem;
+  .version-notices {
+    margin-bottom: var(--space-4);
+    color: var(--secondary);
+    font-size: var(--text-meta);
+    line-height: var(--leading-meta);
   }
-  
-  .translation-notice {
-    border-left-color: #f59e0b;
-    background: rgba(245, 158, 11, 0.1);
+
+  .version-notices p {
+    margin: 0;
   }
-  
-  .notice-icon {
-    font-size: 1.1rem;
-    flex-shrink: 0;
+
+  .version-notices a {
+    white-space: nowrap;
   }
-  
-  .language-notice a,
-  .translation-notice a {
-    color: var(--accent);
-    font-weight: 600;
-    text-decoration: none;
-  }
-  
-  .language-notice a:hover,
-  .translation-notice a:hover {
-    text-decoration: underline;
+
+  /* The pixel mark sits apart from the text it introduces. */
+  .version-notices :global(.notice-mark) {
+    margin-inline-end: var(--space-2);
   }
 </style>

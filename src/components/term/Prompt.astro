@@ -1,0 +1,20 @@
+---
+/**
+ * 终端提示符行：`$ command`，或只有 `$` 与块光标的最后一行。
+ * 整行对读屏器隐藏：它是画面上的标题或装饰，语义由页面的 h1 / h2（sr-only）承担。
+ */
+import Cursor from './Cursor.astro';
+
+interface Props {
+	/** 提示符后的命令；省略时只画 `$`。 */
+	command?: string;
+	/** 末尾画块光标。 */
+	cursor?: boolean;
+	/** 光标闪烁（只用于有暂停控件的页面）。 */
+	blink?: boolean;
+}
+
+const { command, cursor = false, blink = false } = Astro.props;
+---
+
+<p class="term-prompt" aria-hidden="true">$ {command && <span class="term-command">{command}</span>}{cursor && <Cursor blink={blink} />}</p>

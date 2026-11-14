@@ -8,11 +8,13 @@ interface Props {
 	label?: string;
 }
 
+// One icon set for both themes: the same drawing, coloured by currentColor
+// (.pixel-icon in terminal.css).
 const { name, class: className, label } = Astro.props;
 const rects = pixelIconRects(name);
 ---
 <svg
-	class:list={['tty-pixel-icon', className]}
+	class:list={['pixel-icon', className]}
 	data-pixel-icon={name}
 	width="16"
 	height="16"

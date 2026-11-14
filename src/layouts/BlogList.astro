@@ -1,13 +1,13 @@
 ---
 /**
- * 博客列表页 - excerpt 列表布局（含智能分页）
- * 用于首页 (/, /en/, /zh-CN/) 和分页页面 (/page/N, /en/page/N, /zh-CN/page/N)
+ * 分页文章列表：标题、摘要、元信息行，底部分页
+ * 用于 /page/N, /en/page/N, /zh-CN/page/N（首页改由 Home.astro 绘制；分页去留待定）
  */
-import { marked } from 'marked';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import PageFrame from '../components/PageFrame.astro';
+import PostMeta from '../components/PostMeta.astro';
 import PixelArrowText from '../components/PixelArrowText.astro';
 import { getBlogPrefix, getHomePath, getHtmlLang, getPagePrefix } from '../i18n/collections';
 import type { Lang } from '../i18n/ui';
@@ -33,11 +33,16 @@ const blogPrefix = getBlogPrefix(lang);
 const pagePrefix = getPagePrefix(lang);
 const homePath = getHomePath(lang);
 
-// 页面标题
-const isFirstPage = currentPage === 1;
-const pageTitle = isFirstPage
-	? `${SITE_TITLE} - For Coding Life`
+const pageTitle = currentPage === 1
+	? `${SITE_TITLE} - ${t('site.tagline')}`
 	: t('pagination.pageTitle', { title: SITE_TITLE, page: currentPage.toString() });
+
+// Pagination shows the first and last page and the current page's
+// neighbours; a gap between two shown numbers becomes an ellipsis.
+const shownPages = [...new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages])]
+	.filter((page) => page >= 1 && page <= totalPages)
+	.sort((a, b) => a - b);
+const pageHref = (page: number) => (page === 1 ? homePath : `${pagePrefix}/${page}/`);
 ---
 
 <!doctype html>
@@ -45,133 +50,49 @@ const pageTitle = isFirstPage
 	<head>
 		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
 		<style>
-			main {
-				width: 960px;
-				max-width: calc(100% - 2rem);
-				margin: auto;
-				padding: 3rem 1rem;
-			}
-			h1 {
-				font-size: 2.5rem;
-				font-weight: 700;
-				margin: 0 0 2rem 0;
-			}
-			.post-list {
-				list-style-type: none;
-				padding: 0;
-				margin: 0 0 3rem 0;
-			}
-			.post-item {
-				margin-bottom: 3rem;
-				padding-bottom: 3rem;
-				border-bottom: 1px solid #e0e0e0;
-			}
-			.post-item:last-child {
-				border-bottom: none;
-			}
-			.post-title {
-				font-size: 1.8rem;
-				font-weight: 600;
-				margin: 0 0 1rem 0;
-			}
-			.post-title a {
-				color: var(--fg-primary);
-				background: var(--bg-secondary);
-				transition: all 0.2s ease;
-				text-decoration: none;
-			}
-			.post-title a:hover {
-				color: var(--accent);
-			}
 			.post-excerpt {
-				color: rgb(var(--gray-dark));
-				line-height: 1.6;
-				margin: 1rem 0;
+				color: var(--foreground);
+				line-height: var(--leading-prose);
+				margin: var(--space-3) 0;
 			}
 			.post-excerpt :global(blockquote) {
-				margin: 1rem 0;
-				padding-left: 1rem;
-				border-left: 3px solid rgb(var(--gray));
-				font-style: italic;
-				color: rgb(var(--gray-dark));
+				margin: var(--space-3) 0;
 			}
-			.post-excerpt :global(h2),
+			/* Excerpt headings start at h3 (src/lib/excerpt.ts) and all read
+			 * as one sub-heading size under the entry title. */
 			.post-excerpt :global(h3),
-			.post-excerpt :global(h4) {
-				font-size: 1.2rem;
-				margin: 1rem 0 0.5rem 0;
+			.post-excerpt :global(h4),
+			.post-excerpt :global(h5),
+			.post-excerpt :global(h6) {
+				font-size: var(--text-h3);
+				line-height: var(--leading-h3);
+				margin: var(--space-3) 0 var(--space-2) 0;
 			}
 			.post-excerpt :global(p) {
-				margin: 0.5rem 0;
+				margin: var(--space-2) 0;
 			}
 			.post-excerpt :global(ul),
 			.post-excerpt :global(ol) {
-				margin: 0.5rem 0;
-				padding-left: 2rem;
+				margin: var(--space-2) 0;
+				padding-inline-start: var(--space-5);
 			}
-			.post-excerpt :global(code) {
-				background-color: #f4f4f4;
-				padding: 0.2rem 0.4rem;
-				border-radius: 3px;
-				font-size: 0.9em;
-				font-family: monospace;
-			}
-			.post-excerpt :global(pre) {
-				background-color: #f4f4f4;
-				padding: 1rem;
-				overflow-x: auto;
-			}
-			.post-excerpt :global(pre code) {
-				background-color: transparent;
-				padding: 0;
-			}
-			.post-meta {
-				display: flex;
-				gap: 1rem;
-				align-items: center;
-				color: rgb(var(--gray));
-				font-size: 0.9rem;
-				flex-wrap: wrap;
-			}
-			.read-more {
-				color: var(--accent);
-				text-decoration: none;
-				font-weight: 500;
-			}
-			.read-more:hover {
-				text-decoration: underline;
-			}
+			/* Page numbers are controls; the current one reads [n]. */
 			.pagination {
 				display: flex;
 				justify-content: center;
-				gap: 0.5rem;
-				margin: 2rem 0;
+				align-items: center;
+				gap: var(--space-2);
+				margin: var(--space-5) 0;
 				flex-wrap: wrap;
 			}
-			.pagination a,
-			.pagination span {
-				padding: 0.5rem 1rem;
-				border: 2px solid var(--accent);
-				text-decoration: none;
-				color: var(--accent);
-				background: transparent;
-				transition: all 0.2s ease;
-			}
-			.pagination a:hover {
-				background: var(--accent);
-				color: var(--background);
-			}
-			.pagination .current {
-				background: var(--accent);
-				color: var(--background);
-				font-weight: 700;
+			.pagination .ellipsis {
+				color: var(--secondary);
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>{t('blog.heading')}</h1>
+		<PageFrame title={t('blog.heading')} pattern="list">
 			<ul class="post-list">
 				{
 					posts.map(({ post, excerpt }) => (
@@ -180,69 +101,37 @@ const pageTitle = isFirstPage
 								<a href={`${blogPrefix}/${post.id}/`}>{post.data.title}</a>
 							</h2>
 							<div class="post-excerpt" set:html={excerpt.html} />
-							<div class="post-meta">
-								<FormattedDate date={post.data.pubDate} source={post.data.pubDateSource} />
-								{post.data.author && <span>{t('blog.authorLabel')}{post.data.author}</span>}
-								{post.data.category && <span>{t('blog.categoryLabel')}{post.data.category}</span>}
+							<PostMeta lang={lang} pubDate={post.data.pubDate} pubDateSource={post.data.pubDateSource} author={post.data.author} category={post.data.category}>
 								{excerpt.hasMore && (
-									<a href={`${blogPrefix}/${post.id}/`} class="read-more" aria-label={`${t('blog.continueReading')} ${post.data.title}`}>
+									<a href={`${blogPrefix}/${post.id}/`} aria-label={`${t('blog.continueReading')} ${post.data.title}`}>
 										<PixelArrowText text={t('blog.continueReading')} />
 									</a>
 								)}
-							</div>
+							</PostMeta>
 						</li>
 					))
 				}
 			</ul>
 
 			{totalPages > 1 && (
-				<nav class="pagination">
+				<nav class="pagination" aria-label={t('pagination.label')}>
 					{currentPage > 1 && (
-						<a href={currentPage === 2 ? homePath : `${pagePrefix}/${currentPage - 1}/`} aria-label={t('pagination.prev')}><PixelArrowText text={t('pagination.prev')} /></a>
+						<a class="control" href={pageHref(currentPage - 1)} aria-label={t('pagination.prev')}><PixelArrowText text={t('pagination.prev')} /></a>
 					)}
-
-					{/* 始终显示第1页 */}
-					{currentPage === 1 ? (
-						<span class="current">1</span>
-					) : (
-						<a href={homePath}>1</a>
-					)}
-
-					{/* 如果当前页 > 3，显示省略号 */}
-					{currentPage > 3 && <span>…</span>}
-
-					{/* 显示当前页附近的页码（当前页-1, 当前页, 当前页+1） */}
-					{Array.from({ length: totalPages }, (_, i) => {
-						const pageNum = i + 1;
-						// 跳过第1页和最后一页（它们单独处理）
-						if (pageNum === 1 || pageNum === totalPages) return null;
-						// 只显示当前页附近的2页
-						if (Math.abs(pageNum - currentPage) > 1) return null;
-
-						if (pageNum === currentPage) {
-							return <span class="current">{pageNum}</span>;
-						}
-						return <a href={`${pagePrefix}/${pageNum}/`}>{pageNum}</a>;
-					})}
-
-					{/* 如果当前页 < 总页数-2，显示省略号 */}
-					{currentPage < totalPages - 2 && <span>…</span>}
-
-					{/* 始终显示最后一页（如果总页数>1） */}
-					{totalPages > 1 && (
-						currentPage === totalPages ? (
-							<span class="current">{totalPages}</span>
-						) : (
-							<a href={`${pagePrefix}/${totalPages}/`}>{totalPages}</a>
-						)
-					)}
-
+					{shownPages.map((page, index) => (
+						<>
+							{index > 0 && page - shownPages[index - 1] > 1 && <span class="ellipsis">…</span>}
+							{page === currentPage
+								? <span class="control" aria-current="page">[{page}]</span>
+								: <a class="control" href={pageHref(page)}>{page}</a>}
+						</>
+					))}
 					{currentPage < totalPages && (
-						<a href={`${pagePrefix}/${currentPage + 1}/`} aria-label={t('pagination.next')}><PixelArrowText text={t('pagination.next')} /></a>
+						<a class="control" href={pageHref(currentPage + 1)} aria-label={t('pagination.next')}><PixelArrowText text={t('pagination.next')} /></a>
 					)}
 				</nav>
 			)}
-		</main>
+		</PageFrame>
 		<Footer />
 	</body>
 </html>

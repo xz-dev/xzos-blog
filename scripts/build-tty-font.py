@@ -231,7 +231,7 @@ def main():
                     'unicodeRange': 'U+1F000-1FAFF', 'codepoints': len(expected_cmap),
                     'asset': {'url': '/fonts/' + symbol_target.name, 'bytes': len(symbol_data), 'sha256': sha256(symbol_data)},
                     'preservesSampleOutlines': True, 'checkedSample': symbol_sample},
-        'scope': 'Night-mode Latin, CJK, punctuation, code and controls. System glyph fallback only for missing code points.',
+        'scope': 'Latin, CJK, punctuation, code and controls in both themes. System glyph fallback only for missing code points.',
         'historicalBoundary': 'A CJK-capable pixel adaptation, not the Tektronix 4052 original 5x8 ASCII character generator.',
     }
     (ROOT / 'docs/theme/tty-font.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')

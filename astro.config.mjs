@@ -5,6 +5,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import translate from './src/integrations/translate';
+import { daySyntaxTheme } from './src/lib/syntax-day';
 import { tableScroll } from './src/lib/table-scroll';
 
 // https://astro.build/config
@@ -37,21 +38,22 @@ export default defineConfig({
     processor: satteri({ hastPlugins: [tableScroll] }),
     shikiConfig: {
       themes: {
-        light: 'github-light',
-        // Code is the explicit multicolour fluorescent exception to the green UI.
-        // Crisp saturated accents, without glow or animation; daytime is unchanged.
+        // GitHub Light's rules with AA colours on the peach code surface.
+        light: daySyntaxTheme,
+        // Code is the explicit multicolour fluorescent exception to the phosphor UI.
+        // Crisp saturated accents, without glow or animation.
         dark: {
           name: 'tty-neon',
           type: 'dark',
           colors: {
-            'editor.background': '#031e0e',
+            'editor.background': '#1d2606',
             'editor.foreground': '#e8fff0',
           },
           tokenColors: [
             { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#53d98f' } },
-            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#ff79c6' } },
+            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#ff8acd' } },
             { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#32eaff' } },
-            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#c58cff' } },
+            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#cc99ff' } },
             { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#f3ff57' } },
           ],
         },

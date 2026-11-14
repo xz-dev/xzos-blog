@@ -1,0 +1,216 @@
+# Design language
+
+One layout and one font in both themes; night only recolours. Day
+(`data-theme="solarized"`) is peach paper and night (`data-theme="tty"`) is
+phosphor on olive. Switching theme never moves or resizes anything, and no
+frame, fill or bevel exists in one theme but not the other.
+
+## Tokens
+
+Every value comes from `src/styles/tokens.css`. `:root` holds the day
+palette, the type scale, spacing, widths, sizes and the role tokens. The night
+block redefines colours and the role tokens only.
+
+- **Font:** `--font-ui` is GNU Unifont (`src/styles/fonts.css`), set once on
+  `body`. It has one weight and no italic, so synthesis is off and emphasis
+  follows the terminal rule "bold is bright": `strong` and `b` take
+  `--accent`, `em` and `i` take `--secondary`, and neither is underlined.
+  The underline means a link and nothing else. Inside a link, the link colour
+  wins.
+- **Type scale (rem; line heights land on whole pixels):** body 16/24,
+  prose 16/28, page title 32/40, card title 24/32, h2 22/32, h3 20/28,
+  meta 14/20, code 16/24.
+- **Spacing:** `--space-1` to `--space-7` (4, 8, 16, 24, 32, 48, 64 px).
+- **Radius:** `--radius: 0`. Every box is square.
+- **Roles:** `--code-color`, `--selection-*`, `--text-glow` and
+  `--field-overlay`. Night redefines the palette and these roles only: a glow
+  and a scanline-and-vignette layer behind the content, and reverse-video
+  selection. Controls, menu items and form fields are drawn the same in both
+  themes. `prefers-contrast: more` removes the glow and the layer.
+
+## Primitives
+
+| Role | Primitive | Where |
+|---|---|---|
+| Page frame and title | `PageFrame` (`list`, `page`, `article`, `home`; `hideTitle`) with `.page-title` | `src/components/PageFrame.astro`, `terminal.css` |
+| Menu item | `.menu-item`, `.menu-label`, `.menu-item-icon` | header status line, footer social links |
+| Control | `.control` | pagination |
+| Icon | `PixelIcon` (`.pixel-icon`): one hand-drawn 16×16 set, the same in both themes, coloured by `currentColor` | header logo, social links, theme toggle, notices, contents, pagination and read-more arrows |
+| Meta line | `PostMeta` (`.post-meta`) | post lists, posts |
+| Prompt line | `term/Prompt` (`.term-prompt`, `.term-command`): `$ command`, or `$` and the cursor | home, about, link-exchange |
+| Command output | `term/OutputList` (`.term-output`): aligned `left  right` rows | home (recent posts), link-exchange |
+| Page as output | `.term-text` on the content under a `cat` prompt | about |
+| Block cursor | `term/Cursor` (`.cursor`, U+2588); `blink` only with a pause control | home (blinking), about, link-exchange (steady) |
+
+## Shell session
+
+Home, about and link-exchange read as one shell session, built from the
+`src/components/term/` primitives and their classes in `terminal.css`. The
+commands are i18n keys (`term.*`), shown verbatim in every locale.
+
+- **Prompt:** `$` in `--secondary`, the command in `--foreground`. A prompt
+  follows output after one blank line (`--space-4`); the first one in a
+  block has no top margin. The line is `aria-hidden`: it is the visible
+  title or decoration, and the page's h1 or a `sr-only` h2 carries the
+  meaning.
+- **Output rows:** `OutputList` measures each column's widest entry in
+  character cells (`cellWidth` in `src/lib/term-width.ts`: wide East Asian
+  characters count two) and sets every left cell to that width, so the right
+  column lines up and dates and names never wrap; the right cell takes the
+  rest of the row and wraps inside it. Columns are `--cell-gap` (2ch) apart.
+  Linked cells are `--foreground`; hover turns them `--accent` and
+  underlines them, with no fill. Plain cells (dates, hosts) are
+  `--secondary`. A `stack` list keeps the right column on one line as well:
+  when the row is narrower than the widest `left  right` pair, every row
+  puts its right cell on its own line, 2ch in, at once. The switch follows
+  the entries, not a breakpoint. Words break only when one alone is wider
+  than the row.
+- **Page as output:** under its prompt, a page's content uses the body line
+  height, paragraphs one blank line apart, quotes as indented output behind
+  the 2px `--rule` in `--border-strong`, list items as `- ` rows with a
+  hanging indent; links keep their underline.
+- **Cursor:** blinks only with `blink` (`data-blink`), which only the home
+  page sets, because it has a pause control (WCAG 2.2.2). Other cursors are
+  steady.
+- **Current markers** (the `Theme:` and `Locale:` rows, the pause control) take `--accent`
+  and a trailing `*`, as in the status line; nothing is inverted.
+- **Title:** the prompt line, or fastfetch's `xz@xzos` on the home page, is
+  the visible title, so these pages pass `hideTitle` to `PageFrame`: the one
+  h1 stays in the document, visually hidden (`sr-only`).
+
+## Status line
+
+The header is a terminal status line, like tmux's, the same in both themes:
+
+```
+◌ xzOS  0:首页   1:文章*  2:关于   3:友链        lang:  zh*  en   zh-CN   │  ☾  │  M  G  S
+```
+
+It is one flat row of plain text on `--surface` with a 1px `--border-strong`
+bottom edge (`border-block-end`). The row holds the pixel logo (`--accent`),
+the site name, the menus and a status area (the language field, the theme
+toggle and the social links). The row is a character grid: menu and
+language items are `.menu-item`s, 32px tall with no inline padding, so the
+`--cell-gap` (2ch) between two items is their distance edge to edge. Items
+that can be current (menus, languages) reserve the cell of the `*`; the
+others draw it invisibly, so marking one moves nothing. The status area's
+groups (languages, theme, social links) are split by an `aria-hidden` `│` in
+`--secondary` with a `--cell-gap` on each side. Icons (theme toggle, social
+links) are 16px glyphs in a 2ch cell, centred on the row like the labels.
+
+- **Menus** read `index:label`. The order and labels come from `navItems` and
+  `nav.*` in `src/i18n/ui.ts`; the index is a dim `.menu-label`
+  (`--secondary`), hidden from assistive technology.
+- **Languages** read `lang: zh en zh-CN`: the `lang.prefix` label, then the
+  short codes. Each link's accessible name and tooltip is the full name from
+  `languages` with the code, for example `English (en)`.
+- **Current page or section** (`aria-current`) takes `--accent` and a
+  trailing `*`, generated with empty alternative text. Nothing is filled or
+  inverted.
+- **Hover** turns the entry `--accent` and underlines it. **Focus** is the
+  shared 2px `--accent` outline.
+- **Theme toggle:** a pixel sun in day and moon at night, chosen by CSS from
+  `data-theme`. `aria-pressed` (pressed = night) is set by an inline script
+  right after the button, so it matches the theme at first paint.
+
+Tablets put the menus on a second row. At 720px and below the title takes
+its own row, the menus and the status area follow and share a row only when
+both fit, and the tagline, the `│` separators and the social links (which
+the footer repeats) are hidden.
+
+Text slots wrap or stay on one line by declaration. A menu label never breaks
+(`nowrap`); a row that runs out of room wraps whole items. Post titles and
+prose wrap anywhere, and meta lines wrap between fields. Code blocks and
+tables scroll in their own container.
+
+## Routes and patterns
+
+Every HTML page renders through `PageFrame`. `list`, `page` and `home` use
+`--page-width` (960px). `article` uses `--prose-width` (720px) and puts the
+meta line above the title. The `/en/` and `/zh-CN/` variants use the same
+pattern as the `zh` route.
+
+| Route | Pattern | Source |
+|---|---|---|
+| `/`, `/en/`, `/zh-CN/` | home | `layouts/Home.astro` |
+| `/page/N/`, `/en/page/N/`, `/zh-CN/page/N/` | list | `layouts/BlogList.astro` (pending: kept reachable as is until the home redesign settles pagination and redirects) |
+| `/blog/`, `/en/blog/`, `/zh-CN/blog/` | list | `layouts/BlogArchive.astro` |
+| `/blog/<slug>/`, `/en/blog/<slug>/`, `/zh-CN/blog/<slug>/` | article | `layouts/BlogPost.astro` |
+| `/about/`, `/en/about/`, `/zh-CN/about/` | page, shell session (`$ cat ~/about.md`, `hideTitle`) | `layouts/Page.astro` |
+| `/link-exchange` | page, shell session (`$ ls ~/friends`, then `$ ls ~/communities`, `hideTitle`) | `pages/link-exchange.astro` |
+| `/404` | page | `pages/404.astro` |
+
+Endpoints that are not HTML pages have no pattern: `/rss.xml`
+(`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)
+and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
+
+## Home: boot screen
+
+The home page reads like fastfetch at login. Above 800px the art and the info
+block sit side by side on one line grid (`--line-height`, 24px), the ring's
+top row on the title line, so row k of the art sits beside line k of the
+info; below that the art stacks above the info.
+
+- **Title:** `PageFrame` still draws the page's one h1 (`xzOS - For Coding
+  Life`), visually hidden (`home` sets `hideTitle` by default); the visible
+  title line is the info block's `xz@xzos`.
+- **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
+  (`src/lib/ascii-ring.ts`), on a fixed grid of 42 × 14 cells, one row per
+  line of the info block (the blank line and the palette row included),
+  and 30 × 10 at 420px and below. Cells are
+  8 × 24 (one character on a body line), so x is scaled three times y to
+  keep the ring round, and the box never changes size. The dashes are a flat band (half-width 0.17 across the ring,
+  0.08 along its axis, dash 42% of each 1/16 arc) with back faces culled, so
+  the gaps stay empty; the ramp ` -=+*#%@` has no light marks. The ring
+  leans back 14°–26° and swings up to 26° about the vertical axis, so the
+  drawing keeps all but one or two rows. Bright marks use `--accent`, dim marks
+  `--secondary`, the rest `--foreground`. The build renders frame 0; the
+  page script animates it at 12 fps while it is on screen and the tab is
+  visible. The art is `aria-hidden` with a visually hidden text alternative.
+- **Pause:** `[pause]` is a plain menu item at the bottom right of the boot
+  block, on the palette row's line, so it takes no line of its own. It has
+  `aria-pressed` and a constant accessible name, and the page script
+  unhides it; without script the page has no motion to stop. Pressed (paused) is marked like the status
+  line's current entry: `--accent` and a trailing `*`, never inverted. It
+  stops the logo and the cursor (`data-paused` on the frame).
+- **Info block:** fastfetch's layout: `xz@xzos` (names in `--accent`, `@`
+  plain), a rule of as many dashes, then `Key: value` lines with no column
+  alignment, keys in `--accent` and `:` and values in `--foreground`. Keys
+  are fastfetch's English names in every locale: OS, Init System, Kernel
+  (the Astro version that built the page), Uptime, Packages (the post
+  count), Shell, Theme, Font (the version in `tty-font.json`), Locale,
+  Links. The theme in use (it follows `data-theme`) and the current locale
+  are marked like the status line's current entry (`--accent`, trailing
+  `*`), never inverted. Links are plain values with a dotted 1px underline,
+  solid on hover and focus. After one blank line comes one row of six 3ch
+  swatches, no frame: the theme's own tokens (`--surface`,
+  `--border-color`, `--border-strong`, `--secondary`, `--accent`,
+  `--foreground`), so the row recolours with the theme. The shell's errors
+  use `--error`, the one colour outside that set.
+- **Recent posts:** one blank line (`--space-4`) after the fetch output, a
+  `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
+  (`OutputList`: dates never wrap; titles wrap under the title column), a
+  link to the locale's archive (the `→ ` stays off its underline), then `$`
+  and the blinking block cursor. With script, the shell (xzsh) takes that
+  prompt's place and prints its login message above its prompt: the
+  localized help hint (`shell.hint`) in `--secondary`. `clear` wipes it.
+- **Motion:** the logo and the cursor are the site's only motion, in both
+  themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
+  control and stops the blink. The cursor blinks only while the script has
+  shown the pause control (`data-pausable`), so without script it is
+  steady. The ring rewrites its `innerHTML` 12 times a second; at 4× CPU
+  throttling on `/` (1440px, day) five seconds of animation produced no long
+  task, about 6 ms of script and 1 ms of layout per ring frame, and the page
+  kept its 60 fps animation-frame rate.
+
+## Night-only rules that remain
+
+`src/styles/tty.css` turns motion off on every element, which a token cannot
+reach, and lets the home page's cursor blink through (the logo is drawn by
+script, which the reset does not touch). It also applies Shiki's per-span
+`--shiki-dark` colours, which Shiki writes inline. Icons are not night-only:
+every first-party UI icon is the same 16×16 pixel drawing in both themes
+(`PixelIcon`, see `docs/theme/tty-icons.md`); only its colour changes.
+`ThemeToggle.astro` shows the sun or moon from `data-theme` as a state
+indicator, so the icon is right at first paint, before any script runs. The
+favicon still switches from the day PNG to `/favicon-tty.svg` at night.

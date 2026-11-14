@@ -1,5 +1,5 @@
 ---
-source_hash: "622f3d09"
+source_hash: "658cda6c"
 title: "Honor Pad 2 Adaptation Plan"
 pubDate: "2018-06-22T00:00:00+08:00"
 description: "Plan description for adapting LineageOS to Honor Pad 2, including technical approach and participation methods (this plan was later canceled)."
@@ -28,4 +28,4 @@ QQ(Base64): MTA1NDg1NTU0MQ==
 
 Mail(Base64): MTA1NDg1NTU0MUBxcS5jb20=
 
-# Learn [How to Compile LineageOS](https://xzos.net/index.php/galaxy/2018/06/28/fedora-lineageos/)
+## Learn [How to Compile LineageOS](https://xzos.net/index.php/galaxy/2018/06/28/fedora-lineageos/)

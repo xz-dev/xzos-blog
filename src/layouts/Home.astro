@@ -1,0 +1,365 @@
+---
+/**
+ * 首页：开机画面。左边是转动的字符画标志，右边是 fastfetch 式的信息块，
+ * 下面是最近五篇文章，最后一行是闪烁光标的提示符。
+ * 用于 /, /en/, /zh-CN/；分页列表 /page/N 仍由 BlogList.astro 绘制。
+ */
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PageFrame from '../components/PageFrame.astro';
+import PixelArrowText from '../components/PixelArrowText.astro';
+import OutputList from '../components/term/OutputList.astro';
+import Prompt from '../components/term/Prompt.astro';
+import Shell from '../components/term/Shell.astro';
+import { getBlogPrefix, getHomePath, getHtmlLang } from '../i18n/collections';
+import { languages, type Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
+import { formatPostDate } from '../lib/post-date';
+import { SITE_DESCRIPTION, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS, THEME_NAMES } from '../consts';
+import font from '../../docs/theme/tty-font.json';
+import { formatUptime } from '../lib/uptime';
+import { LS } from '../lib/xzsh';
+
+interface Props {
+	lang: Lang;
+	/** The newest posts of this locale, newest first: the first LS are listed, up to LS_ALL feed the shell's `ls -a`. */
+	posts: any[];
+	/** Every post of this locale. */
+	postCount: number;
+}
+
+const { lang, posts, postCount } = Astro.props;
+const t = useTranslations(lang);
+const blogPrefix = getBlogPrefix(lang);
+const pageTitle = `${SITE_TITLE} - ${t('site.tagline')}`;
+const locales = Object.keys(languages) as Lang[];
+const links = [
+	{ name: 'GitHub', href: SOCIAL_LINKS.github },
+	{ name: 'Mastodon', href: SOCIAL_LINKS.mastodon },
+	{ name: 'Stack Overflow', href: SOCIAL_LINKS.stackOverflow },
+];
+// fastfetch's title and the rule under it, as long as the title.
+const [user, host] = ['xz', 'xzos'];
+const rule = '-'.repeat(`${user}@${host}`.length);
+// Every value is real: the Astro that built the page, the post count, the font manifest.
+const kernel = Astro.generator.replace(/^Astro v/, 'Astro ');
+// `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
+// The palette swatches: the site's own colour tokens, which the theme
+// toggle redefines, from the surface through the borders to the text.
+const palette = ['surface', 'border-color', 'border-strong', 'secondary', 'accent', 'foreground'];
+const allPosts = t('home.allPosts').replace(/^→\s*/, '');
+const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
+const datetime = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime;
+const recent = posts.slice(0, LS);
+---
+
+<!doctype html>
+<html lang={getHtmlLang(lang)}>
+	<head>
+		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
+		<style>
+			/* Two columns above 800px: the art, then the info block, both on the
+			 * body's line grid. The ring is a fixed character grid (--cols ×
+			 * --rows) of body-height rows, its top on the title line, so row k of
+			 * the art sits beside line k of the info and frames never move
+			 * anything. The wide ring has as many rows as the info block has
+			 * lines; the pause control sits at the block's bottom right. */
+			.boot {
+				position: relative;
+				display: grid;
+				grid-template-columns: max-content minmax(0, 1fr);
+				column-gap: var(--space-6);
+				row-gap: var(--line-height);
+				align-items: start;
+			}
+			.ring {
+				width: calc(var(--cols) * 1ch);
+				height: calc(var(--rows) * var(--line-height));
+				line-height: var(--line-height);
+				white-space: pre;
+				overflow: hidden;
+				color: var(--foreground);
+			}
+			.ring :global(.b) {
+				color: var(--accent);
+			}
+			.ring :global(.d) {
+				color: var(--secondary);
+			}
+			.ring-narrow {
+				display: none;
+			}
+			/* The pause control sits at the far right of the boot block's last line
+			 * (the palette row), so it takes no line of its own. */
+			.art {
+				width: max-content;
+			}
+			.ring-toggle {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				min-height: var(--line-height);
+				line-height: var(--line-height);
+			}
+			/* Plain text like a menu item; pressed (paused) is marked like the
+			 * status line's current entry: accent and a trailing `*`. */
+			.ring-toggle[aria-pressed="true"] {
+				color: var(--accent);
+			}
+			.ring-toggle[aria-pressed="true"]::after {
+				content: "*";
+				content: "*" / "";
+			}
+
+			/* fastfetch: `user@host`, a rule as long as it, then `Key: value`
+			 * lines with no column alignment; keys and the title's names in the
+			 * accent, `@`, `:` and values plain. Every line is one body line. */
+			.fetch p,
+			.fetch dl,
+			.fetch dd {
+				margin: 0;
+			}
+			.fetch-user b {
+				color: var(--accent);
+			}
+			.fetch dt,
+			.fetch dd {
+				display: inline;
+			}
+			.fetch dt {
+				color: var(--accent);
+			}
+			.fetch dt span,
+			.fetch dd {
+				color: var(--foreground);
+			}
+			.fetch dd > span {
+				white-space: nowrap;
+			}
+			/* Links read as plain values with a dotted hairline underline that
+			 * turns solid on hover and focus; no fill. */
+			.fetch a {
+				color: var(--foreground);
+				text-decoration-style: dotted;
+				text-decoration-thickness: var(--hairline);
+			}
+			.fetch a:hover,
+			.fetch a:focus-visible {
+				text-decoration-style: solid;
+			}
+			/* The current theme and language are marked like the status line's
+			 * current entry: the accent and a trailing `*` with empty alternative
+			 * text. Screen readers get the state in words instead: aria-current on
+			 * the locale link, and on the theme a visually hidden "current" that
+			 * shows under the same selectors as the marker, so it follows
+			 * data-theme without script. Inline-block keeps a link's underline
+			 * off the marker. */
+			.fetch a[aria-current] {
+				color: var(--accent);
+			}
+			.fetch a[aria-current]::after {
+				content: "*";
+				content: "*" / "";
+				display: inline-block;
+			}
+			:root:not([data-theme="tty"]) .fetch-theme-day,
+			:root[data-theme="tty"] .fetch-theme-night {
+				color: var(--accent);
+			}
+			:root:not([data-theme="tty"]) .fetch-theme-day::after,
+			:root[data-theme="tty"] .fetch-theme-night::after {
+				content: "*";
+				content: "*" / "";
+			}
+			.fetch-current {
+				display: none;
+			}
+			:root:not([data-theme="tty"]) .fetch-theme-day .fetch-current,
+			:root[data-theme="tty"] .fetch-theme-night .fetch-current {
+				display: inline;
+			}
+			.sep {
+				color: var(--secondary);
+			}
+			/* The theme's palette after one blank line, like fastfetch's colour
+			 * row: one line high, each swatch three cells wide, no frame. */
+			.palette {
+				display: grid;
+				grid-template-columns: repeat(6, 3ch);
+				grid-auto-rows: var(--line-height);
+				margin-top: var(--line-height);
+				width: max-content;
+			}
+
+			/* The ls prompt and its rows are the shared terminal primitives
+			 * (terminal.css); the prompt's top margin is the one blank line after
+			 * the fetch output. */
+			.all-posts {
+				display: inline-block;
+				margin-top: var(--space-2);
+			}
+			/* The arrow and the space after it stay outside the underline: an
+			 * inline-block takes no decoration from its link. */
+			.all-posts-arrow {
+				display: inline-block;
+				margin-inline-end: 1ch;
+			}
+
+			@media (max-width: 800px) {
+				.boot {
+					grid-template-columns: minmax(0, 1fr);
+				}
+			}
+			@media (max-width: 420px) {
+				.ring-wide {
+					display: none;
+				}
+				.ring-narrow {
+					display: block;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<PageFrame title={pageTitle} pattern="home">
+			<div class="boot" data-ring-root>
+				<div class="art">
+					<p class="sr-only">{t('home.logoAlt')}</p>
+					{Object.entries(RING_GRIDS).map(([name, grid]) => (
+						<div
+							class={`ring ring-${name}`}
+							aria-hidden="true"
+							data-cols={grid.cols}
+							data-rows={grid.rows}
+							style={`--cols: ${grid.cols}; --rows: ${grid.rows}`}
+							set:html={ringHtml(0, grid)}
+						/>
+					))}
+					<button type="button" class="menu-item ring-toggle" aria-pressed="false" aria-label={t('home.pauseLabel')} hidden>
+						<span aria-hidden="true">[</span>{t('home.pause')}<span aria-hidden="true">]</span>
+					</button>
+				</div>
+
+				<div class="fetch">
+					<p class="fetch-user"><b>{user}</b>@<b>{host}</b></p>
+					<p aria-hidden="true">{rule}</p>
+					<dl>
+						<div><dt>OS<span>:</span></dt> <dd>{SITE_TITLE}</dd></div>
+						<div><dt>Init System<span>:</span></dt> <dd>OpenRC</dd></div>
+						<div><dt>Kernel<span>:</span></dt> <dd>{kernel}</dd></div>
+						<div><dt>Uptime<span>:</span></dt> <dd><span data-uptime={SITE_SINCE}>{formatUptime(SITE_SINCE, Date.now())}</span></dd></div>
+						<div><dt>Packages<span>:</span></dt> <dd>{t('home.packages', { count: postCount })}</dd></div>
+						<div><dt>Shell<span>:</span></dt> <dd>xzsh</dd></div>
+						<div><dt>Theme<span>:</span></dt> <dd><span class="fetch-theme-day">{THEME_NAMES.day} [day]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span>, <span class="fetch-theme-night">{THEME_NAMES.night} [night]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span></dd></div>
+						<div><dt>Font<span>:</span></dt> <dd>GNU {font.family} {font.version}</dd></div>
+						{/* One plain space after the key, as fastfetch prints it; each item after the first opens
+						    with a plain space, where the line may break, then `· ` and the link. */}
+						<div><dt>Locale<span>:</span></dt> <dd>{locales.map((locale, index) => (
+							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={getHomePath(locale)} hreflang={locale} aria-current={locale === lang ? 'page' : undefined}>{languages[locale]}</a></span></>
+						))}</dd></div>
+						<div><dt>Links<span>:</span></dt> <dd>{links.map((link, index) => (
+							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
+						))}</dd></div>
+					</dl>
+					<div class="palette" aria-hidden="true">
+						{palette.map((token) => <span style={`background: var(--${token})`} />)}
+					</div>
+				</div>
+			</div>
+
+			<section class="recent" aria-labelledby="recent-heading">
+				<h2 id="recent-heading" class="sr-only">{t('home.recent')}</h2>
+				<Prompt command={t('term.recent', { count: recent.length })} />
+				<OutputList
+					rows={recent.map((post) => ({
+						left: { text: day(post), datetime: datetime(post) },
+						right: { text: post.data.title, href: `${blogPrefix}/${post.id}/` },
+					}))}
+				/>
+				<a class="all-posts" href={`${blogPrefix}/`}><span class="all-posts-arrow"><PixelArrowText text="→" /></span>{allPosts}</a>
+				<Prompt cursor blink />
+				<Shell lang={lang} posts={posts.map((post) => ({ date: day(post), datetime: datetime(post), title: post.data.title, href: `${blogPrefix}/${post.id}/` }))} />
+			</section>
+		</PageFrame>
+		<Footer />
+
+		<script>
+			// Animates the ring at RING_FPS while it is on screen, the tab is
+			// visible, motion is allowed and the reader has not paused it. Frame 0
+			// is the server-rendered one; reduced motion keeps it and hides the
+			// pause control.
+			import { RING_FPS, ringHtml } from '../lib/ascii-ring';
+			import { formatUptime } from '../lib/uptime';
+
+			// The build-time uptime goes stale; recount it now and every minute.
+			const uptime = document.querySelector<HTMLElement>('[data-uptime]');
+			if (uptime) {
+				const tick = () => {
+					uptime.textContent = formatUptime(uptime.dataset.uptime!, Date.now());
+				};
+				tick();
+				setInterval(tick, 60_000);
+			}
+
+			const root = document.querySelector<HTMLElement>('[data-ring-root]');
+			const button = root?.querySelector<HTMLButtonElement>('.ring-toggle');
+			if (root && button) {
+				const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+				const shown = new Set<HTMLElement>();
+				let paused = false;
+				let time = 0;
+				let last = 0;
+				let frame = 0;
+
+				const draw = (now: number) => {
+					frame = requestAnimationFrame(draw);
+					// 5ms of slack so a 60Hz display lands on every fifth frame, not the sixth.
+					if (last && now - last < 1000 / RING_FPS - 5) return;
+					// A long gap (a stalled tab) advances one frame, not a jump.
+					if (last) time += Math.min(now - last, 250) / 1000;
+					last = now;
+					for (const art of shown) {
+						art.innerHTML = ringHtml(time, { cols: Number(art.dataset.cols), rows: Number(art.dataset.rows) });
+					}
+				};
+				const main = root.closest('main');
+				const update = () => {
+					button.hidden = reduce.matches;
+					// The cursor blinks only while this control is there to stop it.
+					main?.toggleAttribute('data-pausable', !button.hidden);
+					const run = !paused && !reduce.matches && !document.hidden && shown.size > 0;
+					if (run && !frame) {
+						last = 0;
+						frame = requestAnimationFrame(draw);
+					} else if (!run && frame) {
+						cancelAnimationFrame(frame);
+						frame = 0;
+					}
+				};
+
+				const observer = new IntersectionObserver((entries) => {
+					for (const entry of entries) {
+						const art = entry.target as HTMLElement;
+						if (entry.isIntersecting) shown.add(art);
+						else shown.delete(art);
+					}
+					update();
+				});
+				root.querySelectorAll<HTMLElement>('.ring').forEach((art) => observer.observe(art));
+				button.addEventListener('click', () => {
+					paused = !paused;
+					button.setAttribute('aria-pressed', String(paused));
+					// Pausing stops the cursor too (WCAG 2.2.2): [data-paused] in terminal.css.
+					main?.toggleAttribute('data-paused', paused);
+					update();
+				});
+				document.addEventListener('visibilitychange', update);
+				reduce.addEventListener('change', update);
+				update();
+			}
+		</script>
+	</body>
+</html>

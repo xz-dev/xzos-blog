@@ -34,14 +34,34 @@ test('code is a multi-hue fluorescent exception, not green-only syntax', () => {
   });
   assert.equal(new Set(accents.map(c => Math.floor(c.hue / 45))).size, 4, 'four genuinely different accent hue families');
   assert.ok(accents.every(c => c.saturation >= 0.8), 'bright saturated neon-style accents, not muted pastels');
-  assert.equal(active.palette['--foreground'], '#31fea8', 'ordinary page UI retains the selected green');
+  assert.equal(active.palette['--foreground'], '#d4ff3a', 'ordinary page UI uses the yellow-green phosphor');
   assert.notEqual(active.syntax.foreground, active.palette['--foreground'], 'code has its own foreground');
   assert.match(config, /name:\s*'tty-neon'/);
-  assert.match(tty, new RegExp(`color:\\s*var\\(--shiki-dark,\\s*${active.syntax.foreground}\\)`));
-  assert.match(tty, /font-synthesis:\s*none/);
+  // Inline code takes the code foreground through a token, not a night rule.
+  assert.doesNotMatch(tty.replace(/\/\*[\s\S]*?\*\//g, ''), /(?:^|\s)code\s*\{/);
+  assert.match(read('../src/styles/tokens.css'), /:root\[data-theme="tty"\]\s*\{[^}]*--code-color:\s*var\(--code-foreground\);/);
+  assert.match(read('../src/styles/terminal.css'), /\ncode,\s*kbd\s*\{[^}]*color:\s*var\(--code-color\);/);
+  assert.equal(active.palette['--code-foreground'], active.syntax.foreground);
+  assert.match(read('../src/styles/terminal.css'), /font-synthesis:\s*none/);
 });
 
 test('night marked text uses clear reverse video, like text selection', () => {
-  assert.match(tty, /:root\[data-theme="tty"\] mark\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
-  assert.match(tty, /:root\[data-theme="tty"\] ::selection\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
+  const base = read('../src/styles/terminal.css');
+  const night = read('../src/styles/tokens.css').match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
+  assert.match(base, /\nmark\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
+  assert.match(base, /\n::selection\s*\{[^}]*background:\s*var\(--selection-bg\);[^}]*color:\s*var\(--selection-fg\);/);
+  assert.match(night, /--selection-bg:\s*var\(--accent\);/);
+  assert.match(night, /--selection-fg:\s*var\(--background\);/);
+});
+
+test('day syntax keeps every colour at WCAG AA on the day code surface', async () => {
+  const { daySyntax, daySyntaxTheme } = await import('../src/lib/syntax-day.ts');
+  const tokens = read('../src/styles/tokens.css');
+  const surface = tokens.match(/:root\s*\{[^}]*--surface:\s*(#[\da-f]{6});/i)![1];
+  assert.equal(daySyntax.background, surface, 'the theme describes the surface pre actually paints');
+  assert.equal(daySyntaxTheme.colors['editor.background'], surface);
+  const used = new Set<string>([daySyntaxTheme.colors['editor.foreground']]);
+  for (const rule of daySyntaxTheme.tokenColors) if ('foreground' in rule.settings) used.add(rule.settings.foreground!);
+  for (const color of used) assert.ok(contrast(color, surface) >= 4.5, `${color} on ${surface}: ${contrast(color, surface).toFixed(2)}`);
+  assert.match(config, /light:\s*daySyntaxTheme/);
 });

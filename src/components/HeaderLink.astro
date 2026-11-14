@@ -1,38 +1,18 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { getNavCurrent } from '../i18n/utils';
 
-type Props = HTMLAttributes<'a'>;
+type Props = HTMLAttributes<'a'> & {
+	/** The window number shown before the label, as on a tmux status line. */
+	index: number;
+};
 
-const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+const { href, index, class: className, ...props } = Astro.props;
+// Compared without the language prefix and trailing slash, so /en/blog/,
+// /zh-CN/blog/foo/ and /page/2/ mark their section too.
+const current = getNavCurrent(Astro.url.pathname, String(href ?? ''));
 ---
 
-<a href={href} class:list={[className, { active: isActive }]} {...props}>
-	<slot />
+<a href={href} class:list={[className, 'menu-item']} aria-current={current} {...props}>
+	<span class="menu-label" aria-hidden="true">{index}:</span><slot />
 </a>
-<style>
-	a {
-		display: inline-block;
-		padding: 0.5em 1em;
-		color: var(--foreground);
-		text-decoration: none;
-		border: 2px solid transparent;
-		transition: all 0.2s ease;
-		font-weight: 500;
-	}
-
-	a:hover {
-		background: var(--accent);
-		color: var(--background);
-		border-color: var(--accent);
-	}
-
-	a.active {
-		background: var(--accent);
-		color: var(--background);
-		border-color: var(--accent);
-		font-weight: 700;
-	}
-</style>

@@ -7,7 +7,7 @@ category: "日常"
 tags: ["日常"]
 ---
 
-# 新的域名， 新的开始
+## 新的域名， 新的开始
 
 New domain name, new start
 

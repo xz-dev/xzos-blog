@@ -8,6 +8,15 @@ interface Props {
 
 const { date, source } = Astro.props;
 const formatted = formatPostDate(date, source);
+// The day and the clock never break inside, but a narrow column may wrap
+// between them.
+const [day, ...clock] = formatted.text.split(' ');
 ---
 
-<time datetime={formatted.datetime}>{formatted.text}</time>
+<time datetime={formatted.datetime}><span>{day}</span>{clock.length > 0 && <> <span>{clock.join(' ')}</span></>}</time>
+
+<style>
+	time span {
+		white-space: nowrap;
+	}
+</style>

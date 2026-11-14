@@ -27,4 +27,4 @@ QQ(Base64): MTA1NDg1NTU0MQ==
 
 Mail(Base64): MTA1NDg1NTU0MUBxcS5jb20=
 
-# 教你[如何编译 LineageOS](https://xzos.net/index.php/galaxy/2018/06/28/fedora-lineageos/)
+## 教你[如何编译 LineageOS](https://xzos.net/index.php/galaxy/2018/06/28/fedora-lineageos/)

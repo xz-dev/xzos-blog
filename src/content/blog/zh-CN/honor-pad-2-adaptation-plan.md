@@ -1,5 +1,5 @@
 ---
-source_hash: "622f3d09"
+source_hash: "658cda6c"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
@@ -31,4 +31,4 @@ QQ(Base64): MTA1NDg1NTU0MQ==
 
 Mail(Base64): MTA1NDg1NTU0MUBxcS5jb20=
 
-# 教你[如何编译 LineageOS](https://xzos.net/index.php/galaxy/2018/06/28/fedora-lineageos/)
+## 教你[如何编译 LineageOS](https://xzos.net/index.php/galaxy/2018/06/28/fedora-lineageos/)

@@ -1,0 +1,41 @@
+---
+/**
+ * 两列对齐的命令输出（`left  right`），如 `ls -t` 的日期与标题、`ls ~/friends` 的名字与主机。
+ * 左列宽度取最长一项的终端字宽（cellWidth，宽字符算 2ch），所以左列从不换行；右列占满余下宽度，在列内换行。
+ * 每格是一个 .term-cell，列宽在格子上，里面的链接只有文字那么宽，所以列里的空白处不是链接。
+ * 有链接的格子用正文色，纯文本格子用 --secondary。stack 为真时，右列也不换行：
+ * 一行放不下最长的 `left  right` 时，整张表一起改为右列另起一行、缩进 2ch。
+ */
+import { cellWidth } from '../../lib/term-width';
+import type { Cell } from '../../lib/xzsh';
+
+interface Props {
+	rows: { left: Cell; right: Cell }[];
+	stack?: boolean;
+	/** 列表的可访问名称：画面上给它命名的提示符对读屏器隐藏。 */
+	label?: string;
+}
+
+const { rows, stack = false, label } = Astro.props;
+const widest = (cells: Cell[]) => Math.max(0, ...cells.map((cell) => cellWidth(cell.text)));
+const left = widest(rows.map((row) => row.left));
+const right = widest(rows.map((row) => row.right));
+---
+
+<ul class:list={['term-output', stack && 'term-output-stack']} style={`--term-left: ${left}ch; --term-right: ${right}ch`} aria-label={label}>
+	{rows.map(({ left, right }) => (
+		<li>
+			{[left, right].map((cell) => (
+				<span class="term-cell">
+					{cell.href ? (
+						<a href={cell.href} {...(cell.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{cell.text}</a>
+					) : cell.datetime ? (
+						<time datetime={cell.datetime}>{cell.text}</time>
+					) : (
+						cell.text
+					)}
+				</span>
+			))}
+		</li>
+	))}
+</ul>

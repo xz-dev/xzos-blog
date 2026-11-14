@@ -1,5 +1,5 @@
 ---
-source_hash: "d867e8b3"
+source_hash: "2764707d"
 source_lang: "zh"
 target_lang: "zh-CN"
 is_copy: true
@@ -11,7 +11,7 @@ category: "日常"
 tags: ["日常"]
 ---
 
-# 新的域名， 新的开始
+## 新的域名， 新的开始
 
 New domain name, new start
 

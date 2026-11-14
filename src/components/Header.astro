@@ -1,9 +1,10 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SOCIAL_LINKS } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import PixelIcon from './PixelIcon.astro';
+import { navItems } from '../i18n/ui';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
@@ -14,51 +15,32 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 <header>
 	<nav>
 		<div class="site-title">
-			<img src="/dotted_circle.png" alt="xzOS logo" class="site-logo tty-original-icon" />
-			<PixelIcon name="logo" class="tty-site-logo" label="xzOS logo" />
-			<div class="title-text">
-				<h2><a href="/">{SITE_TITLE}</a></h2>
-				<p class="tagline">For Coding Life</p>
-			</div>
+			<PixelIcon name="logo" class="site-logo" label={t('site.logoAlt')} />
+			<h2><a class="menu-item" href={`${basePath}/`}>{SITE_TITLE}</a></h2>
+			<p class="tagline">{t('site.tagline')}</p>
 		</div>
+		<span class="status-sep brand-sep" aria-hidden="true">│</span>
 		<div class="internal-links">
-			<HeaderLink href={`${basePath}/`}>{t('nav.home')}</HeaderLink>
-			<HeaderLink href={`${basePath}/blog`}>{t('nav.blog')}</HeaderLink>
-			<HeaderLink href={`${basePath}/about`}>{t('nav.about')}</HeaderLink>
-			<HeaderLink href="/link-exchange">{t('nav.links')}</HeaderLink>
+			{navItems.map((item, index) => (
+				<HeaderLink index={index} href={item.localized ? `${basePath}${item.path}` : item.path}>{t(item.key)}</HeaderLink>
+			))}
 		</div>
 		<div class="right-section">
 			<LanguageSwitcher />
+			<span class="status-sep" aria-hidden="true">│</span>
 			<ThemeToggle />
+			<span class="status-sep" aria-hidden="true">│</span>
 			<div class="social-links">
-				<a href="https://fosstodon.org/@xzdev" target="_blank">
-					<span class="sr-only">Follow on Mastodon</span>
-					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
-						><path
-							fill="currentColor"
-							d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z"
-						></path></svg
-					>
+				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.mastodon} target="_blank">
+					<span class="sr-only">{t('social.mastodon')}</span>
 					<PixelIcon name="mastodon" />
 				</a>
-				<a href="https://github.com/xz-dev" target="_blank">
-					<span class="sr-only">Go to GitHub</span>
-					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
-						><path
-							fill="currentColor"
-							d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-						></path></svg
-					>
+				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.github} target="_blank">
+					<span class="sr-only">{t('social.github')}</span>
 					<PixelIcon name="github" />
 				</a>
-				<a href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
-					<span class="sr-only">Stack Overflow Profile</span>
-					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
-						><path
-							fill="currentColor"
-							d="M12.658 14.577v-4.27h1.423V16H1.23v-5.693h1.42v4.27h10.006zm-8.583-1.423h7.16V11.73h-7.16v1.424zm.173-3.235l6.987 1.46.3-1.38L4.55 8.54l-.302 1.38zm.906-3.37l6.47 3.02.602-1.3-6.47-3.02-.602 1.29zm1.81-3.19l5.478 4.57.906-1.08L7.87 2.28l-.906 1.08zM10.502 0L9.338.863l4.27 5.735 1.164-.862L10.502 0z"
-						></path></svg
-					>
+				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.stackOverflow} target="_blank">
+					<span class="sr-only">{t('social.stackOverflow')}</span>
 					<PixelIcon name="stack-overflow" />
 				</a>
 			</div>
@@ -66,137 +48,148 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	</nav>
 </header>
 <style>
+	/* A terminal status line, like tmux's: one flat row of plain text on the
+	 * surface colour with a structural bottom edge, the same in both themes.
+	 * Menus read `0:首页 1:文章*`, the language field `lang: zh* en zh-CN`;
+	 * nothing is boxed, filled or bevelled. Every entry is a .menu-item
+	 * (terminal.css). The block padding leaves room for the focus ring. */
 	header {
 		margin: 0;
-		padding: 1em;
-		background: var(--background);
-		border-bottom: 2px solid var(--accent);
+		padding: var(--space-1) var(--space-3);
+		background: var(--surface);
+		border-block-end: var(--hairline) solid var(--border-strong);
 	}
 
 	nav {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1em;
-		max-width: 1200px;
+		gap: var(--space-3);
+		max-width: var(--header-width);
 		margin: 0 auto;
 	}
 
 	.site-title {
 		display: flex;
 		align-items: center;
-		gap: 1em;
+		gap: var(--space-1);
 	}
 
-	.site-logo {
-		width: 48px;
-		height: 48px;
-		border: none;
-		padding: 0;
-	}
-
-	.title-text {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25em;
+	/* The logo is a glyph of the status line: the same pixel drawing in both
+	 * themes at one grid unit (16px, the text size, so every pixel is one
+	 * CSS pixel), centred on the row like the labels and coloured by the
+	 * accent token. */
+	.site-title :global(.site-logo) {
+		width: var(--pixel-icon-size);
+		height: var(--pixel-icon-size);
+		color: var(--accent);
 	}
 
 	h2 {
 		margin: 0;
-		font-size: 1.25em;
-		font-weight: 700;
-	}
-
-	h2 a {
-		color: var(--foreground);
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	h2 a:hover {
-		color: var(--accent);
+		white-space: nowrap;
+		font-size: var(--font-size);
+		line-height: var(--line-height);
 	}
 
 	.tagline {
 		margin: 0;
-		font-size: 0.75em;
+		margin-inline-start: var(--space-1);
+		font-size: var(--text-meta);
+		line-height: var(--leading-meta);
+		color: var(--secondary);
+		white-space: nowrap;
+	}
+
+	/* Menus follow the site name; the status area (languages, theme, social
+	 * links) sits at the right end. The status line is a character grid:
+	 * items carry no inline padding, so the --cell-gap (2ch) between two
+	 * items is their distance edge to edge, and the groups of the status area
+	 * are split by a `│` with a --cell-gap on each side, as tmux draws it. */
+	.internal-links,
+	.right-section,
+	.social-links {
+		display: flex;
+		align-items: center;
+		gap: var(--cell-gap);
+	}
+
+	.internal-links :global(.menu-item),
+	.right-section :global(.menu-item) {
+		padding-inline: 0;
+	}
+
+	/* An item that can be current reserves the cell of its `*`: the others
+	 * draw it invisibly, so marking one never moves its neighbours and the
+	 * columns stay put from page to page. */
+	.internal-links :global(.menu-item)::after,
+	.right-section :global(.lang-link)::after {
+		content: "*";
+		content: "*" / "";
+		visibility: hidden;
+	}
+
+	.internal-links :global(.menu-item[aria-current])::after,
+	.right-section :global(.lang-link[aria-current])::after {
+		visibility: visible;
+	}
+
+	/* Icons are glyphs of the grid: 16px (Unifont's cell height) and two
+	 * cells wide, centred on the row like the labels, in both themes. */
+	.right-section :global(#theme-toggle),
+	.social-links :global(.menu-item-icon) {
+		width: 2ch;
+		min-width: 0;
+	}
+
+	.social-links :global(.menu-item-icon svg) {
+		width: var(--pixel-icon-size);
+		height: var(--pixel-icon-size);
+	}
+
+	.status-sep {
 		color: var(--secondary);
 	}
 
+	/* Text slots: an item's label never breaks (white-space: nowrap on
+	 * .menu-item), the title and tagline stay on one line, and a row that
+	 * runs out of room wraps whole items onto the next line instead of
+	 * overflowing. The tagline is dropped on phones. */
 	.internal-links {
-		display: flex;
-		gap: 0.5em;
 		flex: 1;
-		justify-content: center;
-		align-items: center;
+		flex-wrap: wrap;
+		min-width: 0;
 	}
 
-	.right-section {
-		display: flex;
-		align-items: center;
-		gap: 1em;
-	}
-
-	.social-links {
-		display: flex;
-		gap: 0.5em;
-	}
-
-	.social-links a {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		padding: 8px;
-		color: var(--accent);
-		border: 2px solid var(--accent);
-		transition: all 0.2s ease;
-	}
-
-	.social-links a:hover {
-		background: var(--accent);
-		color: var(--background);
-	}
-
-	.social-links a svg {
-		width: 100%;
-		height: 100%;
-	}
-
+	/* The site name and the menus are two groups, split like the status
+	 * area's; once the menus wrap to a row of their own the split goes. */
 	@media (max-width: 960px) {
 		nav {
 			flex-wrap: wrap;
 		}
+
+		.brand-sep {
+			display: none;
+		}
 	}
 
 	/* Tablet: the links take a full row below the title and right section. A
-	 * `flex: 1` box alone has a 0% basis that ignores `width: 100%`, so once
-	 * tty.css lets the links wrap, it would stack them in a narrow column. */
+	 * `flex: 1` box alone has a 0% basis that ignores `width: 100%`, so if the
+	 * links wrap, it would stack them in a narrow column. */
 	@media (720px < width <= 960px) {
 		.internal-links {
 			order: 3;
 			flex-basis: 100%;
-			justify-content: flex-start;
 		}
 	}
 
-	/* Phone: rows follow the source order, so focus moves the way the eye does:
-	 * logo and title, then the navigation, then the language links with the
-	 * theme toggle at the end. The last two share a row when they fit. */
+	/* Phone: the status line wraps into rows of the same plain text, in source
+	 * order, so focus moves the way the eye does: logo and title, then the
+	 * menus, then the language field with the theme toggle at the end. */
 	@media (max-width: 720px) {
-		header {
-			padding: 0.75rem 1rem;
-		}
-
 		nav {
 			justify-content: flex-start;
-			gap: 0.5rem;
-		}
-
-		/* terminal.css gives every img a 25px block margin, doubling the row. */
-		.site-logo {
-			margin: 0;
+			gap: var(--space-1);
 		}
 
 		.site-title {
@@ -205,43 +198,19 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 
 		.internal-links {
 			flex: 0 1 auto;
-			flex-wrap: wrap;
-			justify-content: flex-start;
 		}
 
 		.right-section {
 			flex: 1 1 auto;
 		}
 
-		.right-section :global(.language-switcher) {
-			flex-wrap: wrap;
+		.status-sep {
+			display: none;
 		}
 
 		.right-section :global(#theme-toggle) {
 			flex: none;
-			margin-left: auto;
-		}
-
-		.internal-links,
-		.right-section,
-		.right-section :global(.language-switcher) {
-			gap: 0.5rem;
-		}
-
-		/* Every control in a row is at least as tall as the toggle; min-height
-		 * lets enlarged text grow the control instead of spilling out. */
-		.internal-links :global(a),
-		.right-section :global(.lang-link) {
-			display: inline-flex;
-			align-items: center;
-			min-height: 40px;
-			padding-block: 0;
-			white-space: nowrap;
-		}
-
-		/* Narrower than the desktop 1em so the four English links fit one 360px row. */
-		.internal-links :global(a) {
-			padding-inline: 0.75em;
+			margin-inline-start: auto;
 		}
 
 		.social-links {

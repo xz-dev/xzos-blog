@@ -1,0 +1,301 @@
+---
+/**
+ * 首页最后一行的迷你 shell（xzsh）：有 JS 时取代前面那行静态的 `$ █` 提示符，
+ * 行高不变，但上方多出一行登录提示（help 提示），后面的内容随之下移；
+ * 没有 JS 时保持隐藏，页面与原来一样。
+ * 命令表在 src/lib/xzsh.ts；这里只负责绘制输出、编辑键与执行动作。
+ */
+import { getBlogPrefix, getHomePath } from '../../i18n/collections';
+import { languages, type Lang, type UIKey } from '../../i18n/ui';
+import { useTranslations } from '../../i18n/utils';
+import { SITE_HOST, SITE_SINCE } from '../../consts';
+import { COMMANDS, type ShellData } from '../../lib/xzsh';
+import Cursor from './Cursor.astro';
+
+interface Props {
+	lang: Lang;
+	/** Newest first, at most LS_ALL. */
+	posts: ShellData['posts'];
+}
+
+const { lang, posts } = Astro.props;
+const t = useTranslations(lang);
+const base = lang === 'zh' ? '' : `/${lang}`;
+const data: ShellData = {
+	lang,
+	homes: Object.fromEntries((Object.keys(languages) as Lang[]).map((locale) => [locale, getHomePath(locale)])),
+	blog: `${getBlogPrefix(lang)}/`,
+	about: `${base}/about`,
+	links: '/link-exchange',
+	host: SITE_HOST,
+	since: SITE_SINCE,
+	posts,
+	allPosts: t('home.allPosts').replace(/^→\s*/, ''),
+	help: Object.fromEntries(COMMANDS.map((name) => [name, t(`shell.help.${name}` as UIKey)])),
+	keys: t('shell.keys'),
+};
+---
+
+<div class="shell" data-shell={JSON.stringify(data)} hidden>
+	{/* The login message: what a shell prints once above its first prompt.
+	    `clear` wipes it with the rest of the screen. */}
+	<div class="shell-out" aria-live="polite"><p class="shell-motd">{t('shell.hint')}</p></div>
+	<p class="term-prompt shell-prompt">
+		<span aria-hidden="true">$</span>
+		<span class="shell-field">
+			<input
+				class="shell-input"
+				type="text"
+				aria-label={t('shell.label')}
+				aria-describedby="shell-hint"
+				autocomplete="off"
+				autocapitalize="none"
+				spellcheck="false"
+				enterkeyhint="go"
+			/>
+			<Cursor blink />
+		</span>
+	</p>
+	<p id="shell-hint" class="sr-only">{t('shell.hint')}</p>
+</div>
+
+<style>
+	/* Output sits one blank line under the posts, like the prompt it pushes
+	 * down; nodes the script adds have no scope attribute, hence :global. */
+	.shell-out {
+		margin-top: var(--space-4);
+	}
+	.shell-out:empty {
+		display: none;
+	}
+	.shell-out :global(.shell-text) {
+		margin: 0;
+		color: var(--foreground);
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
+	.shell-motd {
+		margin: 0;
+		color: var(--secondary);
+	}
+	.shell-out :global(.shell-error) {
+		color: var(--error);
+	}
+	.shell-out :global(.shell-arrow) {
+		display: inline-block;
+		margin-inline-end: 1ch;
+	}
+
+	/* The input is the prompt's command: no frame, the line's height and
+	 * font, so swapping it in for the static prompt moves nothing. The focus
+	 * ring is drawn around the whole line. */
+	.shell-prompt {
+		display: flex;
+		column-gap: 1ch;
+	}
+	.shell-prompt:focus-within {
+		outline: var(--focus-width) solid var(--accent);
+		outline-offset: var(--focus-offset);
+	}
+	.shell-field {
+		position: relative;
+		display: flex;
+		flex: 1;
+		min-width: 0;
+	}
+	.shell-input {
+		flex: 1;
+		min-width: 0;
+		height: var(--line-height);
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: var(--foreground);
+		font: inherit;
+		line-height: inherit;
+		caret-color: var(--foreground);
+		caret-shape: block;
+	}
+	.shell-input:focus-visible {
+		outline: none;
+	}
+	/* The block cursor stands in for the caret until the line is focused or
+	 * holds text; then the browser's caret takes over. */
+	.shell-field :global(.cursor) {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		pointer-events: none;
+	}
+	.shell-input:focus + :global(.cursor),
+	.shell-field[data-filled] :global(.cursor) {
+		display: none;
+	}
+	/* The caret stops blinking where the cursor would. */
+	@media (prefers-reduced-motion: reduce) {
+		.shell-input {
+			caret-animation: manual;
+		}
+	}
+	:global([data-paused]) .shell-input {
+		caret-animation: manual;
+	}
+</style>
+
+<script>
+	import { complete, run, type Line, type ShellData } from '../../lib/xzsh';
+	import { cellWidth } from '../../lib/term-width';
+
+	// Keep about this many output lines; older commands scroll away whole.
+	const MAX_LINES = 50;
+
+	const shell = document.querySelector<HTMLElement>('[data-shell]');
+	const input = shell?.querySelector<HTMLInputElement>('.shell-input');
+	const out = shell?.querySelector<HTMLElement>('.shell-out');
+	if (shell && input && out) {
+		const data = JSON.parse(shell.dataset.shell!) as ShellData;
+		const field = input.parentElement!;
+		const root = document.documentElement;
+		const history: string[] = [];
+		let position = 0;
+		let draft = '';
+		let lastTab: string | null = null;
+
+		const node = <K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text = '') => {
+			const element = document.createElement(tag);
+			if (className) element.className = className;
+			if (text) element.textContent = text;
+			return element;
+		};
+		const echo = (command: string) => {
+			const line = node('p', 'term-prompt');
+			line.dataset.echo = '';
+			const dollar = node('span', '', '$ ');
+			dollar.setAttribute('aria-hidden', 'true');
+			line.append(dollar, node('span', 'term-command', command));
+			return line;
+		};
+		const draw = (line: Line): HTMLElement => {
+			if (line.type === 'text') return node('p', line.error ? 'shell-text shell-error' : 'shell-text', line.text);
+			if (line.type === 'link') {
+				const p = node('p', 'shell-text');
+				const arrow = node('span', 'shell-arrow', '→');
+				arrow.setAttribute('aria-hidden', 'true');
+				const link = node('a', '', line.text);
+				link.href = line.href;
+				p.append(arrow, link);
+				return p;
+			}
+			const list = node('ul', 'term-output');
+			const widest = (side: 'left' | 'right') => Math.max(0, ...line.rows.map((row) => cellWidth(row[side].text)));
+			list.style.setProperty('--term-left', `${widest('left')}ch`);
+			list.style.setProperty('--term-right', `${widest('right')}ch`);
+			for (const row of line.rows) {
+				const item = node('li');
+				// The same markup as OutputList: the cell carries the width, a link
+				// inside it only its text.
+				for (const cell of [row.left, row.right]) {
+					const wrapper = node('span', 'term-cell');
+					if (cell.href) {
+						const link = node('a', '', cell.text);
+						link.href = cell.href;
+						wrapper.append(link);
+					} else if (cell.datetime) {
+						const time = node('time', '', cell.text);
+						time.dateTime = cell.datetime;
+						wrapper.append(time);
+					} else {
+						wrapper.textContent = cell.text;
+					}
+					item.append(wrapper);
+				}
+				list.append(item);
+			}
+			return list;
+		};
+		const print = (command: string, lines: (Line | HTMLElement)[]) => {
+			out.append(echo(command), ...lines.map((line) => (line instanceof HTMLElement ? line : draw(line))));
+			while (out.querySelectorAll('p, li').length > MAX_LINES && out.querySelectorAll('[data-echo]').length > 1) {
+				do out.firstElementChild!.remove();
+				while (out.firstElementChild && !out.firstElementChild.hasAttribute('data-echo'));
+			}
+			// The output pushes the prompt down; keep the line being typed on
+			// screen (a no-op while it is already in view).
+			input.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		};
+		const setLine = (value: string) => {
+			input.value = value;
+			input.setSelectionRange(value.length, value.length);
+			field.toggleAttribute('data-filled', value !== '');
+		};
+		const same = (a: string, b: string) => a.replace(/\/+$/, '') === b.replace(/\/+$/, '');
+
+		const submit = () => {
+			const command = input.value;
+			setLine('');
+			const trimmed = command.trim();
+			if (trimmed && history.at(-1) !== trimmed) history.push(trimmed);
+			position = history.length;
+			draft = '';
+			const theme = root.getAttribute('data-theme') === 'tty' ? 'night' : 'day';
+			const { lines, action } = run(command, data, { now: Date.now(), theme });
+			if (action?.type === 'clear') {
+				out.replaceChildren();
+				return;
+			}
+			print(command, lines);
+			if (action?.type === 'theme' && action.theme !== theme) {
+				// The header's toggle owns the switch and the saved choice.
+				document.getElementById('theme-toggle')?.click();
+			} else if (action?.type === 'navigate' && !same(action.href, location.pathname)) {
+				location.assign(action.href);
+			}
+		};
+
+		input.addEventListener('input', () => field.toggleAttribute('data-filled', input.value !== ''));
+		input.addEventListener('keydown', (event) => {
+			if (event.isComposing) return;
+			const plain = !event.altKey && !event.ctrlKey && !event.metaKey;
+			if (event.key !== 'Tab') lastTab = null;
+			if (event.key === 'Enter' && plain) {
+				event.preventDefault();
+				submit();
+			} else if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && plain && !event.shiftKey) {
+				const next = position + (event.key === 'ArrowUp' ? -1 : 1);
+				if (next < 0 || next > history.length) return;
+				event.preventDefault();
+				if (position === history.length) draft = input.value;
+				position = next;
+				setLine(history[position] ?? draft);
+			} else if (event.key === 'Tab' && plain && !event.shiftKey) {
+				// Only a completion consumes Tab, and a second Tab on the same
+				// line moves focus on, so the field never traps the keyboard.
+				const result = lastTab === input.value ? null : complete(input.value);
+				if (!result) return;
+				event.preventDefault();
+				lastTab = result.value;
+				if (result.options.length) print(input.value, [{ type: 'text', text: result.options.join('  ') }]);
+				setLine(result.value);
+			} else if (event.key === 'Escape' && input.value) {
+				event.preventDefault();
+				setLine('');
+			} else if (event.key.toLowerCase() === 'l' && event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
+				event.preventDefault();
+				out.replaceChildren();
+			}
+		});
+
+		// A click on the terminal (not on a control, not ending a selection)
+		// puts the caret in the shell without scrolling the page.
+		shell.closest('main')?.addEventListener('click', (event) => {
+			if ((event.target as Element).closest('a, button, input, label, select, textarea, summary')) return;
+			if (!getSelection()?.isCollapsed) return;
+			input.focus({ preventScroll: true });
+		});
+
+		// Swap the static prompt for the shell; the login message adds one line above it.
+		const prompt = shell.previousElementSibling as HTMLElement | null;
+		if (prompt) prompt.hidden = true;
+		shell.hidden = false;
+	}
+</script>

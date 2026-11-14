@@ -241,6 +241,6 @@
     "preservesSampleOutlines": true,
     "checkedSample": "🌐🎭💗😘🙁🙂🤖"
   },
-  "scope": "Night-mode Latin, CJK, punctuation, code and controls. System glyph fallback only for missing code points.",
+  "scope": "Latin, CJK, punctuation, code and controls in both themes. System glyph fallback only for missing code points.",
   "historicalBoundary": "A CJK-capable pixel adaptation, not the Tektronix 4052 original 5x8 ASCII character generator."
 }

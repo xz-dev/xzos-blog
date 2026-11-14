@@ -4,107 +4,50 @@ import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import LanguageVersionNotice from '../components/LanguageVersionNotice.astro';
+import PageFrame from '../components/PageFrame.astro';
+import PostMeta from '../components/PostMeta.astro';
 import Remark42Comments from '../components/Remark42Comments.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import type { Lang } from '../i18n/ui';
 
-interface Heading {
-	depth: number;
-	slug: string;
-	text: string;
-}
-
 type Props = CollectionEntry<'blog'>['data'] & {
-	headings?: Heading[];
+	headings?: { depth: number; slug: string; text: string }[];
 	ogImage?: ImageMetadata | string;
 	lang?: Lang;
 	slug?: string;
 };
 
 const { title, description, pubDate, updatedDate, pubDateSource, updatedDateSource, heroImage, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
-
-// 从 URL 提取 slug（如果没有传入）
-const actualSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
+const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
 ---
 
+<!doctype html>
 <html lang={lang}>
 	<head>
 		<BaseHead title={title} description={description} image={ogImage} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+			:global(.page-frame-article .post-meta) {
+				margin-bottom: var(--space-2);
 			}
 			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				/* Unitless, so a wrapped date or "Last updated" line keeps its leading. */
-				line-height: 1.3;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
+				margin: 0 auto var(--space-4);
 			}
 		</style>
 	</head>
 
 	<body>
 		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} source={pubDateSource} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} source={updatedDateSource} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<LanguageVersionNotice slug={actualSlug} lang={lang} />
-					<TableOfContents headings={headings} />
-					<slot />
-					<hr />
-					<Remark42Comments lang={lang} />
-				</div>
-			</article>
-		</main>
+		<PageFrame title={title} pattern="article">
+			{heroImage && <Image slot="hero" class="hero-image" width={1020} height={510} src={heroImage} alt="" />}
+			<PostMeta slot="meta" lang={lang} pubDate={pubDate} pubDateSource={pubDateSource} updatedDate={updatedDate} updatedDateSource={updatedDateSource} />
+			<LanguageVersionNotice slug={postSlug} lang={lang} />
+			<TableOfContents headings={headings} lang={lang} />
+			<slot />
+			<hr />
+			<Remark42Comments lang={lang} />
+		</PageFrame>
 		<Footer />
 	</body>
 </html>

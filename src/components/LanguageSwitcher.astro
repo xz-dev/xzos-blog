@@ -1,26 +1,29 @@
 ---
-/**
- * 语言切换组件
- */
-import { languages, defaultLang, type Lang } from '../i18n/ui';
-import { getAlternateLanguagePath, getLangFromUrl } from '../i18n/utils';
+import { languages, type Lang } from '../i18n/ui';
+import { getAlternateLanguagePath, getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const currentLang = getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
+// A status-line field: `lang: zh* en zh-CN`. The visible text is the short
+// code; the accessible name starts with the full language name and keeps the
+// code, so voice control can still say what it sees.
 ---
 
-<nav class="language-switcher" aria-label="Language switcher">
-  {Object.entries(languages).map(([lang, label]) => {
-    const isActive = lang === currentLang;
-    const href = getAlternateLanguagePath(Astro.url, lang as Lang);
-    
+<nav class="language-switcher" aria-label={t('lang.switch')}>
+  <span class="menu-label" aria-hidden="true">{t('lang.prefix')}</span>
+  {(Object.keys(languages) as Lang[]).map((lang) => {
+    const name = `${languages[lang]} (${lang})`;
     return (
-      <a 
-        href={href}
-        class:list={['lang-link', { active: isActive }]}
-        aria-current={isActive ? 'page' : undefined}
+      <a
+        href={getAlternateLanguagePath(Astro.url, lang)}
+        class="lang-link menu-item"
+        aria-current={lang === currentLang ? 'page' : undefined}
+        aria-label={name}
+        title={name}
         hreflang={lang}
+        lang={lang}
       >
-        {label}
+        {lang}
       </a>
     );
   })}
@@ -29,25 +32,8 @@ const currentLang = getLangFromUrl(Astro.url);
 <style>
   .language-switcher {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: var(--cell-gap);
     align-items: center;
-  }
-  
-  .lang-link {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 0.875rem;
-    color: rgb(var(--gray));
-    transition: color 0.2s, background-color 0.2s;
-  }
-  
-  .lang-link:hover {
-    color: var(--accent);
-  }
-  
-  .lang-link.active {
-    color: var(--accent);
-    font-weight: 600;
   }
 </style>

@@ -1,0 +1,123 @@
+/* Design tokens for both themes: palettes, type scale, spacing, widths and
+ * control sizes. Day is :root; night (data-theme="tty") overrides colours and
+ * effects only, so switching theme never moves or resizes anything.
+ * terminal.css styles elements and shared classes from these tokens, glow and
+ * overlay included; tty.css keeps only the night rules a token cannot
+ * express. One font serves both themes, and no frame, fill or bevel exists in
+ * one theme but not the other. */
+
+/* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
+ * links reach WCAG AA (>= 4.5:1) on the page and the surface (code, inline
+ * code, the header status line). Two borders: --border-strong (the
+ * accent mixed 80% into the page) outlines structure that must stay visible,
+ * such as tables, code, quotes and the header's edge, at >= 3:1 on the page
+ * and the surface;
+ * --border-color (30%) is for decorative separators only. */
+:root {
+  color-scheme: light;
+  --background: #fff8f2;
+  --surface: #ffeadb;
+  --foreground: #42302a;
+  --accent: #b4410f;
+  --secondary: #76605a;
+  --emphasized: #42302a;
+  --border-color: #e9c1ae;        /* decorative separators: hr, list rules, image frames */
+  --border-strong: #c3663c;       /* structural: tables, code, quotes, header edge */
+
+  /* Role tokens that differ between the themes in colour or effect only;
+   * the night block redefines them, so no element rule depends on the theme. */
+  --code-color: var(--foreground);
+  --selection-bg: Highlight;
+  --selection-fg: HighlightText;
+  --text-glow: none;              /* text-shadow on body text */
+  --field-overlay: none;          /* fixed layer painted behind the content */
+
+  /* Error text (xzsh's "command not found"): a muted red, 4.5:1 on the page. */
+  --error: #a8321f;
+
+  /* Size, spacing, width and font system shared by both themes. The night
+   * block changes colour and effects only, so switching theme never moves or
+   * resizes anything. Body text is 16px, Unifont's native grid, and every
+   * line height is a rem length so lines land on whole pixels. */
+  --font-ui: "Unifont", "Unifont Upper", monospace; /* every element, both themes (fonts.css) */
+  --font-size: 1rem;              /* body: 16px */
+  --line-height: 1.5rem;          /* body and UI: 24px */
+  --leading-prose: 1.75rem;       /* running text in posts, pages, excerpts: 28px */
+  --text-page-title: 2rem;        /* the page's one h1: 32px */
+  --leading-page-title: 2.5rem;   /* 40px */
+  --text-card-title: 1.5rem;      /* post-list titles: 24px */
+  --leading-card-title: 2rem;     /* 32px */
+  --text-h2: 1.375rem;            /* section heading: 22px */
+  --leading-h2: 2rem;             /* 32px */
+  --text-h3: 1.25rem;             /* sub-heading: 20px */
+  --leading-h3: 1.75rem;          /* 28px */
+  --text-meta: 0.875rem;          /* dates, tags, notices, footer: 14px */
+  --leading-meta: 1.25rem;        /* 20px */
+  --text-code: 1rem;              /* inline and block code: 16px */
+  --leading-code: 1.5rem;         /* 24px */
+
+  --space-1: 0.25rem;             /* 4px */
+  --space-2: 0.5rem;              /* 8px */
+  --space-3: 1rem;                /* 16px */
+  --space-4: 1.5rem;              /* 24px */
+  --space-5: 2rem;                /* 32px */
+  --space-6: 3rem;                /* 48px */
+  --space-7: 4rem;                /* 64px */
+  --cell-gap: 2ch;                /* two character cells: between output columns and status-line items */
+
+  --prose-width: 45rem;           /* post column incl. padding: 720px */
+  --page-width: 60rem;            /* list and static-page frame: 960px */
+  --header-width: 75rem;          /* header row: 1200px */
+
+  --control-size: 2.5rem;         /* pagination entries' height: 40px */
+  --menu-item-height: 2rem;       /* status-line items, square icon items' width: 32px */
+  --thumb-size: 4rem;             /* archive thumbnail square: 64px */
+  --pixel-icon-size: 1rem;        /* every UI icon, both themes: Unifont's 16px grid */
+  --rule: 2px;                    /* quote, footer and hr rules */
+  --hairline: 1px;                /* borders, underlines and the header's edge */
+  --radius: 0;                    /* the one corner radius: every box is square, both themes */
+  --focus-width: 2px;             /* keyboard focus ring */
+  --focus-offset: 2px;
+  --underline-offset: 0.2em;
+
+  /* Motion: the site's only animations, both on the home page (a terminal
+   * cursor; the logo's frame rate lives in its script). Reduced motion and
+   * the page's pause control stop them. */
+  --cursor-blink: cursor-blink 1s steps(1, end) infinite;
+}
+
+:root[data-theme="tty"] {
+  color-scheme: dark;
+  /* Chosen anchors; --border-color mixes --foreground over --background at the
+   * weight in docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
+  --background: #141a03;
+  --surface: #1d2606;
+  --foreground: #d4ff3a;
+  --emphasized: #d4ff3a;
+  --accent: #f0ff9a;
+  --secondary: #a8cc2a;
+  --border-color: #6a811c;
+  --border-strong: var(--border-color);
+  --code-foreground: #e8fff0;
+  --code-color: var(--code-foreground);
+  --selection-bg: var(--accent);  /* reverse video, like mark */
+  --selection-fg: var(--background);
+  /* Error text: a dim phosphor level, still 4.5:1 on the field. */
+  --error: #728b1d;
+  /* Static phosphor glow and a scanline and vignette layer behind the content. */
+  --text-glow: var(--tty-glow);
+  --field-overlay: var(--tty-scanlines), var(--tty-vignette);
+  --tty-glow: 0 0 2px currentColor, 0 0 8px color-mix(in srgb, var(--foreground) 45%, transparent);
+  /* Painted behind the content (terminal.css body::after), so they darken only the field. */
+  --tty-scanlines: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px);
+  --tty-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* Users who ask for more contrast get plain sharp text and no overlay. */
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme="tty"] {
+    --text-glow: none;
+    --field-overlay: none;
+  }
+}

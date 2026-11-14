@@ -1,5 +1,5 @@
 ---
-source_hash: "d867e8b3"
+source_hash: "2764707d"
 title: "A New Beginning"
 pubDate: "2018-05-19T00:00:00+08:00"
 description: "Announcement of the personal website's new domain xzos.net, marking a fresh start."
@@ -8,7 +8,7 @@ category: "Daily"
 tags: ["Daily"]
 ---
 
-# New Domain, New Beginning
+## New Domain, New Beginning
 
 On May 18, 2018, I purchased the domain xzos.net for my personal website and completed the domain switch the following day.
 

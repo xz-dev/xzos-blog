@@ -1,0 +1,36 @@
+---
+/**
+ * 所有页面的共用框架：每种页面类型一个宽度、同一个 h1、同样的标题位置。
+ * list（文章列表）与 page（静态页）用 --page-width，article（文章）用
+ * --prose-width；页面自身不再设定宽度。
+ * home（首页开机画面）同样用 --page-width。
+ * hideTitle：h1 仍由框架绘制，但只对读屏器可见（sr-only），画面上的标题由页面自己的
+ * 一行承担（首页是 fastfetch 的 xz@xzos，关于与友链是 `$ cat …` / `$ ls …` 提示符）。
+ * home 默认隐藏。
+ */
+interface Props {
+	title: string;
+	pattern?: 'list' | 'page' | 'article' | 'home';
+	hideTitle?: boolean;
+}
+
+const { title, pattern = 'page', hideTitle = pattern === 'home' } = Astro.props;
+---
+
+<main class:list={['page-frame', `page-frame-${pattern}`]}>
+	{pattern === 'article' ? (
+		<>
+			<slot name="hero" />
+			<article class="prose">
+				<slot name="meta" />
+				<h1 class="page-title">{title}</h1>
+				<slot />
+			</article>
+		</>
+	) : (
+		<>
+			<h1 class:list={['page-title', hideTitle && 'sr-only']}>{title}</h1>
+			<slot />
+		</>
+	)}
+</main>
