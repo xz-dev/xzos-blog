@@ -151,10 +151,6 @@ table {
     overflow-y: auto;
     margin: 0;
   }
-
-  .page-frame-article:has(> .article > .toc) > :not(.article) {
-    max-width: calc(var(--prose-width) - var(--space-3) * 2);
-  }
 }
 
 /* Section headings read as Markdown source: `## ` and `### ` in the accent
@@ -196,10 +192,6 @@ table {
   margin-block-start: var(--space-4);
   padding-block-start: var(--space-4);
   border-block-start: var(--hairline) solid var(--border-strong);
-}
-
-.article-comments .term-prompt {
-  margin-block-start: 0;
 }
 
 /* Long paths, option names and URLs in prose (plain text, inline code, links,

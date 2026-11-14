@@ -139,7 +139,8 @@ variants use the same pattern as the `zh` route.
 
 ### Article
 
-An article is three blocks in one column:
+An article is three blocks: one column below 1280px, and from 1280px two
+columns (head and body, then the contents) when it has contents:
 
 1. **Head** (`.article-head`): the meta line, the h1 (the page's only one)
    and the language line (`LanguageVersionNotice`: other language versions
@@ -161,8 +162,10 @@ drawn like `tree` output: `├─ `, `└─ ` and `│  ` prefixes in
 `--secondary`, `aria-hidden`, while the entries stay a nested `<ul>` of
 links. The label line is `▾ 目录` (`blog.toc`) in a `<details open>`.
 Below 1280px the box follows the head block. From 1280px it leaves the flow
-for a sticky column (`--toc-width`, 320px) right of the body, `--space-5`
-apart; the frame widens by that column, so the text column keeps its 576px.
+for a sticky right column (`--toc-width`, 320px) that starts beside the head
+and runs along the body, `--space-5` apart; the frame widens by that column,
+so the text column keeps its 576px and the comments block below spans the
+frame's full content width.
 With script, an IntersectionObserver marks the section being read (the
 last heading above the top 30% of the viewport): the link takes `--accent`,
 a trailing `*` and `aria-current="location"`. Every link reserves the `*`

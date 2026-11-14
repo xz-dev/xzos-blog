@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 import { langCodes, navItems, ui } from '../src/i18n/ui.ts';
+import { cssRules, ruleFor } from './css-rules.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const base = read('../src/styles/terminal.css');
@@ -265,8 +266,8 @@ test('structural borders reach 3:1 in both themes; the soft border is decorative
 		}
 	}
 	// Tables, code and quotes outline structure; hr, list rules and image frames decorate.
-	const rules = [...base.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)];
-	const borderOf = (selector: string) => rules.filter((r) => r[1].split(',').map((x) => x.trim()).includes(selector)).map((r) => r[2]).join('');
+	const rules = cssRules(base);
+	const borderOf = (selector: string) => ruleFor(rules, selector);
 	for (const selector of ['pre', 'kbd', 'td', 'blockquote']) assert.match(borderOf(selector), /border(?:-inline-start)?:[^;]*var\(--border-strong\)/, selector);
 	for (const selector of ['hr', 'img', '.post-item']) assert.doesNotMatch(borderOf(selector), /--border-strong/, selector);
 });

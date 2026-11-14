@@ -15,7 +15,7 @@ export interface TocNode extends Heading {
 	children: TocNode[];
 }
 
-export const TOC_MIN_ENTRIES = 2;
+const TOC_MIN_ENTRIES = 2;
 
 const BRANCH = '├─ ';
 const LAST = '└─ ';

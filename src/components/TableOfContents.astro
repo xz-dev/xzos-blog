@@ -1,7 +1,7 @@
 ---
 /**
  * 文章目录：像 `tree` 一样画出 h2 / h3 的层级，放在与代码块同样的框里。
- * 窄屏时在文章头部之后；1280px 起在正文右侧做粘性侧栏（terminal.css 的
+ * 窄屏时在文章头部之后；1280px 起在右栏做粘性侧栏，与头部和正文并排（terminal.css 的
  * .article 网格），并以 accent 加尾随 `*` 标出当前阅读的小节。
  * 少于两个标题的文章不画目录（buildTocTree 返回空）。
  */
@@ -9,6 +9,7 @@ import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import { buildTocTree, type Heading } from '../lib/toc-tree';
 import PixelIcon from './PixelIcon.astro';
+import TocActive from './TocActive.astro';
 import TocList from './TocList.astro';
 
 interface Props {
@@ -22,42 +23,14 @@ const tree = buildTocTree(headings);
 ---
 
 {tree.length > 0 && (
-	<nav class="toc" aria-labelledby="toc-label">
+	<nav class="toc" aria-labelledby="xz-toc-label">
 		<details open>
-			<summary id="toc-label"><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t('blog.toc')}</summary>
+			<summary id="xz-toc-label"><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t('blog.toc')}</summary>
 			<TocList nodes={tree} />
 		</details>
+		<TocActive />
 	</nav>
 )}
-
-<script>
-	// Marks the section being read: the last heading above the top 30% of the
-	// viewport. Without script the contents stay a plain list of links.
-	const links = new Map<string, HTMLAnchorElement>();
-	for (const link of document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]')) {
-		links.set(decodeURIComponent(link.hash.slice(1)), link);
-	}
-	const headings = [...document.querySelectorAll<HTMLElement>('.article-body :is(h2, h3)[id]')].filter((heading) => links.has(heading.id));
-	if (headings.length > 0 && 'IntersectionObserver' in window) {
-		let current: HTMLAnchorElement | undefined;
-		const update = () => {
-			const line = window.innerHeight * 0.3;
-			let active: HTMLElement | undefined;
-			for (const heading of headings) {
-				if (heading.getBoundingClientRect().top <= line) active = heading;
-				else break;
-			}
-			const next = active && links.get(active.id);
-			if (next === current) return;
-			current?.removeAttribute('aria-current');
-			next?.setAttribute('aria-current', 'location');
-			current = next;
-		};
-		const observer = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px' });
-		for (const heading of headings) observer.observe(heading);
-		update();
-	}
-</script>
 
 <style>
 	/* The code-block box: --surface, a hairline --border-strong frame and
@@ -78,6 +51,7 @@ const tree = buildTocTree(headings);
 		display: block;
 		list-style: none;
 		width: fit-content;
+		padding-block: var(--space-1);
 		color: var(--foreground);
 		cursor: pointer;
 	}

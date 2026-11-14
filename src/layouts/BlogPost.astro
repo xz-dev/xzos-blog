@@ -13,9 +13,10 @@ import TableOfContents from '../components/TableOfContents.astro';
 import Prompt from '../components/term/Prompt.astro';
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
+import type { Heading } from '../lib/toc-tree';
 
 type Props = CollectionEntry<'blog'>['data'] & {
-	headings?: { depth: number; slug: string; text: string }[];
+	headings?: Heading[];
 	ogImage?: ImageMetadata | string;
 	lang?: Lang;
 	slug?: string;
@@ -45,9 +46,9 @@ const t = useTranslations(lang);
 			<LanguageVersionNotice slot="head" slug={postSlug} lang={lang} />
 			<TableOfContents slot="aside" headings={headings} lang={lang} />
 			<slot />
-			<section slot="after" class="article-comments" aria-labelledby="comments-title">
+			<section slot="after" class="article-comments" aria-labelledby="xz-comments-title">
 				<Prompt command={t('term.comments')} />
-				<h2 id="comments-title" class="sr-only">{t('blog.comments')}</h2>
+				<h2 id="xz-comments-title" class="sr-only">{t('blog.comments')}</h2>
 				<Remark42Comments lang={lang} />
 			</section>
 		</PageFrame>

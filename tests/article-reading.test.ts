@@ -3,14 +3,13 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { ui } from '../src/i18n/ui.ts';
 import { buildTocTree } from '../src/lib/toc-tree.ts';
+import { cssRules, ruleFor as cssRulesFor } from './css-rules.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const base = read('../src/styles/terminal.css');
 const tokens = read('../src/styles/tokens.css');
-const rules = [...base.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)];
-// Selector lists split at top-level commas only, so `:is(h2, h3)` stays whole.
-const selectors = (list: string) => list.split(/,(?![^(]*\))/).map((x) => x.trim());
-const ruleFor = (selector: string) => rules.filter((r) => selectors(r[1]).includes(selector)).map((r) => r[2]).join('');
+const rules = cssRules(base);
+const ruleFor = (selector: string) => cssRulesFor(rules, selector);
 
 const h = (depth: number, text: string) => ({ depth, slug: text.toLowerCase(), text });
 
@@ -48,15 +47,23 @@ test('the contents are a real nested list with decorative prefixes and a current
 	const list = read('../src/components/TocList.astro');
 	assert.match(toc, /const tree = buildTocTree\(headings\);/);
 	assert.match(toc, /\{tree\.length > 0 && \(/);
-	assert.match(toc, /<nav class="toc" aria-labelledby="toc-label">\s*<details open>/);
+	assert.match(toc, /<nav class="toc" aria-labelledby="xz-toc-label">\s*<details open>/);
 	// Nested <ul>s for assistive technology; the branch drawing is hidden from it.
 	assert.match(list, /<ul>[\s\S]*<li>[\s\S]*<span class="toc-branch" aria-hidden="true">\{node\.prefix\}<\/span><a href=\{`#\$\{node\.slug\}`\}>/);
 	assert.match(list, /<Astro\.self nodes=\{node\.children\} \/>/);
 	assert.match(toc, /\.toc :global\(\.toc-branch\)\s*\{[^}]*color:\s*var\(--secondary\);[^}]*white-space:\s*pre;/);
 	// The section in view: aria-current="location", the accent and a trailing `*`
 	// whose cell every link reserves; set by an IntersectionObserver.
-	assert.match(toc, /new IntersectionObserver\(/);
-	assert.match(toc, /setAttribute\('aria-current', 'location'\)/);
+	// The script lives in a child rendered only inside the tree-non-empty branch,
+	// so posts without contents ship no observer.
+	const active = read('../src/components/TocActive.astro');
+	assert.match(toc, /\{tree\.length > 0 && \([\s\S]*<TocActive \/>[\s\S]*\)\}/);
+	assert.doesNotMatch(toc, /<script/);
+	assert.match(active, /new IntersectionObserver\(/);
+	assert.match(active, /setAttribute\('aria-current', 'location'\)/);
+	// A scrollable box follows the marker by its own scrollTop; the page never scrolls.
+	assert.match(active, /toc\.scrollTop \+=/);
+	assert.doesNotMatch(active, /scrollIntoView|window\.scroll/);
 	assert.match(toc, /\.toc :global\(a\[aria-current\]\)\s*\{\s*color:\s*var\(--accent\);\s*\}/);
 	assert.match(toc, /\.toc :global\(a\)::after\s*\{\s*content:\s*"\*";\s*content:\s*"\*" \/ "";\s*visibility:\s*hidden;/);
 	assert.doesNotMatch(toc, /data-theme|background:\s*var\(--accent\)/);
@@ -64,6 +71,9 @@ test('the contents are a real nested list with decorative prefixes and a current
 	assert.match(tokens, /--toc-width:\s*20rem;/);
 	assert.match(base, /@media \(min-width: 1280px\)\s*\{[\s\S]*\.page-frame-article \.article > \.toc\s*\{[^}]*grid-column:\s*2;[^}]*position:\s*sticky;/);
 	assert.match(read('../src/layouts/BlogPost.astro'), /<TableOfContents slot="aside" headings=\{headings\} lang=\{lang\} \/>/);
+	// The label keeps a 32px target (--menu-item-height) and the ids are namespaced.
+	assert.match(toc, /\.toc summary\s*\{[^}]*padding-block:\s*var\(--space-1\);/);
+	assert.match(toc, /id="xz-toc-label"/);
 });
 
 test('an article is a head block closed by a structural rule, the body, then the comments block', () => {
@@ -76,9 +86,14 @@ test('an article is a head block closed by a structural rule, the body, then the
 	assert.match(head, /border-block-end:\s*var\(--hairline\) solid var\(--border-strong\);/);
 	const post = read('../src/layouts/BlogPost.astro');
 	assert.match(post, /<LanguageVersionNotice slot="head" /);
-	assert.match(post, /<section slot="after" class="article-comments" aria-labelledby="comments-title">\s*<Prompt command=\{t\('term\.comments'\)\} \/>\s*<h2 id="comments-title" class="sr-only">\{t\('blog\.comments'\)\}<\/h2>\s*<Remark42Comments/);
+	assert.match(post, /<section slot="after" class="article-comments" aria-labelledby="xz-comments-title">\s*<Prompt command=\{t\('term\.comments'\)\} \/>\s*<h2 id="xz-comments-title" class="sr-only">\{t\('blog\.comments'\)\}<\/h2>\s*<Remark42Comments/);
 	assert.doesNotMatch(post, /<hr \/>/);
 	assert.match(ruleFor('.article-comments'), /border-block-start:\s*var\(--hairline\) solid var\(--border-strong\);/);
+	// The comments span the frame's content width, with or without contents; the
+	// first prompt's zero top margin comes from `.term-prompt:first-child`.
+	assert.doesNotMatch(base, />\s*:not\(\.article\)/);
+	assert.equal(ruleFor('.article-comments .term-prompt'), '');
+	assert.match(ruleFor('.term-prompt:first-child'), /margin-top:\s*0;/);
 	for (const lang of ['zh', 'en', 'zh-CN'] as const) {
 		assert.equal(ui[lang]['term.comments'], 'tail -f ~/comments');
 		assert.ok(ui[lang]['blog.comments']);
