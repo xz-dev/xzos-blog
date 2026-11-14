@@ -2,223 +2,131 @@ import { Resvg } from '@resvg/resvg-js';
 import fs from 'node:fs';
 import path from 'node:path';
 import satori from 'satori';
+import { defaultLang, langCodes, ui } from '../i18n/ui.ts';
 
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
+export const OG_PALETTE = {
+	background: '#fff8f2',
+	surface: '#ffeadb',
+	foreground: '#42302a',
+	secondary: '#76605a',
+	accent: '#b4410f',
+	borderStrong: '#c3663c',
+} as const;
 
 export interface OgImageContent {
 	title: string;
-	brand: string;
-	footer: string;
+	brand?: string;
+	footer?: string;
+	slug?: string;
+	date?: string;
+	category?: string;
+	postCount?: number;
+	locale?: 'src' | 'en' | 'zh-CN';
 }
 
-let cachedAssets: {
-	fontRegular: Buffer;
-	fontBold: Buffer;
-	fontChinese: Buffer;
-	fontFiles: string[];
-	logoDataUri: string;
-} | undefined;
+let font: Buffer | undefined;
+function loadFont(): Buffer {
+	return font ??= fs.readFileSync(path.join(process.cwd(), 'src/assets/og-fonts/unifont-18.0.01.otf'));
+}
 
-function loadAssets() {
-	if (!cachedAssets) {
-		const fontDir = path.join(process.cwd(), 'src/assets/og-fonts');
-		const fontFiles = [
-			path.join(fontDir, 'atkinson-regular.woff'),
-			path.join(fontDir, 'atkinson-bold.woff'),
-			path.join(fontDir, 'NotoSansSC-Bold.ttf'),
-		];
-		const logo = fs.readFileSync(path.join(process.cwd(), 'public/dotted_circle.png'));
+// Reserve two cells for non-ASCII glyphs, including fullwidth punctuation.
+// This also bounds uncommon Unifont glyphs without a second font metrics parser.
+const cells = (text: string) => [...text].reduce((n, char) => n + (char.codePointAt(0)! < 128 ? 1 : 2), 0);
 
-		cachedAssets = {
-			fontRegular: fs.readFileSync(fontFiles[0]),
-			fontBold: fs.readFileSync(fontFiles[1]),
-			fontChinese: fs.readFileSync(fontFiles[2]),
-			fontFiles,
-			logoDataUri: `data:image/png;base64,${logo.toString('base64')}`,
-		};
+const closing = /[，。、：；！？）」』]/u;
+const cjk = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
+
+/** Wrap words and CJK character groups within the cell budget, then ellipsize. */
+export function wrapOgText(text: string, columns: number, maxLines = 3): string[] {
+	if (!Number.isInteger(columns) || columns < 4 || !Number.isInteger(maxLines) || maxLines < 1) {
+		throw new RangeError('Wrapping requires at least four columns and one line');
 	}
-
-	return cachedAssets;
-}
-
-function getTitleFontSize(title: string): number {
-	const visualLength = [...title].reduce((length, character) => {
-		return length + (/\p{Script=Han}/u.test(character) ? 1.7 : 1);
-	}, 0);
-
-	if (visualLength > 132) return 40;
-	if (visualLength > 105) return 46;
-	if (visualLength > 78) return 52;
-	if (visualLength > 54) return 62;
-	return 74;
-}
-
-function lineGrid() {
-	const children = [];
-	for (let x = 72; x <= 1128; x += 48) {
-		children.push({
-			type: 'div',
-			props: {
-				style: {
-					position: 'absolute',
-					left: x,
-					top: 0,
-					width: 1,
-					height: OG_IMAGE_HEIGHT,
-					background: 'rgba(92, 184, 255, 0.035)',
-				},
-			},
-		});
+	const chars = [...text.replace(/\s+/gu, ' ').trim()];
+	const lines: string[] = [];
+	let start = 0;
+	while (start < chars.length && lines.length < maxLines) {
+		const truncated = lines.length === maxLines - 1 && cells(chars.slice(start).join('')) > columns;
+		const budget = columns - (truncated ? cells('…') : 0);
+		let end = start;
+		let width = 0;
+		let boundary = start;
+		while (end < chars.length && width + cells(chars[end]) <= budget) {
+			width += cells(chars[end++]);
+			const previous = chars[end - 1];
+			const next = chars[end];
+			if (!next || (!closing.test(next) && (
+				/[ -]/u.test(previous) || next === ' ' || cjk.test(previous) || cjk.test(next) || closing.test(previous)
+			))) boundary = end;
+		}
+		if (end < chars.length && boundary > start) end = boundary;
+		// An oversized word may split, but its closing punctuation stays attached.
+		while (end > start + 1 && end < chars.length && closing.test(chars[end])) end--;
+		lines.push(chars.slice(start, end).join('').trim() + (truncated ? '…' : ''));
+		if (truncated) break;
+		start = end;
+		while (chars[start] === ' ') start++;
 	}
-	for (let y = 72; y <= 558; y += 48) {
-		children.push({
-			type: 'div',
-			props: {
-				style: {
-					position: 'absolute',
-					left: 0,
-					top: y,
-					width: OG_IMAGE_WIDTH,
-					height: 1,
-					background: 'rgba(92, 184, 255, 0.035)',
-				},
-			},
-		});
-	}
-	return children;
+	return lines;
 }
 
-export async function renderOgImage({ title, brand, footer }: OgImageContent): Promise<Buffer> {
-	const { fontRegular, fontBold, fontChinese, fontFiles, logoDataUri } = loadAssets();
-	const svg = await satori(
-		{
-			type: 'div',
-			props: {
-				style: {
-					// Keep padding inside the fixed canvas across Satori/Yoga defaults.
-					boxSizing: 'border-box',
-					width: '100%',
-					height: '100%',
-					display: 'flex',
-					position: 'relative',
-					flexDirection: 'column',
-					justifyContent: 'space-between',
-					padding: '68px 76px 58px',
-					background: '#050b14',
-					color: '#f2f7fb',
-					fontFamily: 'Atkinson Hyperlegible, Noto Sans SC',
-					overflow: 'hidden',
-				},
-				children: [
-					...lineGrid(),
-					{
-						type: 'div',
-						props: {
-							style: {
-								position: 'absolute',
-								left: 0,
-								top: 0,
-								width: 9,
-								height: '100%',
-								background: '#138bd2',
-							},
-						},
-					},
-					{
-						type: 'div',
-						props: {
-							style: {
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								position: 'relative',
-							},
-							children: [
-								{
-									type: 'div',
-									props: {
-										children: brand,
-										style: {
-											fontSize: 27,
-											fontWeight: 700,
-											letterSpacing: 5.5,
-											color: '#79c9ff',
-										},
-									},
-								},
-								{
-									type: 'img',
-									props: {
-										src: logoDataUri,
-										width: 58,
-										height: 58,
-										style: { opacity: 0.72 },
-									},
-								},
-							],
-						},
-					},
-					{
-						type: 'div',
-						props: {
-							children: title,
-							style: {
-								display: 'flex',
-								position: 'relative',
-								maxWidth: 1030,
-								maxHeight: 280,
-								overflow: 'hidden',
-								fontSize: getTitleFontSize(title),
-								fontWeight: 700,
-								lineHeight: 1.08,
-								letterSpacing: -1.1,
-								color: '#f4f8fb',
-							},
-						},
-					},
-					{
-						type: 'div',
-						props: {
-							style: {
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								position: 'relative',
-								paddingTop: 21,
-								borderTop: '1px solid rgba(121, 201, 255, 0.28)',
-								fontSize: 24,
-								letterSpacing: 2.5,
-								color: '#9aafbf',
-							},
-							children: [
-								{ type: 'div', props: { children: footer } },
-								{
-									type: 'div',
-									props: {
-										children: 'xzos.net',
-										style: { color: '#d5e8f4' },
-									},
-								},
-							],
-						},
-					},
-				],
+export async function renderOgImage(content: OgImageContent): Promise<Buffer> {
+	const { title, slug, date, category, postCount, locale = 'src' } = content;
+	const isPost = slug !== undefined;
+	const fontSize = cells(title) <= 34 ? 64 : 48;
+	const titleLines = wrapOgText(title, Math.floor(1104 / (fontSize / 2)));
+	const clip = (text: string, columns: number) => wrapOgText(text, columns, 1)[0] ?? '';
+	const command = isPost ? `cat ~/blog/${clip(slug, 53)}.md` : 'fastfetch';
+	const meta = [date, category && clip(category, 40), locale].filter(Boolean).join('  │  ');
+	const labels = ui[locale === 'src' ? defaultLang : locale];
+	const nav = [labels['nav.home'], labels['nav.blog']];
+	const text = (value: string, left: number, top: number, size = 32, color: string = OG_PALETTE.foreground) => ({
+		type: 'div',
+		props: { children: value, style: { position: 'absolute', left, top, fontSize: size, color, whiteSpace: 'pre', lineHeight: 1 } },
+	});
+	const output = isPost ? [
+		...titleLines.map((line, index) => text(line, 48, 208 + index * 64, fontSize)),
+		text(meta, 48, 448, 32, OG_PALETTE.secondary),
+	] : [
+		text('xz@xzos', 48, 208, 48, OG_PALETTE.accent),
+		text('-------', 48, 264),
+		...[
+			['OS', 'xzOS'],
+			['Shell', 'xzsh'],
+			['Packages', `${postCount ?? '?'} (posts)`],
+			['Locale', Object.values(langCodes).join(' · ')],
+		].flatMap(([key, value], index) => [
+			text(key, 48, 312 + index * 40, 32, OG_PALETTE.accent),
+			text(`: ${value}`, 48 + key.length * 16, 312 + index * 40),
+		]),
+	];
+	const svg = await satori({
+		type: 'div',
+		props: {
+			style: {
+				display: 'flex', width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT,
+				position: 'relative', background: OG_PALETTE.background,
+				fontFamily: 'Unifont', fontWeight: 400, fontStyle: 'normal',
 			},
-		},
-		{
-			width: OG_IMAGE_WIDTH,
-			height: OG_IMAGE_HEIGHT,
-			fonts: [
-				{ name: 'Atkinson Hyperlegible', data: fontRegular, weight: 400, style: 'normal' },
-				{ name: 'Atkinson Hyperlegible', data: fontBold, weight: 700, style: 'normal' },
-				{ name: 'Noto Sans SC', data: fontChinese, weight: 700, style: 'normal' },
+			children: [
+				{ type: 'div', props: { style: {
+					position: 'absolute', top: 0, left: 0, width: OG_IMAGE_WIDTH, height: 80,
+					background: OG_PALETTE.surface, borderBottom: `1px solid ${OG_PALETTE.borderStrong}`,
+				} } },
+				text(`xzOS │ 0:${nav[0]}${isPost ? '' : '*'}  1:${nav[1]}${isPost ? '*' : ''}`, 48, 24),
+				text(`lang: ${locale}`, 944, 24, 32, OG_PALETTE.secondary),
+				text('$', 48, 128, 32, OG_PALETTE.accent),
+				text(command, 80, 128),
+				...output,
+				text('$', 48, 550, 32, OG_PALETTE.accent),
+				text('█', 80, 550, 32, OG_PALETTE.accent),
+				text('xzos.net', 1024, 550),
 			],
 		},
-	);
-	const resvg = new Resvg(svg, {
-		font: { loadSystemFonts: false, fontFiles },
+	}, {
+		width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT,
+		fonts: [{ name: 'Unifont', data: loadFont(), weight: 400, style: 'normal' }],
 	});
-
-	return resvg.render().asPng();
+	return new Resvg(svg, { font: { loadSystemFonts: false } }).render().asPng();
 }

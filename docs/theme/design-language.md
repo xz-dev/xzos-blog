@@ -213,6 +213,25 @@ Endpoints that are not HTML pages have no pattern: `/rss.xml`
 (`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)
 and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
 
+**Open Graph.** The 1200×630 PNG cards use the day palette from the exported
+`OG_PALETTE` in `src/lib/og-image.ts` and only GNU Unifont 18.0.01. A flat
+status line uses the site navigation translations on the surface colour
+with a 1px strong bottom border.
+Post cards put a `$ cat ~/blog/<slug>.md` prompt before the title:
+64px for short titles, otherwise 48px, wrapped on character cells into at
+most three lines with an ellipsis. Latin words wrap at spaces or hyphens;
+only words wider than a line split. CJK closing punctuation stays with the
+preceding character. The default card shows `$ fastfetch`, `xz@xzos`, a
+dash rule and OS, Shell, Packages and Locale rows with accent-coloured keys.
+The default route counts the root blog collection for Packages. Other text
+is 32px (the fetch heading is 48px); all positions are
+whole pixels, with no synthesized weight or italic. The meta line carries
+the original publication day, category when present and `src`/`en`/`zh-CN`.
+Long slugs and categories are truncated to keep their rows inside the frame.
+The bottom row carries `xzos.net` and a steady block cursor. Cards have no
+grid, gradient, shadow, glow or rounded corners; rendering uses no clock.
+
+
 ## Home: boot screen
 
 The home page reads like fastfetch at login. Above 800px the art and the info
