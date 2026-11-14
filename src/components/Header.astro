@@ -16,10 +16,8 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		<div class="site-title">
 			<img src="/dotted_circle.png" alt={t('site.logoAlt')} class="site-logo tty-original-icon" />
 			<PixelIcon name="logo" class="tty-site-logo" label={t('site.logoAlt')} />
-			<div class="title-text">
-				<h2><a href={`${basePath}/`}>{SITE_TITLE}</a></h2>
-				<p class="tagline">{t('site.tagline')}</p>
-			</div>
+			<h2><a class="menu-item" href={`${basePath}/`}>{SITE_TITLE}</a></h2>
+			<p class="tagline">{t('site.tagline')}</p>
 		</div>
 		<div class="internal-links">
 			<HeaderLink href={`${basePath}/`}>{t('nav.home')}</HeaderLink>
@@ -31,7 +29,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 			<LanguageSwitcher />
 			<ThemeToggle />
 			<div class="social-links">
-				<a class="control control-icon" href="https://fosstodon.org/@xzdev" target="_blank">
+				<a class="menu-item menu-item-icon" href="https://fosstodon.org/@xzdev" target="_blank">
 					<span class="sr-only">{t('social.mastodon')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
@@ -41,7 +39,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 					>
 					<PixelIcon name="mastodon" />
 				</a>
-				<a class="control control-icon" href="https://github.com/xz-dev" target="_blank">
+				<a class="menu-item menu-item-icon" href="https://github.com/xz-dev" target="_blank">
 					<span class="sr-only">{t('social.github')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
@@ -51,7 +49,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 					>
 					<PixelIcon name="github" />
 				</a>
-				<a class="control control-icon" href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
+				<a class="menu-item menu-item-icon" href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
 					<span class="sr-only">{t('social.stackOverflow')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
@@ -66,11 +64,15 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	</nav>
 </header>
 <style>
+	/* An OS-style menu bar: one flat row on the surface colour with a
+	 * structural bottom edge. Every item is a .menu-item (terminal.css), so
+	 * both themes share one shape and night only recolours it. The vertical
+	 * padding leaves room for the focus ring inside the bar. */
 	header {
 		margin: 0;
-		padding: var(--space-3);
-		background: linear-gradient(to bottom, var(--header-top), var(--background));
-		border-bottom: var(--rule) solid var(--accent);
+		padding: var(--space-1) var(--space-3);
+		background: var(--surface);
+		border-bottom: var(--hairline) solid var(--border-strong);
 	}
 
 	nav {
@@ -85,7 +87,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	.site-title {
 		display: flex;
 		align-items: center;
-		gap: var(--space-3);
+		gap: var(--space-1);
 	}
 
 	/* terminal.css gives every img a block margin; night's pixel logo is an
@@ -98,56 +100,37 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		padding: 0;
 	}
 
-	.title-text {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-	}
-
 	h2 {
 		margin: 0;
-		font-size: var(--text-h3);
-		line-height: var(--leading-h3);
-		font-weight: 700;
-	}
-
-	h2 a {
-		color: var(--foreground);
-		text-decoration: none;
-	}
-
-	h2 a:hover {
-		color: var(--accent);
+		font-size: var(--font-size);
+		line-height: var(--line-height);
 	}
 
 	.tagline {
-		margin: 0;
+		margin: 0 0 0 var(--space-1);
 		font-size: var(--text-meta);
 		line-height: var(--leading-meta);
 		color: var(--secondary);
+		white-space: nowrap;
+	}
+
+	/* Menus follow the site name, as on an OS menu bar; the status area
+	 * (languages, theme, social links) sits at the right end. */
+	.internal-links,
+	.right-section,
+	.social-links {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
 	}
 
 	.internal-links {
-		display: flex;
-		gap: var(--space-2);
 		flex: 1;
-		justify-content: center;
-		align-items: center;
 	}
 
 	.right-section {
-		display: flex;
-		align-items: center;
 		gap: var(--space-3);
 	}
-
-	.social-links {
-		display: flex;
-		gap: var(--space-2);
-	}
-
-
-
 
 	@media (max-width: 960px) {
 		nav {
@@ -162,7 +145,6 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		.internal-links {
 			order: 3;
 			flex-basis: 100%;
-			justify-content: flex-start;
 		}
 	}
 
@@ -170,13 +152,9 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	 * logo and title, then the navigation, then the language links with the
 	 * theme toggle at the end. The last two share a row when they fit. */
 	@media (max-width: 720px) {
-		header {
-			padding: var(--space-2) var(--space-3);
-		}
-
 		nav {
 			justify-content: flex-start;
-			gap: var(--space-2);
+			gap: var(--space-1);
 		}
 
 		.site-title {
@@ -186,11 +164,11 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		.internal-links {
 			flex: 0 1 auto;
 			flex-wrap: wrap;
-			justify-content: flex-start;
 		}
 
 		.right-section {
 			flex: 1 1 auto;
+			gap: var(--space-1);
 		}
 
 		.right-section :global(.language-switcher) {
@@ -200,19 +178,6 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		.right-section :global(#theme-toggle) {
 			flex: none;
 			margin-left: auto;
-		}
-
-		.internal-links,
-		.right-section,
-		.right-section :global(.language-switcher) {
-			gap: var(--space-2);
-		}
-
-		/* Narrower than the desktop padding so the four English links fit one
-		 * 360px row. */
-		.internal-links :global(.control),
-		.right-section :global(.lang-link) {
-			padding-inline: var(--space-2);
 		}
 
 		.social-links {

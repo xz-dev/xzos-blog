@@ -1,6 +1,7 @@
 ---
 // Import the terminal theme (contains all base styles)
 import '../styles/tokens.css';
+import '../styles/fonts.css';
 import '../styles/terminal.css';
 import '../styles/tty.css';
 import '../styles/tty-pixel-icons.css';
@@ -125,18 +126,4 @@ const hreflangUrls = Object.keys(languages).map((lang) => ({
 			});
 		}
 	})();
-</script>
-
-<!-- Day text renders in Fira Code above the fold: fetch it with the stylesheet, not after layout.
-     Night mode uses Unifont only, so it skips this preload. -->
-<script is:inline>
-	if (document.documentElement.getAttribute('data-theme') !== 'tty') {
-		const fira = document.createElement('link');
-		fira.setAttribute('rel', 'preload');
-		fira.setAttribute('as', 'font');
-		fira.setAttribute('type', 'font/woff2');
-		fira.setAttribute('crossorigin', 'anonymous');
-		fira.setAttribute('href', '/fonts/fira-code-5.2-latin.woff2');
-		document.head.appendChild(fira);
-	}
 </script>

@@ -10,6 +10,6 @@ const { href, class: className, ...props } = Astro.props;
 const current = getNavCurrent(Astro.url.pathname, String(href ?? ''));
 ---
 
-<a href={href} class:list={[className, 'control', { active: Boolean(current) }]} aria-current={current} {...props}>
+<a href={href} class:list={[className, 'menu-item']} aria-current={current} {...props}>
 	<slot />
 </a>

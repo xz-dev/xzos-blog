@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -80,15 +80,20 @@ test('night styles are scoped; glow, scanlines and vignette are static and opt o
 	assert.match(tty, /border-radius:\s*0\s*!important/);
 });
 
-test('night typography is self-hosted, with real WOFF2 files and its license', () => {
-	assert.match(tty, /font-variant-ligatures:\s*none/);
+test('typography is self-hosted for both themes, with real WOFF2 files and its license', () => {
+	assert.match(base, /body\s*\{[^}]*font-variant-ligatures:\s*none/);
 	const file = '../public/fonts/unifont-18.0.01-latin.woff2';
 	assert.equal(readFileSync(new URL(file, import.meta.url)).subarray(0, 4).toString(), 'wOF2');
-	assert.ok(tty.includes('/fonts/unifont-18.0.01-latin.woff2'));
+	assert.ok(read('../src/styles/fonts.css').includes('/fonts/unifont-18.0.01-latin.woff2'));
 	assert.match(read('../public/fonts/unifont-OFL.txt'), /SIL OPEN FONT LICENSE/i);
+	// No third-party font stylesheet, and no second family left behind.
+	assert.doesNotMatch(base, /@import|url\(['"]?https?:/);
+	assert.doesNotMatch(base, /@font-face/);
+	assert.ok(!existsSync(new URL('../public/fonts/fira-code-5.2-latin.woff2', import.meta.url)));
+	assert.ok(!existsSync(new URL('../scripts/build-day-font.py', import.meta.url)));
 });
 
-test('day palette keeps the peach hues and the original font stack', () => {
+test('day palette keeps the peach hues', () => {
 	assert.equal(day['--background'], '#fff8f2');
 	assert.equal(day['--surface'], '#ffeadb');
 	assert.equal(day['--accent'], '#b4410f');
@@ -100,22 +105,64 @@ test('day palette keeps the peach hues and the original font stack', () => {
 		}).join('');
 	assert.equal(mix(day['--accent'], day['--background'], 0.3), day['--border-color']);
 	assert.equal(mix(day['--accent'], day['--background'], 0.8), day['--border-strong']);
-	// Code and inline code sit on the surface; the header runs from header-top to the page.
+	// Code and inline code sit on the surface.
 	assert.match(base, /pre\s*\{[^}]*background:\s*var\(--surface\)/);
-	assert.match(read('../src/components/Header.astro'), /background:\s*linear-gradient\(to bottom, var\(--header-top\), var\(--background\)\)/);
 	assert.doesNotMatch(base, /text-shadow/);
-	assert.match(base, /font-family:\s*"Fira Code",\s*"JetBrains Mono"/);
-	// Fira Code is self-hosted: no render-blocking third-party font stylesheet.
-	assert.doesNotMatch(base, /@import|url\(['"]?https?:/);
-	assert.equal(readFileSync(new URL('../public/fonts/fira-code-5.2-latin.woff2', import.meta.url)).subarray(0, 4).toString(), 'wOF2');
-	assert.match(read('../public/fonts/fira-code-OFL.txt'), /SIL Open Font License, Version 1\.1/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
+});
+
+// --menu-hover is declared once as color-mix(accent 15%, surface); resolve it per palette.
+const mixHex = (a: string, b: string, weight: number) =>
+	'#' + [0, 1, 2].map((i) => {
+		const channel = (hex: string) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+		return Math.round(channel(a) * weight + channel(b) * (1 - weight)).toString(16).padStart(2, '0');
+	}).join('');
+const menuHover = (colors: Record<string, string>) => {
+	const [, weight] = dayTokens.match(/--menu-hover:\s*color-mix\(in srgb, var\(--accent\) (\d+)%, var\(--surface\)\);/)!;
+	return mixHex(colors['--accent'], colors['--surface'], Number(weight) / 100);
+};
+
+test('the header is a flat OS-style menu bar, shared by both themes', () => {
+	const header = read('../src/components/Header.astro');
+	const bar = header.match(/\n\theader\s*\{([^}]*)\}/)![1];
+	assert.match(bar, /background:\s*var\(--surface\);/);
+	assert.match(bar, /border-bottom:\s*var\(--hairline\) solid var\(--border-strong\);/);
+	assert.doesNotMatch(header, /gradient/);
+	assert.doesNotMatch(tokens, /--header-top/);
+	assert.doesNotMatch(tty.replace(/\/\*[\s\S]*?\*\//g, ''), /header|menu-bar/i);
+	// Menu items: plain text, hover tints the bar, the current page inverts.
+	assert.match(base, /\.menu-item\s*\{[^}]*min-height:\s*var\(--menu-item-height\);[^}]*border:\s*0;[^}]*background:\s*transparent;/);
+	assert.match(base, /\.menu-item:hover\s*\{\s*background:\s*var\(--menu-hover\);/);
+	assert.match(base, /\.menu-item\[aria-current\]\s*\{\s*background:\s*var\(--accent\);\s*color:\s*var\(--background\);/);
+	for (const file of ['HeaderLink', 'LanguageSwitcher', 'ThemeToggle']) {
+		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*menu-item/, file);
+	}
+	assert.doesNotMatch(header, /class="control/);
+	// Night bevels skip menu items, so both themes share one flat style.
+	assert.match(tty, /:root\[data-theme="tty"\] button:not\(\.menu-item\)\s*\{/);
+	// Contrast: text on the bar and on the hover tint, the inverted item, icons, and the bar's edge.
+	for (const [theme, colors] of Object.entries({ day, night: palette })) {
+		const hover = menuHover(colors);
+		const checks: [string, string, string, number][] = [
+			['text on bar', colors['--foreground'], colors['--surface'], 4.5],
+			['tagline on bar', colors['--secondary'], colors['--surface'], 4.5],
+			['text on hover', colors['--foreground'], hover, 4.5],
+			['inverted item', colors['--background'], colors['--accent'], 4.5],
+			['icon on bar', colors['--accent'], colors['--surface'], 3],
+			['icon on hover', colors['--accent'], hover, 3],
+			['focus ring on bar', colors['--accent'], colors['--surface'], 3],
+			['bar edge on page', colors['--border-strong'], colors['--background'], 3],
+		];
+		for (const [name, fg, bg, floor] of checks) {
+			assert.ok(contrast(fg, bg) >= floor, `${theme} ${name}: ${contrast(fg, bg).toFixed(2)}`);
+		}
+	}
 });
 
 test('both palettes keep every text colour at 4.5:1 or more on each field it sits on', () => {
 	const night = palette;
 	const fields = {
-		day: { background: day['--background'], surface: day['--surface'], 'header-top': day['--header-top'] },
+		day: { background: day['--background'], surface: day['--surface'] },
 		night: { background: night['--background'], surface: night['--surface'], 'control-face': night['--control-face'], 'control-hover': night['--control-hover'] },
 	};
 	const text = {
@@ -139,10 +186,10 @@ test('controls share one box, focus ring and states; night only adds a bevel', (
 	for (const state of ['.control:hover', '.control.active', '.control[aria-current]']) assert.ok(base.includes(state), state);
 	assert.match(base, /\.control,\s*button\s*\{[^}]*min-height:\s*var\(--control-size\);[^}]*border-radius:\s*0;/);
 	// Night: raised and pressed bevels on the same selectors, no new geometry.
-	assert.match(tty, /:root\[data-theme="tty"\] \.control,\s*:root\[data-theme="tty"\] button\s*\{[^}]*box-shadow:\s*inset/);
+	assert.match(tty, /:root\[data-theme="tty"\] \.control,\s*:root\[data-theme="tty"\] button:not\(\.menu-item\)\s*\{[^}]*box-shadow:\s*inset/);
 	assert.match(tty, /:root\[data-theme="tty"\] \.control:active/);
 	assert.doesNotMatch(ttyRules, /(?:width|height|padding|margin|font-size|line-height):/);
-	for (const file of ['HeaderLink', 'LanguageSwitcher', 'ThemeToggle', 'TableOfContents']) {
+	for (const file of ['TableOfContents']) {
 		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*control/, file);
 	}
 });

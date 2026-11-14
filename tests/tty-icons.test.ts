@@ -230,7 +230,7 @@ test('all visible night marks use integer-size grid scaling, currentColor and ze
 	// One 16px grid unit (Unifont's), and the logo shares the day logo's size token.
 	const tokens = read('../src/styles/tokens.css');
 	assert.match(tokens, /--pixel-icon-size:\s*1rem;/);
-	assert.match(tokens, /--logo-size:\s*3rem;/);
+	assert.match(tokens, /--logo-size:\s*2rem;/);
 	assert.match(base, /fill:\s*currentColor/);
 	for (const property of ['animation', 'transition', 'filter', 'box-shadow', 'text-shadow']) assert.match(base, new RegExp(`${property}:\\s*none\\s*!important`));
 	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon.tty-site-logo'), /width:\s*var\(--logo-size\)\s*!important/);

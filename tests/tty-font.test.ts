@@ -5,13 +5,31 @@ import test from 'node:test';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const tty = read('../src/styles/tty.css');
+const base = read('../src/styles/terminal.css');
+// The @font-face subsets, loaded in both themes.
+const fonts = read('../src/styles/fonts.css');
 
-test('all night text, including forms and generated text, uses one CJK-capable pixel family', () => {
-	assert.match(read('../src/styles/tokens.css'), /--tty-font:\s*"Unifont",\s*"Unifont Upper",\s*monospace;/);
-	assert.doesNotMatch(tty, /IBM Plex Mono|Microsoft YaHei|PingFang SC|Noto Sans/);
-	const universal = tty.match(/:root\[data-theme="tty"\] \*,\s*:root\[data-theme="tty"\] \*::before,\s*:root\[data-theme="tty"\] \*::after\s*\{([^}]+)\}/)![1];
-	assert.match(universal, /font-family:\s*var\(--tty-font\)\s*!important;/);
-	assert.match(universal, /font-synthesis:\s*none;/);
+test('every element in both themes uses one CJK-capable pixel family, set once', () => {
+	const tokens = read('../src/styles/tokens.css');
+	const day = tokens.match(/:root\s*\{([^}]+)\}/)![1];
+	assert.match(day, /--font-ui:\s*"Unifont",\s*"Unifont Upper",\s*monospace;/);
+	assert.doesNotMatch(tokens, /--tty-font/);
+	assert.match(base, /body\s*\{[^}]*font-family:\s*var\(--font-ui\);/);
+	// Elements the UA gives another family take the page's instead; nothing else sets one.
+	const families = [...base.matchAll(/font-family:\s*([^;]+);/g)].map((m) => m[1].trim());
+	assert.deepEqual([...new Set(families)].sort(), ['inherit', 'var(--font-ui)']);
+	assert.doesNotMatch(tty, /font-family|font-synthesis/);
+	for (const file of ['tty-pixel-icons.css', 'tokens.css']) assert.doesNotMatch(read(`../src/styles/${file}`).replace(/--font-ui:[^;]+;/, ''), /font-family/, file);
+	for (const file of ['Header', 'HeaderLink', 'LanguageSwitcher', 'ThemeToggle', 'Footer', 'TableOfContents', 'PostMeta']) {
+		assert.doesNotMatch(read(`../src/components/${file}.astro`), /font-family/, file);
+	}
+	assert.doesNotMatch(tty + base + fonts, /Fira Code|IBM Plex Mono|Microsoft YaHei|PingFang SC|Noto Sans/);
+	// fonts.css loads before the element styles and in both themes.
+	const head = read('../src/components/BaseHead.astro');
+	assert.ok(head.indexOf("import '../styles/fonts.css';") > 0);
+	assert.ok(head.indexOf("import '../styles/fonts.css';") < head.indexOf("import '../styles/terminal.css';"));
+	assert.doesNotMatch(head, /fira/i);
+	assert.doesNotMatch(fonts, /data-theme/);
 });
 
 test('self-hosted Unifont preserves its grid, Unicode coverage, metrics and licensing', () => {
@@ -32,7 +50,7 @@ test('self-hosted Unifont preserves its grid, Unicode coverage, metrics and lice
 		assert.equal(bytes.subarray(0, 4).toString(), 'wOF2');
 		assert.equal(bytes.length, asset.bytes);
 		assert.equal(createHash('sha256').update(bytes).digest('hex'), asset.sha256);
-		assert.ok(tty.includes(`src: url('${asset.url}') format('woff2');\n  unicode-range: ${asset.unicodeRange};`), asset.url);
+		assert.ok(fonts.includes(`src: url('${asset.url}') format('woff2');\n  unicode-range: ${asset.unicodeRange};`), asset.url);
 	}
 	assert.ok(manifest.assets[0].bytes < 20_000, 'Latin subset stays small');
 	// The common-character face overlaps the ideograph chunks; the last-defined overlapping face is
@@ -40,15 +58,15 @@ test('self-hosted Unifont preserves its grid, Unicode coverage, metrics and lice
 	const common = manifest.assets.find((asset: { name: string }) => asset.name === 'cjk-common');
 	assert.equal(manifest.commonCharacters.count, 3500);
 	assert.equal(createHash('sha256').update(readFileSync(new URL('../scripts/tgscc-level-1.txt', import.meta.url))).digest('hex'), manifest.commonCharacters.sha256);
-	for (const asset of manifest.assets) if (asset !== common) assert.ok(tty.indexOf(common.url) > tty.indexOf(asset.url), asset.url);
+	for (const asset of manifest.assets) if (asset !== common) assert.ok(fonts.indexOf(common.url) > fonts.indexOf(asset.url), asset.url);
 	const license = read('../public/fonts/unifont-OFL.txt');
 	assert.match(license, /Copyright © 1998-2026 Roman Czyborra/);
 	assert.match(license, /SIL OPEN FONT LICENSE Version 1\.1/);
 });
 
 test('single-weight bitmap outlines are not artificially emboldened or slanted', () => {
-	assert.match(tty, /font-synthesis:\s*none;/);
-	assert.match(tty, /:root\[data-theme="tty"\] strong,\s*:root\[data-theme="tty"\] b,\s*:root\[data-theme="tty"\] em\s*\{[^}]*text-decoration:\s*underline;/);
+	assert.match(base, /body\s*\{[^}]*font-synthesis:\s*none;/);
+	assert.match(base, /\nstrong,\s*b,\s*em\s*\{[^}]*text-decoration:\s*underline;/);
 });
 
 test('supplementary emoji and symbols use the companion pixel font, not a color emoji fallback', () => {
@@ -64,7 +82,7 @@ test('supplementary emoji and symbols use the companion pixel font, not a color 
 	assert.equal(bytes.length, symbols.asset.bytes);
 	assert.ok(bytes.length < 100_000);
 	assert.equal(createHash('sha256').update(bytes).digest('hex'), symbols.asset.sha256);
-	assert.ok(tty.includes(`url('${symbols.asset.url}') format('woff2')`));
+	assert.ok(fonts.includes(`url('${symbols.asset.url}') format('woff2')`));
 });
 
 test('the font documentation distinguishes CJK adaptation from the ASCII-only 4052', () => {

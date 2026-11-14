@@ -39,7 +39,7 @@ test('code is a multi-hue fluorescent exception, not green-only syntax', () => {
   assert.match(config, /name:\s*'tty-neon'/);
   assert.match(tty, /color:\s*var\(--shiki-dark,\s*var\(--code-foreground\)\)/);
   assert.equal(active.palette['--code-foreground'], active.syntax.foreground);
-  assert.match(tty, /font-synthesis:\s*none/);
+  assert.match(read('../src/styles/terminal.css'), /font-synthesis:\s*none/);
 });
 
 test('night marked text uses clear reverse video, like text selection', () => {

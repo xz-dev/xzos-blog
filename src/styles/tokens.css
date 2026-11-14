@@ -2,13 +2,14 @@
  * control sizes. Day is :root; night (data-theme="tty") overrides colours and
  * effects only, so switching theme never moves or resizes anything.
  * terminal.css styles elements and shared classes from these tokens; tty.css
- * adds the night font, glow, overlay and control bevels. */
+ * adds the night glow, overlay and control bevels. One font serves both. */
 
 /* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
- * links reach WCAG AA (>= 4.5:1) on the page, the surface (code, inline code)
- * and both ends of the header gradient. Two borders: --border-strong (the
+ * links reach WCAG AA (>= 4.5:1) on the page, the surface (code, inline code,
+ * the header menu bar) and the menu hover tint. Two borders: --border-strong (the
  * accent mixed 80% into the page) outlines structure that must stay visible,
- * such as tables, code, quotes, at >= 3:1 on the page and the surface;
+ * such as tables, code, quotes and the menu bar's edge, at >= 3:1 on the page
+ * and the surface;
  * --border-color (30%) is for decorative separators only. */
 :root {
   --background: #fff8f2;
@@ -18,13 +19,16 @@
   --secondary: #76605a;
   --emphasized: #42302a;
   --border-color: #e9c1ae;        /* decorative separators: hr, list rules, image frames */
-  --border-strong: #c3663c;       /* structural: tables, code, quotes */
-  --header-top: #ffe4cc;          /* header gradient: --header-top to --background */
+  --border-strong: #c3663c;       /* structural: tables, code, quotes, menu bar edge */
+  /* Menu item hover: the accent tinted into the bar. Declared once; it resolves
+   * against whichever palette is active. */
+  --menu-hover: color-mix(in srgb, var(--accent) 15%, var(--surface));
 
-  /* Size, spacing and width system shared by both themes. tty.css changes
-   * colour, font family and decoration only, so switching theme never moves
-   * or resizes anything. Body text is 16px, Unifont's native grid, and every
+  /* Size, spacing, width and font system shared by both themes. tty.css
+   * changes colour and decoration only, so switching theme never moves or
+   * resizes anything. Body text is 16px, Unifont's native grid, and every
    * line height is a rem length so lines land on whole pixels. */
+  --font-ui: "Unifont", "Unifont Upper", monospace; /* every element, both themes (fonts.css) */
   --font-size: 1rem;              /* body: 16px */
   --line-height: 1.5rem;          /* body and UI: 24px */
   --leading-prose: 1.75rem;       /* running text in posts, pages, excerpts: 28px */
@@ -54,8 +58,9 @@
   --header-width: 75rem;          /* header row: 1200px */
 
   --control-size: 2.5rem;         /* every control's height, icon controls' width: 40px */
+  --menu-item-height: 2rem;       /* header menu items and the logo: 32px */
   --icon-size: 1.25rem;           /* icon inside a control: 20px */
-  --logo-size: 3rem;              /* header logo: 48px */
+  --logo-size: 2rem;              /* header logo, two pixel-icon grid units: 32px */
   --thumb-size: 4rem;             /* archive thumbnail square: 64px */
   --pixel-icon-size: 1rem;        /* night pixel icons: Unifont's 16px grid */
   --rule: 2px;                    /* header, quote and control rules */
@@ -82,8 +87,6 @@
   --edge-light: #7e9821;
   --edge-dark: #000000;
   --edge-inner: #6a811c;
-  --header-top: var(--background);
-  --tty-font: "Unifont", "Unifont Upper", monospace;
   --code-foreground: #e8fff0;
   --tty-glow: 0 0 2px currentColor, 0 0 8px color-mix(in srgb, var(--foreground) 45%, transparent);
   /* Painted behind the content (tty.css), so they darken only the field. */
