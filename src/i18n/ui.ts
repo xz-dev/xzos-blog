@@ -8,6 +8,15 @@ export const languages = {
   'zh-CN': '简体中文',
 } as const;
 
+/** The code shown in the status line and accepted by the shell. The root
+ * locale holds each post in the language it was written in (mostly Chinese,
+ * some English), so it is `src`, not `zh`. */
+export const langCodes = {
+  zh: 'src',
+  en: 'en',
+  'zh-CN': 'zh-CN',
+} as const;
+
 export type Lang = keyof typeof languages;
 
 export const defaultLang: Lang = 'zh';

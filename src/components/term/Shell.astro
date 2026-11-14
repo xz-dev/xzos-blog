@@ -6,7 +6,7 @@
  * 命令表在 src/lib/xzsh.ts；这里只负责绘制输出、编辑键与执行动作。
  */
 import { getBlogPrefix, getHomePath } from '../../i18n/collections';
-import { languages, type Lang, type UIKey } from '../../i18n/ui';
+import { langCodes, languages, type Lang, type UIKey } from '../../i18n/ui';
 import { useTranslations } from '../../i18n/utils';
 import { SITE_HOST, SITE_SINCE } from '../../consts';
 import { COMMANDS, type ShellData } from '../../lib/xzsh';
@@ -22,8 +22,8 @@ const { lang, posts } = Astro.props;
 const t = useTranslations(lang);
 const base = lang === 'zh' ? '' : `/${lang}`;
 const data: ShellData = {
-	lang,
-	homes: Object.fromEntries((Object.keys(languages) as Lang[]).map((locale) => [locale, getHomePath(locale)])),
+	lang: langCodes[lang],
+	homes: Object.fromEntries((Object.keys(languages) as Lang[]).map((locale) => [langCodes[locale], getHomePath(locale)])),
 	blog: `${getBlogPrefix(lang)}/`,
 	about: `${base}/about`,
 	links: '/link-exchange',

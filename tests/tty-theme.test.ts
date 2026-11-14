@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
-import { navItems, ui } from '../src/i18n/ui.ts';
+import { langCodes, navItems, ui } from '../src/i18n/ui.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const base = read('../src/styles/terminal.css');
@@ -160,14 +160,15 @@ test('the header is a tmux-style status line of plain text, shared by both theme
 	const link = read('../src/components/HeaderLink.astro');
 	assert.match(link, /aria-current=\{current\}/);
 	assert.match(link, /<span class="menu-label" aria-hidden="true">\{index\}:<\/span><slot \/>/);
-	// `lang: zh* en zh-CN`: short codes on screen, the full name first in the
+	// `lang: src* en zh-CN`: short codes on screen (the root locale is `src`), the full name first in the
 	// accessible name, the prefix from i18n.
 	const languages = read('../src/components/LanguageSwitcher.astro');
 	assert.match(languages, /<span class="menu-label" aria-hidden="true">\{t\('lang\.prefix'\)\}<\/span>/);
-	assert.match(languages, /const name = `\$\{languages\[lang\]\} \(\$\{lang\}\)`;/);
+	assert.match(languages, /const name = `\$\{languages\[lang\]\} \(\$\{langCodes\[lang\]\}\)`;/);
 	assert.match(languages, /aria-label=\{name\}/);
 	assert.match(languages, /aria-current=\{lang === currentLang \? 'page' : undefined\}/);
-	assert.match(languages, />\s*\{lang\}\s*<\/a>/);
+	assert.match(languages, />\s*\{langCodes\[lang\]\}\s*<\/a>/);
+	assert.deepEqual(langCodes, { zh: 'src', en: 'en', 'zh-CN': 'zh-CN' });
 	for (const lang of ['zh', 'en', 'zh-CN'] as const) assert.equal(ui[lang]['lang.prefix'], 'lang:');
 	// Contrast: entries, dim fields, the current and hovered entry and the
 	// focus ring on the bar, and the bar's edge on the page.
