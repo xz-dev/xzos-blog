@@ -72,6 +72,22 @@ export const ui = {
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
 
+    // 首页命令行（xzsh）：命令名保留英文
+    'shell.label': 'xzOS 命令行',
+    'shell.hint': '输入 help 查看命令',
+    'shell.keys': 'Tab 补全命令，↑↓ 翻阅历史，Ctrl+L 清屏，Esc 清空本行',
+    'shell.help.help': '列出命令',
+    'shell.help.ls': '最近文章；-a 列出十篇',
+    'shell.help.cat': '打开关于页',
+    'shell.help.cd': '前往文章、友链或首页',
+    'shell.help.theme': '切换日间或夜间主题',
+    'shell.help.lang': '切换语言',
+    'shell.help.whoami': '显示当前用户',
+    'shell.help.uname': '显示系统信息',
+    'shell.help.date': '显示当前日期与时间',
+    'shell.help.uptime': '显示运行时长',
+    'shell.help.clear': '清屏',
+
     // 分页
     'pagination.label': '分页',
     'pagination.prev': '← 上一页',
@@ -143,6 +159,22 @@ export const ui = {
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
 
+    // Home page shell (xzsh): command names stay English
+    'shell.label': 'xzOS shell',
+    'shell.hint': 'Type help to list commands',
+    'shell.keys': 'Tab completes, ↑↓ browse history, Ctrl+L clears the screen, Esc clears the line',
+    'shell.help.help': 'list commands',
+    'shell.help.ls': 'latest posts; -a lists ten',
+    'shell.help.cat': 'open the about page',
+    'shell.help.cd': 'go to posts, links or home',
+    'shell.help.theme': 'switch to the day or night theme',
+    'shell.help.lang': 'switch language',
+    'shell.help.whoami': 'print the user',
+    'shell.help.uname': 'print system information',
+    'shell.help.date': 'print the date and time',
+    'shell.help.uptime': 'print how long xzOS has been up',
+    'shell.help.clear': 'clear the screen',
+
     // Pagination
     'pagination.label': 'Pagination',
     'pagination.prev': '← Previous',
@@ -206,6 +238,22 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+
+    // 首页命令行（xzsh）：命令名保留英文
+    'shell.label': 'xzOS 命令行',
+    'shell.hint': '输入 help 查看命令',
+    'shell.keys': 'Tab 补全命令，↑↓ 翻阅历史，Ctrl+L 清屏，Esc 清空本行',
+    'shell.help.help': '列出命令',
+    'shell.help.ls': '最近文章；-a 列出十篇',
+    'shell.help.cat': '打开关于页',
+    'shell.help.cd': '前往文章、友链或首页',
+    'shell.help.theme': '切换日间或夜间主题',
+    'shell.help.lang': '切换语言',
+    'shell.help.whoami': '显示当前用户',
+    'shell.help.uname': '显示系统信息',
+    'shell.help.date': '显示当前日期与时间',
+    'shell.help.uptime': '显示运行时长',
+    'shell.help.clear': '清屏',
 
     // 分页
     'pagination.label': '分页',

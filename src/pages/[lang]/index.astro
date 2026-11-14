@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Home from '../../layouts/Home.astro';
+import { LS_ALL } from '../../lib/xzsh';
 import { getBlogCollection, nonDefaultLocales } from '../../i18n/collections';
 import type { Lang } from '../../i18n/ui';
 
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
 		);
 		paths.push({
 			params: { lang },
-			props: { lang, posts: allPosts.slice(0, 5), postCount: allPosts.length },
+			props: { lang, posts: allPosts.slice(0, LS_ALL), postCount: allPosts.length },
 		});
 	}
 	return paths;

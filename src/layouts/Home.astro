@@ -11,6 +11,7 @@ import PageFrame from '../components/PageFrame.astro';
 import PixelArrowText from '../components/PixelArrowText.astro';
 import OutputList from '../components/term/OutputList.astro';
 import Prompt from '../components/term/Prompt.astro';
+import Shell from '../components/term/Shell.astro';
 import { getBlogPrefix, getHomePath, getHtmlLang } from '../i18n/collections';
 import { languages, type Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
@@ -18,10 +19,11 @@ import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
 import { formatPostDate } from '../lib/post-date';
 import { SITE_DESCRIPTION, SITE_HOST, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS } from '../consts';
 import { formatUptime } from '../lib/uptime';
+import { LS } from '../lib/xzsh';
 
 interface Props {
 	lang: Lang;
-	/** The newest posts of this locale, newest first. */
+	/** The newest posts of this locale, newest first: the first LS are listed, up to LS_ALL feed the shell's `ls -a`. */
 	posts: any[];
 	/** Every post of this locale. */
 	postCount: number;
@@ -42,6 +44,8 @@ const swatches = ['background', 'surface', 'border-color', 'border-strong', 'sec
 // `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
 const allPosts = t('home.allPosts').replace(/^→\s*/, '');
 const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
+const datetime = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime;
+const recent = posts.slice(0, LS);
 ---
 
 <!doctype html>
@@ -250,15 +254,16 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 
 			<section class="recent" aria-labelledby="recent-heading">
 				<h2 id="recent-heading" class="sr-only">{t('home.recent')}</h2>
-				<Prompt command={t('term.recent', { count: posts.length })} />
+				<Prompt command={t('term.recent', { count: recent.length })} />
 				<OutputList
-					rows={posts.map((post) => ({
-						left: { text: day(post), datetime: formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime },
+					rows={recent.map((post) => ({
+						left: { text: day(post), datetime: datetime(post) },
 						right: { text: post.data.title, href: `${blogPrefix}/${post.id}/` },
 					}))}
 				/>
 				<a class="all-posts" href={`${blogPrefix}/`}><span class="all-posts-arrow"><PixelArrowText text="→" /></span>{allPosts}</a>
 				<Prompt cursor blink />
+				<Shell lang={lang} posts={posts.map((post) => ({ date: day(post), datetime: datetime(post), title: post.data.title, href: `${blogPrefix}/${post.id}/` }))} />
 			</section>
 		</PageFrame>
 		<Footer />
