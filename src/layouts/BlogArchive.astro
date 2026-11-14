@@ -47,6 +47,25 @@ const posts = (await getCollection(collectionName as any)).sort(
 			.post-text {
 				grid-column: 2;
 			}
+			/* Phones: the reserved column would cost a quarter of the width and
+			 * leave most entries indented beside nothing. The text takes the
+			 * full row; an entry with a picture puts it on the right. */
+			@media (max-width: 720px) {
+				.post-item {
+					grid-template-columns: minmax(0, 1fr);
+				}
+				.post-item:has(.post-thumbnail) {
+					grid-template-columns: minmax(0, 1fr) var(--thumb-size);
+				}
+				.post-text {
+					grid-column: 1;
+					grid-row: 1;
+				}
+				.post-item :global(.post-thumbnail) {
+					grid-column: 2;
+					grid-row: 1;
+				}
+			}
 		</style>
 	</head>
 	<body>
