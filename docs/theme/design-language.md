@@ -307,8 +307,8 @@ info; below that the art stacks above the info.
   Life`), visually hidden (`home` sets `hideTitle` by default); the visible
   title line is the info block's `xz@xzos`.
 - **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
-  (`src/lib/ascii-ring.ts`), on a fixed grid of 42 × 14 cells, one row per
-  line of the info block (the blank line and the palette row included),
+  (`src/lib/ascii-ring.ts`), on a fixed grid of 45 × 15 cells, one row per
+  line of the info block (the blank line and the two palette rows included),
   and 30 × 10 at 420px and below. Cells are
   8 × 24 (one character on a body line), so x is scaled three times y to
   keep the ring round, and the box never changes size. The dashes are a flat band (half-width 0.17 across the ring,
@@ -320,7 +320,7 @@ info; below that the art stacks above the info.
   page script animates it at 12 fps while it is on screen and the tab is
   visible. The art is `aria-hidden` with a visually hidden text alternative.
 - **Pause:** `[pause]` is a plain menu item at the bottom right of the boot
-  block, on the palette row's line, so it takes no line of its own. It has
+  block, on the last palette row's line, so it takes no line of its own. It has
   `aria-pressed` and a constant accessible name, and the page script
   unhides it; without script the page has no motion to stop. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It

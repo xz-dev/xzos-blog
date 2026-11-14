@@ -96,7 +96,7 @@ const recent = posts.slice(0, LS);
 				display: none;
 			}
 			/* The pause control sits at the far right of the boot block's last line
-			 * (the palette row), so it takes no line of its own. */
+			 * (the second palette row), so it takes no line of its own. */
 			.art {
 				width: max-content;
 			}
@@ -192,7 +192,7 @@ const recent = posts.slice(0, LS);
 				color: var(--secondary);
 			}
 			/* The theme's palette after one blank line, like fastfetch's colour
-			 * row: one line high, each swatch three cells wide, no frame. */
+			 * rows: 16 swatches in two lines of eight, each swatch three cells wide, no frame. */
 			.palette {
 				display: grid;
 				grid-template-columns: repeat(8, 3ch);
