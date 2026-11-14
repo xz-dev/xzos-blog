@@ -218,6 +218,9 @@ const data: ShellData = {
 				do out.firstElementChild!.remove();
 				while (out.firstElementChild && !out.firstElementChild.hasAttribute('data-echo'));
 			}
+			// The output pushes the prompt down; keep the line being typed on
+			// screen (a no-op while it is already in view).
+			input.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 		};
 		const setLine = (value: string) => {
 			input.value = value;
