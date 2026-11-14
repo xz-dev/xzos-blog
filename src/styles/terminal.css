@@ -430,26 +430,37 @@ pre {
   border: var(--hairline) solid var(--border-strong);
 }
 
-/* An article's code block with its `[copy]` control (CodeCopy): the control
- * sits on the block's first line at the right, inside the frame, on the
- * block's own surface so a long first line passes under it. It stays visible
- * on touch screens, where there is no hover. */
+/* An article's code block with its `[copy]` control (CodeCopy). The block
+ * and the control share one grid cell; the control sits at its top right,
+ * inside the frame, on the block's own surface, so a long line scrolls
+ * under it. It is sticky, so in a block taller than the screen it stays at
+ * the top of the screen until the block ends. It stays visible on touch
+ * screens, where there is no hover. */
 .code-block {
-  position: relative;
+  display: grid;
   margin: var(--space-4) 0;
+}
+
+.code-block > pre,
+.code-block > .code-copy {
+  grid-area: 1 / 1;
 }
 
 .code-block > pre {
   margin: 0;
+  min-width: 0;
 }
 
 .code-copy {
-  position: absolute;
-  top: var(--hairline);
-  right: var(--hairline);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  justify-self: end;
+  align-self: start;
   gap: 0;
   min-height: var(--leading-code);
-  padding: var(--space-3) var(--space-3) 0 var(--space-1);
+  margin: var(--hairline) var(--hairline) 0 0;
+  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-2);
   background: var(--surface);
   color: var(--secondary);
   font-size: var(--text-code);

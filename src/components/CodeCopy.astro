@@ -2,6 +2,7 @@
 /**
  * 文章代码块的复制按钮：脚本给 .article-body 里的每个 <pre> 加一个 `[复制]`，
  * 点击后复制代码原文，按钮短暂显示 `[已复制]`。没有脚本时不出现按钮。
+ * 非 HTTPS 页面（如局域网预览）没有 Clipboard API，改用 execCommand('copy')。
  */
 import { useTranslations } from '../i18n/utils';
 import type { Lang } from '../i18n/ui';
@@ -22,7 +23,21 @@ const t = useTranslations(Astro.props.lang);
 	// result in place for two seconds; a polite live region announces it.
 	const host = document.querySelector<HTMLElement>('code-copy');
 	const labels = host?.dataset;
-	if (labels && navigator.clipboard) {
+	// Clipboard API where the page is a secure context; elsewhere (an http
+	// preview) the older execCommand copy from a hidden text field.
+	const write = async (text: string) => {
+		if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+		const field = document.createElement('textarea');
+		field.value = text;
+		field.setAttribute('readonly', '');
+		field.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+		document.body.append(field);
+		field.select();
+		const ok = document.execCommand('copy');
+		field.remove();
+		if (!ok) throw new Error('copy failed');
+	};
+	if (labels) {
 		const set = (button: HTMLButtonElement, text: string) => {
 			button.querySelector('.code-copy-text')!.textContent = text;
 		};
@@ -44,7 +59,7 @@ const t = useTranslations(Astro.props.lang);
 			button.addEventListener('click', async () => {
 				let done = true;
 				try {
-					await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? pre.textContent ?? '');
+					await write(pre.querySelector('code')?.textContent ?? pre.textContent ?? '');
 				} catch {
 					done = false;
 				}
