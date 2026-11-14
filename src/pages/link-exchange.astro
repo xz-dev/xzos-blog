@@ -10,6 +10,8 @@ import PageFrame from '../components/PageFrame.astro';
 import OutputList from '../components/term/OutputList.astro';
 import Prompt from '../components/term/Prompt.astro';
 import { SITE_TITLE } from '../consts';
+import { getHtmlLang } from '../i18n/collections';
+import { defaultLang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 
 const t = useTranslations('zh');
@@ -37,7 +39,7 @@ const rows = (links: { name: string; url: string }[]) =>
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={getHtmlLang(defaultLang)}>
 	<head>
 		<BaseHead title={`${t('nav.links')} - ${SITE_TITLE}`} description={t('links.description')} />
 	</head>

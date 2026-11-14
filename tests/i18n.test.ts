@@ -19,8 +19,8 @@ test('each locale names other versions in its own language', () => {
 	for (const [key, value] of Object.entries(ui.en)) assert.doesNotMatch(value, /[\u3000-\u9fff\uff00-\uffef]/, key);
 });
 
-test('every locale has the same keys except the default-only 404 strings', () => {
-	const keys = Object.keys(ui[defaultLang]).filter((key) => !key.startsWith('error.')).sort();
+test('every locale has the same keys', () => {
+	const keys = Object.keys(ui[defaultLang]).sort();
 	for (const lang of ['en', 'zh-CN'] as const) {
 		assert.deepEqual(Object.keys(ui[lang]).sort(), keys, lang);
 	}

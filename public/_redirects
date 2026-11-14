@@ -1,0 +1,7 @@
+# Page 1 of the paginated list repeats the post list; the build does not emit it.
+/page/1 /blog/ 301
+/page/1/ /blog/ 301
+/en/page/1 /en/blog/ 301
+/en/page/1/ /en/blog/ 301
+/zh-CN/page/1 /zh-CN/blog/ 301
+/zh-CN/page/1/ /zh-CN/blog/ 301

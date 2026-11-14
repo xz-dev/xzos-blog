@@ -13,7 +13,7 @@ import PostThumbnail from '../components/PostThumbnail.astro';
 import { getBlogCollection, getBlogPrefix, getHtmlLang } from '../i18n/collections';
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_TITLE } from '../consts';
 
 interface Props {
 	lang: Lang;
@@ -33,7 +33,7 @@ const posts = (await getCollection(collectionName as any)).sort(
 <!doctype html>
 <html lang={htmlLang}>
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`${t('blog.heading')} - ${SITE_TITLE}`} description={t('meta.blogDescription')} />
 		<style>
 			/* Every entry reserves the thumbnail column, so all titles share one
 			 * left edge with or without a picture. The date breaks between day

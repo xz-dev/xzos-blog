@@ -2,6 +2,7 @@
  * 语言到 content collection 名称的映射
  */
 import { defaultLang, type Lang } from './ui.ts';
+import { getLangTag } from './seo.ts';
 
 /** 非默认语言列表 — [lang] 动态路由的单一来源 */
 export const nonDefaultLocales: Lang[] = ['en', 'zh-CN'];
@@ -18,11 +19,9 @@ export function getPagesCollection(lang: Lang): string {
 	return `pages-${lang}`;
 }
 
-/** 获取 HTML lang 属性值 */
+/** 获取 HTML lang 属性值：源站的中文页面是 zh-Hans，见 seo.ts */
 export function getHtmlLang(lang: Lang): string {
-	// 'zh' 在 HTML 中应使用 'zh-CN'
-	if (lang === 'zh') return 'zh-CN';
-	return lang;
+	return getLangTag(lang);
 }
 
 /** 获取博客文章链接前缀 */

@@ -9,10 +9,10 @@ import Header from '../components/Header.astro';
 import PageFrame from '../components/PageFrame.astro';
 import PostMeta from '../components/PostMeta.astro';
 import PixelArrowText from '../components/PixelArrowText.astro';
-import { getBlogPrefix, getHomePath, getHtmlLang, getPagePrefix } from '../i18n/collections';
+import { getBlogPrefix, getHtmlLang, getPagePrefix } from '../i18n/collections';
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_TITLE } from '../consts';
 
 interface PostWithExcerpt {
 	post: any;
@@ -31,24 +31,22 @@ const t = useTranslations(lang);
 const htmlLang = getHtmlLang(lang);
 const blogPrefix = getBlogPrefix(lang);
 const pagePrefix = getPagePrefix(lang);
-const homePath = getHomePath(lang);
 
-const pageTitle = currentPage === 1
-	? `${SITE_TITLE} - ${t('site.tagline')}`
-	: t('pagination.pageTitle', { title: SITE_TITLE, page: currentPage.toString() });
+// /page/1/ redirects to the post list (public/_redirects), so every page is numbered.
+const pageTitle = `${t('pagination.pageTitle', { title: t('blog.heading'), page: currentPage.toString() })} - ${SITE_TITLE}`;
 
 // Pagination shows the first and last page and the current page's
 // neighbours; a gap between two shown numbers becomes an ellipsis.
 const shownPages = [...new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages])]
 	.filter((page) => page >= 1 && page <= totalPages)
 	.sort((a, b) => a - b);
-const pageHref = (page: number) => (page === 1 ? homePath : `${pagePrefix}/${page}/`);
+const pageHref = (page: number) => (page === 1 ? `${blogPrefix}/` : `${pagePrefix}/${page}/`);
 ---
 
 <!doctype html>
 <html lang={htmlLang}>
 	<head>
-		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
+		<BaseHead title={pageTitle} description={t('meta.blogDescription')} />
 		<style>
 			.post-excerpt {
 				color: var(--foreground);

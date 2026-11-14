@@ -1,0 +1,37 @@
+---
+/**
+ * The 404 page of one locale. The build writes /404.html, /en/404.html and
+ * /zh-CN/404.html (integrations/localized-404.ts); Cloudflare Pages answers a
+ * missing address with the 404.html nearest to it, so /en/nope gets English.
+ */
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PageFrame from '../components/PageFrame.astro';
+import { getHomePath, getHtmlLang } from '../i18n/collections';
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import { SITE_TITLE } from '../consts';
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<!doctype html>
+<html lang={getHtmlLang(lang)}>
+	<head>
+		<BaseHead title={`${t('error.pageNotFound')} - ${SITE_TITLE}`} description={t('error.description')} noindex />
+	</head>
+	<body>
+		<Header />
+		<PageFrame title={`404 ${t('error.pageNotFound')}`}>
+			<p>{t('error.message')}</p>
+			<p><a href={getHomePath(lang)}>{t('error.backHome')}</a></p>
+		</PageFrame>
+		<Footer />
+	</body>
+</html>

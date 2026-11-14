@@ -16,7 +16,8 @@ export async function getStaticPaths() {
 
 		const totalPages = Math.ceil(posts.length / postsPerPage);
 
-		for (let i = 0; i < totalPages; i++) {
+		// Page 1 is the post list: public/_redirects sends /<lang>/page/1/ to /<lang>/blog/.
+		for (let i = 1; i < totalPages; i++) {
 			const pageNum = i + 1;
 			const start = i * postsPerPage;
 			const end = start + postsPerPage;

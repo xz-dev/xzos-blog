@@ -1,9 +1,10 @@
 ---
 /**
- * 文章标题下的语言版本说明：译文注明译自中文原文，并列出其他语言版本
+ * 文章标题下的语言版本说明：译文注明译自哪种语言的原文，并列出其他语言版本
  */
 import { getEntry } from 'astro:content';
 import { getBlogCollection, getBlogPrefix } from '../i18n/collections';
+import { getLangTag, isCopyOfSource, type SourceLang } from '../i18n/seo';
 import { defaultLang, languages, type Lang } from '../i18n/ui';
 import { isMachineTranslation, useTranslations } from '../i18n/utils';
 import PixelIcon from './PixelIcon.astro';
@@ -11,19 +12,23 @@ import PixelIcon from './PixelIcon.astro';
 interface Props {
   slug: string;
   lang?: Lang;
+  /** The root original's language (getPostSourceLang). */
+  source?: SourceLang;
 }
 
-const { slug, lang = defaultLang } = Astro.props;
+const { slug, lang = defaultLang, source = 'zh' } = Astro.props;
 const t = useTranslations(lang);
-// Only machine translations carry the notice; a copy (is_copy) is the original text.
+// Only machine translations carry the notice; a copy (is_copy, or a version
+// in the original's own language) is the original text.
 const entry = lang === defaultLang ? undefined : await getEntry(getBlogCollection(lang) as any, slug);
-const isTranslation = isMachineTranslation(lang, (entry as any)?.data);
+const data = (entry as any)?.data;
+const isTranslation = isMachineTranslation(lang, data) && !isCopyOfSource(lang, source, data);
 
 const otherLangs = (Object.keys(languages) as Lang[]).filter((other) => other !== lang);
 const versions = [];
 for (const other of otherLangs) {
   if (await getEntry(getBlogCollection(other) as any, slug)) {
-    versions.push({ lang: other, path: `${getBlogPrefix(other)}/${slug}`, label: languages[other] });
+    versions.push({ lang: other, hreflang: getLangTag(other, source), path: `${getBlogPrefix(other)}/${slug}/`, label: languages[other] });
   }
 }
 ---
@@ -33,7 +38,7 @@ for (const other of otherLangs) {
     {isTranslation && (
       <p>
         <PixelIcon name="translation" class="notice-mark" />
-        {t('notice.translatedBefore')}<a href={`${getBlogPrefix(defaultLang)}/${slug}`} hreflang="zh">{t('notice.translatedLink')}</a>{t('notice.translatedAfter')}
+        {t('notice.translatedBefore')}<a href={`${getBlogPrefix(defaultLang)}/${slug}/`} hreflang={getLangTag(defaultLang, source)}>{t(source === 'en' ? 'notice.translatedLinkEn' : 'notice.translatedLink')}</a>{t('notice.translatedAfter')}
       </p>
     )}
     {versions.length > 0 && (
@@ -43,7 +48,7 @@ for (const other of otherLangs) {
         {versions.map((version, index) => (
           <>
             {index > 0 && ' / '}
-            <a href={version.path} hreflang={version.lang}>{version.label}</a>
+            <a href={version.path} hreflang={version.hreflang}>{version.label}</a>
           </>
         ))}
       </p>

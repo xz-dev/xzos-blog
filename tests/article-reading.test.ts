@@ -78,7 +78,7 @@ test('the contents are a real nested list with decorative prefixes and a current
 
 test('an article is a head block closed by a structural rule, the body, then the comments block', () => {
 	const frame = read('../src/components/PageFrame.astro');
-	assert.match(frame, /<article class="prose article">\s*<header class="article-head">\s*<slot name="hero" \/>\s*<slot name="meta" \/>\s*<h1 class="page-title">\{title\}<\/h1>\s*<slot name="head" \/>\s*<\/header>\s*<slot name="aside" \/>\s*<div class="article-body">\s*<slot \/>\s*<\/div>\s*<\/article>\s*<slot name="after" \/>/);
+	assert.match(frame, /<article class="prose article">\s*<header class="article-head">\s*<slot name="hero" \/>\s*<slot name="meta" \/>\s*<h1 class="page-title" lang=\{contentLang\}>\{title\}<\/h1>\s*<slot name="head" \/>\s*<\/header>\s*<slot name="aside" \/>\s*<div class="article-body" lang=\{contentLang\}>\s*<slot \/>\s*<\/div>\s*<\/article>\s*<slot name="after" \/>/);
 	assert.equal((frame.match(/<h1/g) ?? []).length, 2, 'one h1 per pattern branch');
 	const head = ruleFor('.article-head');
 	assert.match(head, /margin-block-end:\s*var\(--space-4\);/);
