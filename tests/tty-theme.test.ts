@@ -87,7 +87,7 @@ test('night differs from day through tokens; glow, scanlines and vignette are st
 	assert.match(tty, /transition:\s*none\s*!important/);
 	// One radius, a token: no literal radius anywhere else.
 	assert.match(dayTokens, /--radius:\s*0;/);
-	const styles = ['terminal.css', 'tty.css', 'tty-pixel-icons.css'].map((f) => read(`../src/styles/${f}`)).join('');
+	const styles = ['terminal.css', 'tty.css'].map((f) => read(`../src/styles/${f}`)).join('');
 	const components = ['Header', 'Footer', 'PostThumbnail', 'TableOfContents', 'ThemeToggle', 'PageFrame', 'PostMeta'].map((f) => read(`../src/components/${f}.astro`)).join('');
 	for (const value of [...(styles + components).matchAll(/border-radius:\s*([^;]+);/g)].map((m) => m[1])) assert.equal(value, 'var(--radius)');
 });

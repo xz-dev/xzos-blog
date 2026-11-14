@@ -8,8 +8,8 @@ const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
 <button id="theme-toggle" class="menu-item" aria-label={t('theme.toggle')} title={t('theme.toggle')} aria-pressed="false">
-	<PixelIcon name="sun" class="theme-sun" bothThemes />
-	<PixelIcon name="moon" class="theme-moon" bothThemes />
+	<PixelIcon name="sun" class="theme-sun" />
+	<PixelIcon name="moon" class="theme-moon" />
 </button>
 <script is:inline>
 	// The head script has already chosen the theme; match it before first paint

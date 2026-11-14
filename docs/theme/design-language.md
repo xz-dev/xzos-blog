@@ -35,7 +35,7 @@ block redefines colours and the role tokens only.
 | Page frame and title | `PageFrame` (`list`, `page`, `article`, `home`; `hideTitle`) with `.page-title` | `src/components/PageFrame.astro`, `terminal.css` |
 | Menu item | `.menu-item`, `.menu-label`, `.menu-item-icon` | header status line, footer social links |
 | Control | `.control` | pagination |
-| Pixel mark (both themes) | `PixelIcon bothThemes` (`.pixel-icon`) | header logo, theme toggle |
+| Icon | `PixelIcon` (`.pixel-icon`): one hand-drawn 16×16 set, the same in both themes, coloured by `currentColor` | header logo, social links, theme toggle, notices, contents, pagination and read-more arrows |
 | Meta line | `PostMeta` (`.post-meta`) | post lists, posts |
 | Prompt line | `term/Prompt` (`.term-prompt`, `.term-command`): `$ command`, or `$` and the cursor | home, about, link-exchange |
 | Command output | `term/OutputList` (`.term-output`): aligned `left  right` rows | home (recent posts), link-exchange |
@@ -188,8 +188,9 @@ block sit side by side; below that the art stacks above the info.
 `src/styles/tty.css` turns motion off on every element, which a token cannot
 reach, and lets the home page's cursor blink through (the logo is drawn by
 script, which the reset does not touch). It also applies Shiki's per-span
-`--shiki-dark` colours, which Shiki writes inline. `src/styles/tty-pixel-icons.css` swaps the social, notice,
-contents and pagination icons for hand-drawn 16×16 pixel icons, because night
-uses a different set of drawn assets. The logo and the theme toggle use the
-pixel drawings in both themes. `ThemeToggle.astro` shows the sun or moon from
-`data-theme` so the icon is right at first paint, before any script runs.
+`--shiki-dark` colours, which Shiki writes inline. Icons are not night-only:
+every first-party UI icon is the same 16×16 pixel drawing in both themes
+(`PixelIcon`, see `docs/theme/tty-icons.md`); only its colour changes.
+`ThemeToggle.astro` shows the sun or moon from `data-theme` as a state
+indicator, so the icon is right at first paint, before any script runs. The
+favicon still switches from the day PNG to `/favicon-tty.svg` at night.

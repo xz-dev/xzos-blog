@@ -163,7 +163,7 @@ a:hover {
   padding: 0 var(--space-1);
 }
 
-/* Pagination: a taller target; night's arrow icons sit apart from the text. */
+/* Pagination: a taller target; the arrow icons sit apart from the text. */
 .control {
   gap: var(--space-2);
   min-height: var(--control-size);
@@ -207,19 +207,16 @@ span.control {
   color: var(--accent);
 }
 
-.menu-item-icon svg {
-  width: var(--icon-size);
-  height: var(--icon-size);
-}
-
-/* Pixel marks drawn the same in both themes (PixelIcon bothThemes): the logo
- * and the theme toggle. One 16px grid unit, Unifont's; night-only marks that
- * replace a day drawing are in tty-pixel-icons.css. */
+/* Every first-party UI icon (PixelIcon): one hand-drawn 16×16 set, the same
+ * drawing in both themes, coloured by currentColor. One grid unit, Unifont's,
+ * sitting on the text baseline like a glyph. Article images and the favicon
+ * are not drawn this way. */
 .pixel-icon {
   display: inline-block;
   flex-shrink: 0;
   width: var(--pixel-icon-size);
   height: var(--pixel-icon-size);
+  vertical-align: -2px;
 }
 
 /* One keyboard focus ring for every focusable element, in both themes. */

@@ -6,16 +6,15 @@ interface Props {
 	class?: string;
 	/** Omit for decorative marks inside an already-labelled control. */
 	label?: string;
-	/** Shown in both themes (.pixel-icon in terminal.css) rather than as a
-	 * night-only replacement for a day drawing (.tty-pixel-icon). */
-	bothThemes?: boolean;
 }
 
-const { name, class: className, label, bothThemes = false } = Astro.props;
+// One icon set for both themes: the same drawing, coloured by currentColor
+// (.pixel-icon in terminal.css).
+const { name, class: className, label } = Astro.props;
 const rects = pixelIconRects(name);
 ---
 <svg
-	class:list={[bothThemes ? 'pixel-icon' : 'tty-pixel-icon', className]}
+	class:list={['pixel-icon', className]}
 	data-pixel-icon={name}
 	width="16"
 	height="16"

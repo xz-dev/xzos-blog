@@ -6,22 +6,12 @@ import { ui } from '../src/i18n/ui.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const loadIcons = () => import('../src/lib/pixel-icons.ts');
-const css = () => read('../src/styles/tty-pixel-icons.css');
+const terminal = () => read('../src/styles/terminal.css');
+const iconComponents = ['Header', 'Footer', 'ThemeToggle', 'LanguageVersionNotice', 'TableOfContents', 'PixelArrowText', 'PixelIcon'];
 const expectedNames = [
 	'logo', 'mastodon', 'github', 'stack-overflow', 'sun', 'moon',
 	'globe', 'translation', 'chevron-right', 'chevron-down', 'arrow-left', 'arrow-right',
 ];
-
-function cssRules() {
-	return [...css().replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-		.map(([, selector, body]) => ({ selector: selector.trim(), body }));
-}
-
-function ruleFor(selector: string) {
-	const rule = cssRules().find((rule) => rule.selector.split(',').map((s) => s.trim()).includes(selector));
-	assert.ok(rule, `Missing rule: ${selector}`);
-	return rule.body;
-}
 
 test('each first-party icon is an explicit, nonempty hand-authored 16 × 16 dot/hash grid', async () => {
 	const { PIXEL_GRID_SIZE, PIXEL_ICONS } = await loadIcons();
@@ -94,7 +84,7 @@ test('the brand keeps a broken ring and an empty centre, not a filled disc or un
 	assert.ok(components >= 8 && components <= 20, `Expected separated ring dashes, got ${components}`);
 });
 
-test('PixelIcon is monochrome, crisp, accessible and hidden by default rather than replacing the day drawing', () => {
+test('PixelIcon is monochrome, crisp, accessible and the same drawing in both themes', () => {
 	const component = read('../src/components/PixelIcon.astro');
 	assert.match(component, /pixelIconRects\(name\)/);
 	assert.match(component, /data-pixel-icon=\{name\}/);
@@ -104,39 +94,50 @@ test('PixelIcon is monochrome, crisp, accessible and hidden by default rather th
 	assert.match(component, /aria-hidden=/);
 	assert.match(component, /aria-label=\{label\}/);
 	assert.match(component, /focusable="false"/);
-	// Night-only by default; bothThemes switches to the shared .pixel-icon class.
-	assert.match(component, /class:list=\{\[bothThemes \? 'pixel-icon' : 'tty-pixel-icon', className\]\}/);
-	assert.match(ruleFor('.tty-pixel-icon'), /display:\s*none\s*!important/);
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon'), /display:\s*inline-block\s*!important/);
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-original-icon'), /display:\s*none\s*!important/);
+	// One icon set: every PixelIcon gets the shared class, with no theme switch.
+	assert.match(component, /class:list=\{\['pixel-icon', className\]\}/);
+	assert.doesNotMatch(component, /bothThemes|tty-pixel-icon/);
+	const shared = terminal().match(/\n\.pixel-icon\s*\{([^}]*)\}/)![1];
+	assert.match(shared, /display:\s*inline-block;/);
+	assert.match(shared, /width:\s*var\(--pixel-icon-size\);/);
+	assert.match(shared, /height:\s*var\(--pixel-icon-size\);/);
+	assert.doesNotMatch(shared, /!important|data-theme/);
+	// One 16px grid unit (Unifont's), the text size; the header logo is a glyph
+	// of the status line at the same unit (Header.astro), not a larger mark.
+	const tokens = read('../src/styles/tokens.css');
+	assert.match(tokens, /--pixel-icon-size:\s*1rem;/);
+	assert.doesNotMatch(tokens, /--logo-size|--icon-size/);
 });
 
-test('Header and Footer cover all social marks, preserve original SVGs and retain accessible link names', () => {
+test('no UI icon is swapped by theme: no original drawings, no swap stylesheet', () => {
+	assert.throws(() => read('../src/styles/tty-pixel-icons.css'), /ENOENT/);
+	assert.doesNotMatch(read('../src/components/BaseHead.astro'), /tty-pixel-icons/);
+	const sources = [...iconComponents.map((f) => read(`../src/components/${f}.astro`)), read('../src/layouts/BlogList.astro'), terminal(), read('../src/styles/tty.css')].join('');
+	assert.doesNotMatch(sources, /tty-(?:original|pixel)-icon|tty-(?:pixel|text)-label|bothThemes|<path\b/);
+	assert.doesNotMatch(terminal(), /\.menu-item-icon svg/);
+});
+
+test('Header and Footer draw every social mark as a pixel icon and retain accessible link names', () => {
 	for (const filename of ['Header', 'Footer']) {
 		const component = read(`../src/components/${filename}.astro`);
-		for (const name of ['mastodon', 'github', 'stack-overflow']) assert.ok(component.includes(`<PixelIcon name="${name}"`));
-		assert.equal((component.match(/<svg class="tty-original-icon"/g) ?? []).length, 3);
-		assert.equal((component.match(/<path\s+fill="currentColor"\s+d=/g) ?? []).length, 3);
+		for (const name of ['mastodon', 'github', 'stack-overflow']) assert.ok(component.includes(`<PixelIcon name="${name}" />`));
+		assert.doesNotMatch(component, /<svg\b/);
 		for (const key of ['social.mastodon', 'social.github', 'social.stackOverflow']) assert.ok(component.includes(`<span class="sr-only">{t('${key}')}</span>`));
 	}
 	// One logo in both themes: the pixel drawing, coloured by the accent; the
 	// PNG stays only as the day favicon.
 	const header = read('../src/components/Header.astro');
 	assert.doesNotMatch(header, /dotted_circle\.png|<img/);
-	assert.ok(header.includes("<PixelIcon name=\"logo\" class=\"site-logo\" label={t('site.logoAlt')} bothThemes />"));
+	assert.ok(header.includes("<PixelIcon name=\"logo\" class=\"site-logo\" label={t('site.logoAlt')} />"));
 	assert.match(header, /\.site-title :global\(\.site-logo\)\s*\{[^}]*width:\s*var\(--pixel-icon-size\);[^}]*height:\s*var\(--pixel-icon-size\);[^}]*color:\s*var\(--accent\);/);
 });
 
-test('the theme button is a plain status-line item with the same pixel sun and moon in both themes', () => {
+test('the theme button is a plain status-line item: a pixel sun in day and a pixel moon at night', () => {
 	const toggle = read('../src/components/ThemeToggle.astro');
-	for (const name of ['sun', 'moon']) assert.ok(toggle.includes(`<PixelIcon name="${name}" class="theme-${name}" bothThemes />`));
-	assert.doesNotMatch(toggle, /tty-original-icon|<circle|<path|position:\s*absolute/);
+	for (const name of ['sun', 'moon']) assert.ok(toggle.includes(`<PixelIcon name="${name}" class="theme-${name}" />`));
+	assert.doesNotMatch(toggle, /<circle|<path|position:\s*absolute/);
 	assert.match(toggle, /<button id="theme-toggle" class="menu-item" aria-label=\{t\('theme\.toggle'\)\}/);
 	assert.match(toggle, /:root\[data-theme="tty"\] #theme-toggle :global\(\.theme-sun\),\s*:root:not\(\[data-theme="tty"\]\) #theme-toggle :global\(\.theme-moon\)\s*\{\s*display:\s*none;/);
-	assert.doesNotMatch(css(), /theme-toggle|tty-site-logo/);
-	const shared = read('../src/styles/terminal.css').match(/\n\.pixel-icon\s*\{([^}]*)\}/)![1];
-	assert.match(shared, /display:\s*inline-block;/);
-	assert.match(shared, /width:\s*var\(--pixel-icon-size\);/);
 });
 
 // aria-pressed must match the theme from first paint: an inline script right
@@ -158,22 +159,21 @@ for (const theme of ['tty', 'solarized', null] as const) {
 	});
 }
 
-test('language and translation notices get distinct pixel marks without hiding the new marks with notice-icon', () => {
+test('language and translation notices get distinct pixel marks in both themes', () => {
 	const notice = read('../src/components/LanguageVersionNotice.astro');
 	assert.doesNotMatch(notice, /🤖|🌐/);
-	for (const name of ['globe', 'translation']) assert.ok(notice.includes(`<PixelIcon name="${name}" class="tty-notice-icon" />`));
-	assert.doesNotMatch(notice, /<PixelIcon[^>]*class="notice-icon/);
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-notice-icon'), /margin-inline-end:\s*var\(--space-2\)/);
+	for (const name of ['globe', 'translation']) assert.ok(notice.includes(`<PixelIcon name="${name}" class="notice-mark" />`));
+	assert.match(notice, /\.version-notices :global\(\.notice-mark\)\s*\{\s*margin-inline-end:\s*var\(--space-2\);/);
+	assert.doesNotMatch(notice, /data-theme/);
 });
 
-test('TOC replaces only the night native marker and preserves the day label without additional whitespace', () => {
+test('TOC draws a pixel chevron for its state in both themes instead of the native marker', () => {
 	const toc = read('../src/components/TableOfContents.astro');
-	assert.ok(toc.includes('<summary><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />{t(\'blog.toc\')}</summary>'));
-	assert.match(ruleFor(':root[data-theme="tty"] .toc summary'), /list-style:\s*none/);
-	assert.match(ruleFor(':root[data-theme="tty"] .toc summary::marker'), /content:\s*''/);
-	assert.match(ruleFor(':root[data-theme="tty"] .toc summary::-webkit-details-marker'), /display:\s*none/);
-	assert.match(ruleFor(':root[data-theme="tty"] .toc details[open] .tty-toc-closed'), /display:\s*none\s*!important/);
-	assert.match(ruleFor(':root[data-theme="tty"] .toc details:not([open]) .tty-toc-open'), /display:\s*none\s*!important/);
+	assert.ok(toc.includes('<summary><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t(\'blog.toc\')}</summary>'));
+	assert.match(toc, /\.toc summary\s*\{[^}]*list-style:\s*none;/);
+	assert.match(toc, /\.toc summary::-webkit-details-marker\s*\{\s*display:\s*none;/);
+	assert.match(toc, /\.toc details\[open\] :global\(\.toc-closed\),\s*\.toc details:not\(\[open\]\) :global\(\.toc-open\)\s*\{\s*display:\s*none;/);
+	assert.doesNotMatch(toc, /data-theme|!important|::marker/);
 });
 
 test('pagination and read-more replace only arrows, retaining all original languages, whitespace and accessible names', async () => {
@@ -196,17 +196,10 @@ test('pagination and read-more replace only arrows, retaining all original langu
 	}
 	// Every read-more link on a page needs its own name: the full label plus the post title.
 	assert.ok(list.includes("aria-label={`${t('blog.continueReading')} ${post.data.title}`}"));
+	// One rendering in both themes: the label text with each arrow drawn as a pixel icon.
 	const helper = read('../src/components/PixelArrowText.astro');
-	assert.match(helper, /splitPixelArrowText\(text\)/);
-	assert.match(helper, /<span class="tty-original-icon tty-text-label">\{text\}<\/span>/);
-	assert.match(helper, /<span class="tty-pixel-label" aria-hidden="true">/);
-	// Keep the full day label in one text run: splitting even a boxless arrow
-	// changes fractional font advance and produced a real 14-pixel regression.
-	assert.match(ruleFor('.tty-original-icon.tty-text-label'), /display:\s*contents\s*!important/);
-	assert.match(ruleFor('.tty-original-icon.tty-text-label'), /color:\s*inherit\s*!important/);
-	assert.match(ruleFor('.tty-original-icon.tty-text-label'), /transition:\s*none\s*!important/);
-	assert.match(ruleFor('.tty-pixel-label'), /display:\s*none\s*!important/);
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-label'), /display:\s*contents\s*!important/);
+	assert.match(helper, /\{splitPixelArrowText\(text\)\.map\(\(part\) => part\.icon \? <PixelIcon name=\{part\.icon\} \/> : part\.text\)\}/);
+	assert.doesNotMatch(helper, /<span/);
 });
 
 test('thumbnails are real images only, and article images remain unprocessed', () => {
@@ -215,14 +208,7 @@ test('thumbnails are real images only, and article images remain unprocessed', (
 	assert.ok(thumbnail.includes('<img width={128} height={128} src={thumbnail.src} alt="" class="thumbnail-image" />'));
 	// No generated placeholder: a post without a real image has no thumbnail.
 	assert.doesNotMatch(thumbnail, /placeholder|gradient|PixelIcon|box-shadow|transform|transition/);
-	const newCSS = css();
-	assert.doesNotMatch(newCSS, /image-rendering|url\(|backdrop-filter|(?:blur|drop-shadow)\(/);
-	for (const [, value] of newCSS.matchAll(/\bfilter:\s*([^;]+);/g)) assert.match(value, /^none\s*!important$/);
-	for (const { selector, body } of cssRules()) {
-		if (/\bimg\b|\.thumbnail-image|\.prose\b|\.post-excerpt\b/.test(selector)) {
-			assert.doesNotMatch(body, /image-rendering|filter|mask|opacity|transform/);
-		}
-	}
+	assert.doesNotMatch(terminal(), /image-rendering:\s*pixelated/);
 });
 
 test('archive thumbnails come from the hero image, else the first body image, and link to the post', async () => {
@@ -238,24 +224,6 @@ test('archive thumbnails come from the hero image, else the first body image, an
 	assert.match(read('../src/layouts/BlogArchive.astro'), /<PostThumbnail post=\{post\} href=\{`\$\{blogPrefix\}\/\$\{post\.id\}\/`\} \/>/);
 });
 
-test('all visible night marks use integer-size grid scaling, currentColor and zero motion or decorative effects', () => {
-	for (const { selector } of cssRules()) {
-		for (const part of selector.split(',')) {
-			assert.ok(part.trim().startsWith(':root[data-theme="tty"]') || ['.tty-pixel-icon', '.tty-pixel-label', '.tty-original-icon.tty-text-label'].includes(part.trim()), `Unscoped day-changing rule: ${part}`);
-		}
-	}
-	const base = ruleFor(':root[data-theme="tty"] .tty-pixel-icon');
-	assert.match(base, /width:\s*var\(--pixel-icon-size\)\s*!important/);
-	assert.match(base, /height:\s*var\(--pixel-icon-size\)\s*!important/);
-	// One 16px grid unit (Unifont's), the text size; the header logo is a glyph
-	// of the status line at the same unit (Header.astro), not a larger mark.
-	const tokens = read('../src/styles/tokens.css');
-	assert.match(tokens, /--pixel-icon-size:\s*1rem;/);
-	assert.doesNotMatch(tokens, /--logo-size/);
-	assert.match(base, /fill:\s*currentColor/);
-	for (const property of ['animation', 'transition', 'filter', 'box-shadow', 'text-shadow']) assert.match(base, new RegExp(`${property}:\\s*none\\s*!important`));
-});
-
 test('the same-origin static night favicon uses the same hand-drawn logo grid as page UI', async () => {
 	const { renderPixelIconSvg } = await loadIcons();
 	const { GET, prerender } = await import('../src/pages/favicon-tty.svg.ts');
@@ -265,7 +233,6 @@ test('the same-origin static night favicon uses the same hand-drawn logo grid as
 	assert.match(response.headers.get('Content-Type')!, /^image\/svg\+xml/);
 	assert.equal(await response.text(), renderPixelIconSvg('logo', '#d4ff3a'));
 	const head = read('../src/components/BaseHead.astro');
-	assert.ok(head.includes("import '../styles/tty-pixel-icons.css'"));
 	assert.match(head, /<link id="site-favicon" rel="icon" type="image\/png" href="\/dotted_circle.png" sizes="192x192"/);
 	assert.match(head, /<link rel="apple-touch-icon" href="\/dotted_circle.png"/);
 });

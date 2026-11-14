@@ -78,7 +78,7 @@ test('output rows: the left column is as wide as its widest entry and never wrap
 
 test('link hover changes colour and underlines; no hover or focus paints a fill', () => {
 	assert.match(css, /\.term-output li > a:hover\s*\{\s*color:\s*var\(--accent\);\s*text-decoration:\s*underline;\s*\}/);
-	const sheets = [css, tty, read('../src/styles/tty-pixel-icons.css'), read('../src/components/Header.astro'), read('../src/components/Footer.astro'), ...Object.values(pages)];
+	const sheets = [css, tty, read('../src/components/Header.astro'), read('../src/components/Footer.astro'), ...Object.values(pages)];
 	for (const sheet of sheets) {
 		for (const [, body] of sheet.matchAll(/:(?:hover|focus|focus-visible|active)[^{,]*\{([^}]*)\}/g)) {
 			assert.doesNotMatch(body, /background/, body);

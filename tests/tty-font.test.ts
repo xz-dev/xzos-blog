@@ -26,7 +26,7 @@ test('every element in both themes uses one CJK-capable pixel family, set once',
 		assert.match(body, /\bfont:\s*inherit;/, selector);
 	}
 	assert.doesNotMatch(tty, /font-family|font-synthesis/);
-	for (const file of ['tty-pixel-icons.css', 'tokens.css']) assert.doesNotMatch(read(`../src/styles/${file}`).replace(/--font-ui:[^;]+;/, ''), /font-family/, file);
+	for (const file of ['tokens.css']) assert.doesNotMatch(read(`../src/styles/${file}`).replace(/--font-ui:[^;]+;/, ''), /font-family/, file);
 	for (const file of ['Header', 'HeaderLink', 'LanguageSwitcher', 'ThemeToggle', 'Footer', 'TableOfContents', 'PostMeta']) {
 		assert.doesNotMatch(read(`../src/components/${file}.astro`), /font-family/, file);
 	}
