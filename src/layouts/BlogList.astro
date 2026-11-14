@@ -81,7 +81,7 @@ const pageTitle = isFirstPage
 				text-decoration: none;
 			}
 			.post-title a:hover {
-				color: rgb(var(--accent));
+				color: var(--accent);
 			}
 			.post-excerpt {
 				color: rgb(var(--gray-dark));
@@ -134,7 +134,7 @@ const pageTitle = isFirstPage
 				flex-wrap: wrap;
 			}
 			.read-more {
-				color: rgb(var(--accent));
+				color: var(--accent);
 				text-decoration: none;
 				font-weight: 500;
 			}
@@ -185,7 +185,7 @@ const pageTitle = isFirstPage
 								{post.data.author && <span>{t('blog.authorLabel')}{post.data.author}</span>}
 								{post.data.category && <span>{t('blog.categoryLabel')}{post.data.category}</span>}
 								{excerpt.hasMore && (
-									<a href={`${blogPrefix}/${post.id}/`} class="read-more" aria-label={t('blog.continueReading')}>
+									<a href={`${blogPrefix}/${post.id}/`} class="read-more" aria-label={`${t('blog.continueReading')} ${post.data.title}`}>
 										<PixelArrowText text={t('blog.continueReading')} />
 									</a>
 								)}

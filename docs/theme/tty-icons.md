@@ -29,7 +29,7 @@
 
 样式在 `src/styles/tty-pixel-icons.css`，由 `BaseHead.astro` 引入。新增 `.tty-pixel-icon` **默认 `display: none !important`**，只有 `:root[data-theme="tty"]` 显示；原图标只增加 `.tty-original-icon`，只有夜间隐藏。不新建改变原日间 flex/inline 层级的图标外框。
 
-箭头文案由无外框的 `PixelArrowText.astro` 分成两个互斥分支：日间 `.tty-text-label` 保留**完整原字符串的单一文本节点**，夜间 `.tty-pixel-label` 才把箭头替换成方格 SVG。两个分支在各自主题使用 `display: contents`，避免 `.pagination span` 的内边距/边框创建新控件；显式继承颜色并禁用新增 span 自身过渡。不能只给日间箭头单独包 span：即使无盒子，也可能因文本运行被拆分而改变亚像素字宽。三个链接的 `aria-label` 仍为原 `t(...)` 全文；夜间分支与装饰 SVG 不重复加入可访问名称，所有文案、空格及原分页 URL 不变。
+箭头文案由无外框的 `PixelArrowText.astro` 分成两个互斥分支：日间 `.tty-text-label` 保留**完整原字符串的单一文本节点**，夜间 `.tty-pixel-label` 才把箭头替换成方格 SVG。两个分支在各自主题使用 `display: contents`，避免 `.pagination span` 的内边距/边框创建新控件；显式继承颜色并禁用新增 span 自身过渡。不能只给日间箭头单独包 span：即使无盒子，也可能因文本运行被拆分而改变亚像素字宽。分页链接的 `aria-label` 仍为原 `t(...)` 全文；“继续阅读”链接为 `t(...)` 全文加空格和文章标题，使同页各条链接的可访问名称互不相同；夜间分支与装饰 SVG 不重复加入可访问名称，所有文案、空格及原分页 URL 不变。
 
 TOC 的两枚新图标与原“目录”在模板中连续相接，不引入日间空格。仅夜间清除原生 marker，并依据 `<details open>` 显示一个手工三角；不通过脚本重建展开控件。
 
