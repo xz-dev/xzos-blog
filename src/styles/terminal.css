@@ -98,6 +98,110 @@ table {
   margin: 0 0 var(--space-5) 0;
 }
 
+/* Article (PageFrame "article"): a head block (meta, title, language line)
+ * closed by one structural rule and one blank line, the contents
+ * (TableOfContents), the body, then blocks that follow the post (comments).
+ * From 1280px the contents leave the flow for a sticky column beside the
+ * body: the frame widens by that column and the text column keeps its
+ * width. */
+.article-head {
+  margin-block-end: var(--space-4);
+  padding-block-end: var(--space-4);
+  border-block-end: var(--hairline) solid var(--border-strong);
+}
+
+.article-head .post-meta {
+  margin-block-end: var(--space-2);
+}
+
+.article-head .page-title {
+  margin: 0;
+}
+
+.article-body > :first-child {
+  margin-block-start: 0;
+}
+
+.article-body > :last-child {
+  margin-block-end: 0;
+}
+
+@media (min-width: 1280px) {
+  .page-frame-article:has(> .article > .toc) {
+    width: calc(var(--prose-width) + var(--space-5) + var(--toc-width));
+  }
+
+  .article:has(> .toc) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--toc-width);
+    column-gap: var(--space-5);
+    align-items: start;
+  }
+
+  .article > * {
+    grid-column: 1;
+  }
+
+  .page-frame-article .article > .toc {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: sticky;
+    inset-block-start: var(--space-4);
+    max-height: calc(100vh - var(--space-4) * 2);
+    overflow-y: auto;
+    margin: 0;
+  }
+
+  .page-frame-article:has(> .article > .toc) > :not(.article) {
+    max-width: calc(var(--prose-width) - var(--space-3) * 2);
+  }
+}
+
+/* Section headings read as Markdown source: `## ` and `### ` in the accent
+ * before the title (empty alternative text), the title itself emphasized,
+ * and one more blank line above a section than above a paragraph. */
+.article-body :is(h2, h3, h4, h5, h6) {
+  color: var(--emphasized);
+}
+
+.article-body h2 {
+  margin-block-start: var(--space-6);
+}
+
+.article-body h2::before {
+  content: "## ";
+  content: "## " / "";
+  color: var(--accent);
+}
+
+.article-body h3::before {
+  content: "### ";
+  content: "### " / "";
+  color: var(--accent);
+}
+
+/* Night's glow stays on the frame, titles and headings; running text in a
+ * post (paragraphs, lists, tables, quotes, links) is drawn sharp. */
+.article-body {
+  text-shadow: none;
+}
+
+.article-body :is(h2, h3, h4, h5, h6) {
+  text-shadow: var(--text-glow);
+}
+
+/* Comments follow the post as their own block: a structural rule, one blank
+ * line, then a `$ tail -f ~/comments` prompt as the visible title. */
+.article-comments {
+  margin-block-start: var(--space-4);
+  padding-block-start: var(--space-4);
+  border-block-start: var(--hairline) solid var(--border-strong);
+}
+
+.article-comments .term-prompt {
+  margin-block-start: 0;
+}
+
 /* Long paths, option names and URLs in prose (plain text, inline code, links,
  * titles) break rather than widen the page on phones; night sets the same. */
 .prose {
@@ -323,6 +427,7 @@ pre {
   tab-size: 4;
   background: var(--surface) !important;
   color: var(--foreground);
+  margin: var(--space-4) 0;
   padding: var(--space-3);
   font-size: var(--text-code) !important;
   line-height: var(--leading-code);
@@ -362,11 +467,14 @@ mark {
   opacity: 1 !important;
 }
 
-/* One quote style in both themes: a thin rule, no fill, no bar. */
+/* One quote style in both themes: a rule, no fill, one blank line above and
+ * below, and the text in --secondary (4.5:1 on the page in both themes) so
+ * a quote never reads as the post's own text. */
 blockquote {
   margin: var(--space-4) 0;
   padding: 0 0 0 var(--space-3);
   border-inline-start: var(--rule) solid var(--border-strong);
+  color: var(--secondary);
   font-style: normal;
 }
 
@@ -433,29 +541,26 @@ hr {
   height: var(--rule);
 }
 
-/* Post lists (home and archive): a title, then the meta line (PostMeta); a
- * thin decorative rule between entries. The home list carries excerpts and
- * uses the wide rhythm; .post-list-compact (the archive, title and meta only)
- * halves it. */
+/* Post lists (paged list and archive): title, excerpt (paged list only),
+ * then the meta line, which closes the entry. A decorative hairline sits one
+ * blank line under each meta line and one above the next title, so every
+ * rule belongs to the entry it closes; the last entry needs none. */
 .post-list {
   list-style: none;
-  margin: 0 0 var(--space-6) 0;
+  margin: 0;
   padding: 0;
 }
 
 .post-item {
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-6);
-  border-bottom: var(--hairline) solid var(--border-color);
+  margin-block-end: var(--space-4);
+  padding-block-end: var(--space-4);
+  border-block-end: var(--hairline) solid var(--border-color);
 }
 
 .post-item:last-child {
-  border-bottom: none;
-}
-
-.post-list-compact .post-item {
-  margin-bottom: var(--space-4);
-  padding-bottom: var(--space-4);
+  margin-block-end: 0;
+  padding-block-end: 0;
+  border-block-end: none;
 }
 
 .post-list-compact .post-title {

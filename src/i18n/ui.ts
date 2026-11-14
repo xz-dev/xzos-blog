@@ -45,6 +45,7 @@ export const ui = {
     'blog.authorLabel': '作者：',
     'blog.categoryLabel': '分类：',
     'blog.toc': '目录',
+    'blog.comments': '评论',
 
     // 语言版本提示
     'notice.translatedBefore': '本文由大语言模型译自',
@@ -66,6 +67,7 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+    'term.comments': 'tail -f ~/comments',
 
     // 首页命令行（xzsh）：命令名保留英文
     'shell.label': 'xzOS 命令行',
@@ -129,6 +131,7 @@ export const ui = {
     'blog.authorLabel': 'Author: ',
     'blog.categoryLabel': 'Category: ',
     'blog.toc': 'Table of Contents',
+    'blog.comments': 'Comments',
 
     // Language notices
     'notice.translatedBefore': 'Machine-translated from the ',
@@ -150,6 +153,7 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+    'term.comments': 'tail -f ~/comments',
 
     // Home page shell (xzsh): command names stay English
     'shell.label': 'xzOS shell',
@@ -206,6 +210,7 @@ export const ui = {
     'blog.authorLabel': '作者：',
     'blog.categoryLabel': '分类：',
     'blog.toc': '目录',
+    'blog.comments': '评论',
 
     // 语言版本提示
     'notice.translatedBefore': '本文由大语言模型译自',
@@ -227,6 +232,7 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+    'term.comments': 'tail -f ~/comments',
 
     // 首页命令行（xzsh）：命令名保留英文
     'shell.label': 'xzOS 命令行',

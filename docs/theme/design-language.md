@@ -26,7 +26,10 @@ block redefines colours and the role tokens only.
   `--field-overlay`. Night redefines the palette and these roles only: a glow
   and a scanline-and-vignette layer behind the content, and reverse-video
   selection. Controls, menu items and form fields are drawn the same in both
-  themes. `prefers-contrast: more` removes the glow and the layer.
+  themes. `prefers-contrast: more` removes the glow and the layer. The glow
+  stays on the frame, the title and headings, and the home page; running
+  text in a post (`.article-body`: paragraphs, lists, tables, quotes, links)
+  sets `text-shadow: none`, and its headings take `--text-glow` back.
 
 ## Primitives
 
@@ -37,6 +40,9 @@ block redefines colours and the role tokens only.
 | Control | `.control` | pagination |
 | Icon | `PixelIcon` (`.pixel-icon`): one hand-drawn 16×16 set, the same in both themes, coloured by `currentColor` | header logo, social links, theme toggle, notices, contents, pagination and read-more arrows |
 | Meta line | `PostMeta` (`.post-meta`) | post lists, posts |
+| Article head | `.article-head` in `PageFrame` `article`: hero, meta line, h1, language line, then one structural rule | posts |
+| Contents tree | `TableOfContents` + `TocList` (`.toc`), drawn by `buildTocTree` (`src/lib/toc-tree.ts`) | posts with two or more h2/h3 |
+| Comments block | `.article-comments`: structural rule, `$ tail -f ~/comments` prompt, `sr-only` h2, Remark42 | posts |
 | Prompt line | `term/Prompt` (`.term-prompt`, `.term-command`): `$ command`, or `$` and the cursor | home, about, link-exchange |
 | Command output | `term/OutputList` (`.term-output`): aligned `left  right` rows | home (recent posts), link-exchange |
 | Page as output | `.term-text` on the content under a `cat` prompt | about |
@@ -126,9 +132,65 @@ tables scroll in their own container.
 ## Routes and patterns
 
 Every HTML page renders through `PageFrame`. `list`, `page` and `home` use
-`--page-width` (960px). `article` uses `--prose-width` (720px) and puts the
-meta line above the title. The `/en/` and `/zh-CN/` variants use the same
-pattern as the `zh` route.
+`--page-width` (960px). `article` uses `--prose-width` (608px with its 16px
+padding, so the text column is 576px: 36 CJK characters or 72 Latin cells
+per line) and puts the meta line above the title. The `/en/` and `/zh-CN/`
+variants use the same pattern as the `zh` route.
+
+### Article
+
+An article is three blocks in one column:
+
+1. **Head** (`.article-head`): the meta line, the h1 (the page's only one)
+   and the language line (`LanguageVersionNotice`: other language versions
+   and, on a machine translation, the translation notice), closed by a
+   hairline `--border-strong` rule with one blank line (24px) above and
+   below it.
+2. **Body** (`.article-body`): sections are marked like Markdown source. h2
+   reads `## Title` and h3 `### Title`; the marker is generated in
+   `--accent` with empty alternative text, so ids, anchors and the
+   accessible name are unchanged. The title is `--emphasized`. An h2 has one
+   more blank line above it (48px) than a paragraph.
+3. **Comments** (`.article-comments`, outside the `<article>`): a hairline
+   `--border-strong` rule, one blank line, a `$ tail -f ~/comments` prompt
+   as the visible title (`term.comments`) with a `sr-only` h2
+   (`blog.comments`), then Remark42.
+
+**Contents.** A post with two or more h2/h3 headings gets a contents box
+drawn like `tree` output: `├─ `, `└─ ` and `│  ` prefixes in
+`--secondary`, `aria-hidden`, while the entries stay a nested `<ul>` of
+links. The label line is `▾ 目录` (`blog.toc`) in a `<details open>`.
+Below 1280px the box follows the head block. From 1280px it leaves the flow
+for a sticky column (`--toc-width`, 320px) right of the body, `--space-5`
+apart; the frame widens by that column, so the text column keeps its 576px.
+With script, an IntersectionObserver marks the section being read (the
+last heading above the top 30% of the viewport): the link takes `--accent`,
+a trailing `*` and `aria-current="location"`. Every link reserves the `*`
+cell, so marking one never rewraps it. Without script it is a plain list.
+
+### Boxes and rules
+
+One vocabulary for everything that sets a block apart, in both themes:
+
+| Component | Border | Background | Padding | Margin |
+|---|---|---|---|---|
+| Code block (`pre`) | 1px `--border-strong` | `--surface` | 16px | 24px 0 |
+| Contents (`.toc`) | 1px `--border-strong` | `--surface` | 16px | 24px 0 (0 as a sidebar) |
+| Table cell | 1px `--border-strong` | `th`: `--surface` | 8px | table: 24px 0 |
+| Quote (`blockquote`) | 2px `--rule` `--border-strong`, start edge only; text `--secondary` | none | 16px start | 24px 0 |
+| Image | 1px `--border-color` | none | 0 | 24px 0; caption `--secondary` |
+| Article head end | 1px `--border-strong`, bottom | none | 24px below | 24px below |
+| Comments start | 1px `--border-strong`, top | none | 24px above | 24px above |
+| Post-list entry | 1px `--border-color`, bottom; none on the last | none | 24px below | 24px below |
+| Pagination | 1px `--border-strong`, top | none | 24px above | 24px above |
+| Footer | 2px `--rule` `--accent`, top | `--background` | 48px | 64px above |
+
+`--border-strong` outlines structure and passes 3:1; `--border-color` only
+decorates. No box has a shadow, gradient or radius.
+
+**Post lists.** An entry reads title, excerpt (the paged list only), then
+the meta line, which closes it; the rule sits one blank line under the meta
+line and one above the next title, so it belongs to the entry above it.
 
 | Route | Pattern | Source |
 |---|---|---|

@@ -169,7 +169,7 @@ test('language and translation notices get distinct pixel marks in both themes',
 
 test('TOC draws a pixel chevron for its state in both themes instead of the native marker', () => {
 	const toc = read('../src/components/TableOfContents.astro');
-	assert.ok(toc.includes('<summary><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t(\'blog.toc\')}</summary>'));
+	assert.ok(toc.includes('<summary id="toc-label"><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t(\'blog.toc\')}</summary>'));
 	assert.match(toc, /\.toc summary\s*\{[^}]*list-style:\s*none;/);
 	assert.match(toc, /\.toc summary::-webkit-details-marker\s*\{\s*display:\s*none;/);
 	assert.match(toc, /\.toc details\[open\] :global\(\.toc-closed\),\s*\.toc details:not\(\[open\]\) :global\(\.toc-open\)\s*\{\s*display:\s*none;/);

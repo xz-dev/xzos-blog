@@ -65,7 +65,8 @@
   --space-7: 4rem;                /* 64px */
   --cell-gap: 2ch;                /* two character cells: between output columns and status-line items */
 
-  --prose-width: 45rem;           /* post column incl. padding: 720px */
+  --prose-width: 38rem;           /* post column incl. padding: 608px, a 576px (36 CJK characters) text column */
+  --toc-width: 20rem;             /* post contents as a sidebar, 1280px and wider: 320px */
   --page-width: 60rem;            /* list and static-page frame: 960px */
   --header-width: 75rem;          /* header row: 1200px */
 

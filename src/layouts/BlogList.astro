@@ -77,12 +77,15 @@ const pageHref = (page: number) => (page === 1 ? homePath : `${pagePrefix}/${pag
 				padding-inline-start: var(--space-5);
 			}
 			/* Page numbers are controls; the current one reads [n]. */
+			/* A structural rule and one blank line set the pages apart from the list. */
 			.pagination {
 				display: flex;
 				justify-content: center;
 				align-items: center;
 				gap: var(--space-2);
-				margin: var(--space-5) 0;
+				margin-block: var(--space-4) 0;
+				padding-block-start: var(--space-4);
+				border-block-start: var(--hairline) solid var(--border-strong);
 				flex-wrap: wrap;
 			}
 			.pagination .ellipsis {

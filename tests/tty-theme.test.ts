@@ -223,10 +223,16 @@ test('controls and menu items share one flat box and one focus ring in both them
 	// No guard for buttons that do not exist: the only button is a menu item.
 	assert.doesNotMatch(base, /button:not|\.control:active|\.control-icon/);
 	assert.doesNotMatch(ttyRules, /(?:width|height|padding|margin|font-size|line-height):/);
-	// The contents summary is a plain text line, not a control.
+	// The contents summary is a plain text line, not a control; the contents
+	// sit in the code-block box (surface, hairline structural frame), nothing more.
 	const toc = read('../src/components/TableOfContents.astro');
 	assert.doesNotMatch(toc, /class(?::list)?=[^>]*control/);
-	assert.doesNotMatch(toc.slice(toc.indexOf('<style>')), /background|border|box-shadow/);
+	const tocStyle = toc.slice(toc.indexOf('<style>'));
+	assert.deepEqual([...tocStyle.matchAll(/(background|border(?:-[a-z-]+)?|box-shadow):\s*([^;]+);/g)].map((m) => `${m[1]}: ${m[2]}`), [
+		'background: var(--surface)',
+		'border: var(--hairline) solid var(--border-strong)',
+		'border-radius: var(--radius)',
+	]);
 });
 
 test('no frame, fill or bevel exists in one theme and not the other', () => {
