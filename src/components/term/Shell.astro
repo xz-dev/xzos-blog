@@ -36,7 +36,9 @@ const data: ShellData = {
 ---
 
 <div class="shell" data-shell={JSON.stringify(data)} hidden>
-	<div class="shell-out" aria-live="polite"></div>
+	{/* The login message: what a shell prints once above its first prompt.
+	    `clear` wipes it with the rest of the screen. */}
+	<div class="shell-out" aria-live="polite"><p class="shell-motd">{t('shell.hint')}</p></div>
 	<p class="term-prompt shell-prompt">
 		<span aria-hidden="true">$</span>
 		<span class="shell-field">
@@ -70,6 +72,10 @@ const data: ShellData = {
 		color: var(--foreground);
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
+	}
+	.shell-motd {
+		margin: 0;
+		color: var(--secondary);
 	}
 	.shell-out :global(.shell-error) {
 		color: var(--ansi-1);

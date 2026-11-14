@@ -65,8 +65,9 @@ const recent = posts.slice(0, LS);
 			 * --rows) of body-height rows, its top on the title line, so row k of
 			 * the art sits beside line k of the info and frames never move
 			 * anything. The wide ring has as many rows as the info block has
-			 * lines; the pause control sits directly under it. */
+			 * lines; the pause control sits at the block's bottom right. */
 			.boot {
+				position: relative;
 				display: grid;
 				grid-template-columns: max-content minmax(0, 1fr);
 				column-gap: var(--space-6);
@@ -90,13 +91,17 @@ const recent = posts.slice(0, LS);
 			.ring-narrow {
 				display: none;
 			}
-			/* The art column is as wide as the ring, so the pause control sits
-			 * centred right under the drawing at every width. */
+			/* The pause control sits at the far right of the boot block's last line
+			 * (the palette row), so it takes no line of its own. */
 			.art {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
 				width: max-content;
+			}
+			.ring-toggle {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				min-height: var(--line-height);
+				line-height: var(--line-height);
 			}
 			/* Plain text like a menu item; pressed (paused) is marked like the
 			 * status line's current entry: accent and a trailing `*`. */
