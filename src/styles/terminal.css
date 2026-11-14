@@ -520,6 +520,8 @@ a :is(strong, b, em, i) {
  * widest entry of each column in character cells, so every left cell is as
  * wide as the longest one: the right column lines up and a left entry never
  * wraps. The right cell takes the rest of the row and wraps inside it.
+ * Each cell is a .term-cell that carries the width; a link inside it is
+ * only as wide as its text, so the empty part of a column is not a link.
  * Linked cells use the text colour and, on hover, the accent and an
  * underline (no fill); plain cells (dates, hosts) are dim. Words never break
  * unless one alone is wider than the row. */
@@ -550,12 +552,12 @@ a :is(strong, b, em, i) {
   flex: 1 1 0;
 }
 
-.term-output li > a {
+.term-output .term-cell > a {
   color: var(--foreground);
   text-decoration: none;
 }
 
-.term-output li > a:hover {
+.term-output .term-cell > a:hover {
   color: var(--accent);
   text-decoration: underline;
 }

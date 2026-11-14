@@ -5,9 +5,12 @@
  */
 import { formatUptime } from './uptime.ts';
 
+/** One cell of a two-column output list (term/OutputList.astro and the shell's `draw`). */
 export interface Cell {
 	text: string;
 	href?: string;
+	/** An external link, opened in a new tab. */
+	external?: boolean;
 	/** Rendered as <time datetime>. */
 	datetime?: string;
 }

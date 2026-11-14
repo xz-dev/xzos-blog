@@ -191,18 +191,22 @@ const data: ShellData = {
 			list.style.setProperty('--term-right', `${widest('right')}ch`);
 			for (const row of line.rows) {
 				const item = node('li');
+				// The same markup as OutputList: the cell carries the width, a link
+				// inside it only its text.
 				for (const cell of [row.left, row.right]) {
+					const wrapper = node('span', 'term-cell');
 					if (cell.href) {
 						const link = node('a', '', cell.text);
 						link.href = cell.href;
-						item.append(link);
+						wrapper.append(link);
 					} else if (cell.datetime) {
 						const time = node('time', '', cell.text);
 						time.dateTime = cell.datetime;
-						item.append(time);
+						wrapper.append(time);
 					} else {
-						item.append(node('span', '', cell.text));
+						wrapper.textContent = cell.text;
 					}
+					item.append(wrapper);
 				}
 				list.append(item);
 			}
