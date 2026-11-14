@@ -17,7 +17,7 @@ import { languages, type Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
 import { formatPostDate } from '../lib/post-date';
-import { SITE_DESCRIPTION, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS } from '../consts';
+import { SITE_DESCRIPTION, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS, THEME_NAMES } from '../consts';
 import font from '../../docs/theme/tty-font.json';
 import { formatUptime } from '../lib/uptime';
 import { LS } from '../lib/xzsh';
@@ -251,9 +251,9 @@ const recent = posts.slice(0, LS);
 						<div><dt>Init System<span>:</span></dt> <dd>OpenRC</dd></div>
 						<div><dt>Kernel<span>:</span></dt> <dd>{kernel}</dd></div>
 						<div><dt>Uptime<span>:</span></dt> <dd><span data-uptime={SITE_SINCE}>{formatUptime(SITE_SINCE, Date.now())}</span></dd></div>
-						<div><dt>Packages<span>:</span></dt> <dd>{postCount} (posts)</dd></div>
+						<div><dt>Packages<span>:</span></dt> <dd>{t('home.packages', { count: postCount })}</dd></div>
 						<div><dt>Shell<span>:</span></dt> <dd>xzsh</dd></div>
-						<div><dt>Theme<span>:</span></dt> <dd><span class="fetch-theme-day">Peach [day]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span>, <span class="fetch-theme-night">Phosphor [night]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span></dd></div>
+						<div><dt>Theme<span>:</span></dt> <dd><span class="fetch-theme-day">{THEME_NAMES.day} [day]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span>, <span class="fetch-theme-night">{THEME_NAMES.night} [night]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span></dd></div>
 						<div><dt>Font<span>:</span></dt> <dd>GNU {font.family} {font.version}</dd></div>
 						{/* One plain space after the key, as fastfetch prints it; each item after the first opens
 						    with a plain space, where the line may break, then `· ` and the link. */}

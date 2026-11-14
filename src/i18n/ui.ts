@@ -57,6 +57,7 @@ export const ui = {
     'home.pause': '暂停',
     'home.pauseLabel': '暂停动画',
     'home.themeCurrent': '（当前）',
+    'home.packages': '{count} (文章)',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
@@ -138,6 +139,7 @@ export const ui = {
     'home.pause': 'pause',
     'home.pauseLabel': 'Pause animation',
     'home.themeCurrent': '(current)',
+    'home.packages': '{count} (posts)',
     'home.recent': 'Recent posts',
     'home.allPosts': '→ All posts',
 
@@ -212,6 +214,7 @@ export const ui = {
     'home.pause': '暂停',
     'home.pauseLabel': '暂停动画',
     'home.themeCurrent': '（当前）',
+    'home.packages': '{count} (文章)',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
