@@ -58,9 +58,9 @@ test('night styles are scoped, with no screen simulation or blurred text', () =>
 
 test('night typography is self-hosted, with real WOFF2 files and its license', () => {
 	assert.match(tty, /font-variant-ligatures:\s*none/);
-	const file = '../public/fonts/unifont-18.0.01.woff2';
+	const file = '../public/fonts/unifont-18.0.01-latin.woff2';
 	assert.equal(readFileSync(new URL(file, import.meta.url)).subarray(0, 4).toString(), 'wOF2');
-	assert.ok(tty.includes('/fonts/unifont-18.0.01.woff2'));
+	assert.ok(tty.includes('/fonts/unifont-18.0.01-latin.woff2'));
 	assert.match(read('../public/fonts/unifont-OFL.txt'), /SIL OPEN FONT LICENSE/i);
 });
 
@@ -84,6 +84,10 @@ test('day palette is pinned at WCAG AA and keeps the original font stack', () =>
 		}
 	}
 	assert.match(base, /font-family:\s*"Fira Code",\s*"JetBrains Mono"/);
+	// Fira Code is self-hosted: no render-blocking third-party font stylesheet.
+	assert.doesNotMatch(base, /@import|url\(['"]?https?:/);
+	assert.equal(readFileSync(new URL('../public/fonts/fira-code-5.2-latin.woff2', import.meta.url)).subarray(0, 4).toString(), 'wOF2');
+	assert.match(read('../public/fonts/fira-code-OFL.txt'), /SIL Open Font License, Version 1\.1/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
 });
 
