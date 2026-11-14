@@ -207,7 +207,9 @@ line and one above the next title, so it belongs to the entry above it.
 
 Every internal link ends with a slash (`/about/`, `/en/blog/<slug>/`,
 `/link-exchange/`), the shape the build writes, so no click costs a 308.
-Canonical and hreflang follow `src/i18n/seo.ts`.
+Canonical and hreflang follow `src/i18n/seo.ts`. The 56 addresses of the
+old WordPress site are 301s in `public/_redirects`, generated from
+`src/lib/legacy-redirects.ts` by `npm run redirects`.
 
 Endpoints that are not HTML pages have no pattern: `/rss.xml`
 (`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)

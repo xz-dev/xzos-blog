@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "test": "node --test tests/*.test.ts",
+    "redirects": "node scripts/write-redirects.ts",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
