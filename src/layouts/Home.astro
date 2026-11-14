@@ -72,11 +72,16 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 			.ring-narrow {
 				display: none;
 			}
+			/* The art column is as wide as the ring, so the pause control sits
+			 * centred right under the drawing at every width. */
+			.art {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				width: max-content;
+			}
 			/* Plain text like a menu item; pressed (paused) is marked like the
 			 * status line's current entry: accent and a trailing `*`. */
-			.ring-toggle {
-				margin-inline-start: calc(-1 * var(--space-1));
-			}
 			.ring-toggle[aria-pressed="true"] {
 				color: var(--accent);
 			}
@@ -116,11 +121,17 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 			.fetch dd a {
 				color: var(--foreground);
 			}
+			/* The current language is marked like the status line's current
+			 * entry: the accent and a trailing `*` (empty alternative text, so
+			 * screen readers announce aria-current instead). Inline-block keeps
+			 * the link's underline off the marker. */
 			.fetch dd a[aria-current] {
-				background: var(--accent);
-				color: var(--background);
-				text-decoration: none;
-				text-shadow: none;
+				color: var(--accent);
+			}
+			.fetch dd a[aria-current]::after {
+				content: "*";
+				content: "*" / "";
+				display: inline-block;
 			}
 			.sep {
 				color: var(--secondary);
@@ -137,8 +148,9 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 			}
 
 			/* ls -t output: dates in their own column, titles wrap under theirs. */
+			/* One blank line after the fetch output, as in a terminal. */
 			.recent {
-				margin-top: var(--space-6);
+				margin-top: var(--space-4);
 			}
 			.prompt {
 				margin: 0;

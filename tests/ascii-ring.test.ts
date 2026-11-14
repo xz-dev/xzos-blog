@@ -23,6 +23,20 @@ test('the build-time frame is the one the script starts from, and frames move', 
 	assert.notEqual(ringHtml(0, grid), ringHtml(1 / 12, grid));
 });
 
+test('the ring is dense and fills its box, so it reads as the logo at every pose', () => {
+	// No light marks: every drawn cell is at least `-`.
+	assert.doesNotMatch(RING_RAMP, /[.:]/);
+	for (const [name, grid] of Object.entries(RING_GRIDS)) {
+		for (let t = 0; t < 60; t += 0.5) {
+			const frame = ringFrame(t, grid);
+			const cells = frame.reduce((sum, row) => sum + row.filter(Boolean).length, 0);
+			assert.ok(cells > grid.cols * grid.rows * 0.24, `${name} frame at ${t}s draws only ${cells} cells`);
+			const drawn = frame.flatMap((row, index) => (row.some(Boolean) ? [index] : []));
+			assert.ok(drawn.at(-1)! - drawn[0] + 1 >= grid.rows - 3, `${name} frame at ${t}s leaves more than 3 rows empty`);
+		}
+	}
+});
+
 test('every frame draws the ring with bright, plain and dim marks', () => {
 	for (const t of [0, 3, 9, 30]) {
 		const html = ringHtml(t, RING_GRIDS.narrow);

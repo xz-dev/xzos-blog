@@ -111,20 +111,26 @@ block sit side by side; below that the art stacks above the info.
 - **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
   (`src/lib/ascii-ring.ts`), on a fixed grid of 44 × 22 cells, 32 × 16 at
   420px and below. Cells are 8 × 16 (`--leading-art`), so the box never
-  changes size. Bright marks use `--accent`, dim marks `--secondary`, the
-  rest `--foreground`. The build renders frame 0; the page script animates it
-  at 12 fps while it is on screen and the tab is visible. The art is
-  `aria-hidden` with a visually hidden text alternative.
-- **Pause:** `[pause]` is a plain menu item with `aria-pressed` and a
+  changes size. The dashes are a flat band (half-width 0.17 across the ring,
+  0.11 along its axis, dash 50% of each 1/16 arc) with back faces culled, so
+  the gaps stay empty; the ramp ` -=+*#%@` has no light marks. The ring
+  leans back 14°–26° and swings up to 26° about the vertical axis, so the
+  drawing keeps 19–21 of 22 rows. Bright marks use `--accent`, dim marks
+  `--secondary`, the rest `--foreground`. The build renders frame 0; the
+  page script animates it at 12 fps while it is on screen and the tab is
+  visible. The art is `aria-hidden` with a visually hidden text alternative.
+- **Pause:** `[pause]` is a plain menu item centred directly under the art
+  (the art column is as wide as the ring), with `aria-pressed` and a
   constant accessible name. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It
   stops the logo and the cursor (`data-paused` on the frame).
 - **Info block:** an 8ch label column in `--accent`, values in
   `--foreground` that wrap under their column, and a palette strip of the
-  seven palette tokens.
-- **Recent posts:** a `$ ls -t ~/blog | head -5` prompt over a list of
-  `YYYY-MM-DD  Title` rows (a 10ch date column that never wraps; titles wrap
-  under the title column), a link to the locale's archive, then `$` and the
+  seven palette tokens. The current language in `Lang:` is marked like the
+  status line's current entry (`--accent`, trailing `*`), never inverted.
+- **Recent posts:** one blank line (`--space-4`) after the fetch output, a
+  `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
+  (a 10ch date column that never wraps; titles wrap under the title column), a link to the locale's archive, then `$` and the
   block cursor.
 - **Motion:** the logo and the cursor are the site's only motion, in both
   themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
