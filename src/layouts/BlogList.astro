@@ -9,7 +9,7 @@ import Header from '../components/Header.astro';
 import PageFrame from '../components/PageFrame.astro';
 import PostMeta from '../components/PostMeta.astro';
 import PixelArrowText from '../components/PixelArrowText.astro';
-import { getBlogPrefix, getHomePath, getHtmlLang, getPagePrefix } from '../i18n/collections';
+import { getBlogPrefix, getHtmlLang, getPagePrefix } from '../i18n/collections';
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import { SITE_TITLE } from '../consts';
@@ -31,7 +31,6 @@ const t = useTranslations(lang);
 const htmlLang = getHtmlLang(lang);
 const blogPrefix = getBlogPrefix(lang);
 const pagePrefix = getPagePrefix(lang);
-const homePath = getHomePath(lang);
 
 // /page/1/ redirects to the post list (public/_redirects), so every page is numbered.
 const pageTitle = `${t('pagination.pageTitle', { title: t('blog.heading'), page: currentPage.toString() })} - ${SITE_TITLE}`;
@@ -41,7 +40,7 @@ const pageTitle = `${t('pagination.pageTitle', { title: t('blog.heading'), page:
 const shownPages = [...new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages])]
 	.filter((page) => page >= 1 && page <= totalPages)
 	.sort((a, b) => a - b);
-const pageHref = (page: number) => (page === 1 ? homePath : `${pagePrefix}/${page}/`);
+const pageHref = (page: number) => (page === 1 ? `${blogPrefix}/` : `${pagePrefix}/${page}/`);
 ---
 
 <!doctype html>

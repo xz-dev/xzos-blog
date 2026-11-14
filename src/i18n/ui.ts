@@ -59,6 +59,7 @@ export const ui = {
     // 语言版本提示
     'notice.translatedBefore': '本文由大语言模型译自',
     'notice.translatedLink': '中文原文',
+    'notice.translatedLinkEn': '英文原文',
     'notice.translatedAfter': '，可能有误，以原文为准。',
     'notice.alsoIn': '其他语言：',
 
@@ -148,6 +149,7 @@ export const ui = {
     // Language notices
     'notice.translatedBefore': 'Machine-translated from the ',
     'notice.translatedLink': 'Chinese original',
+    'notice.translatedLinkEn': 'English original',
     'notice.translatedAfter': '; it may contain errors.',
     'notice.alsoIn': 'Also in: ',
 
@@ -237,6 +239,7 @@ export const ui = {
     // 语言版本提示
     'notice.translatedBefore': '本文由大语言模型译自',
     'notice.translatedLink': '中文原文',
+    'notice.translatedLinkEn': '英文原文',
     'notice.translatedAfter': '，可能有误，以原文为准。',
     'notice.alsoIn': '其他语言：',
 

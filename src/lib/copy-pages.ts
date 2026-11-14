@@ -24,13 +24,14 @@ export function readVersionData(file: URL): PostVersionData | undefined {
 export function readVersions(dir: URL, slug: string): Partial<Record<Lang, PostVersionData>> {
 	const versions: Partial<Record<Lang, PostVersionData>> = {};
 	for (const lang of locales) {
-		const data = readVersionData(new URL(`${localeDir(lang)}${slug}.md`, dir));
+		const data = readVersionData(new URL(`${localeDir(lang)}${slug}.md`, dir))
+			?? readVersionData(new URL(`${localeDir(lang)}${slug}.mdx`, dir));
 		if (data) versions[lang] = data;
 	}
 	return versions;
 }
 
-const slugs = (dir: URL) => readdirSync(dir).filter((file) => file.endsWith('.md')).map((file) => file.slice(0, -3));
+const slugs = (dir: URL) => readdirSync(dir).filter((file) => /\.mdx?$/.test(file)).map((file) => file.replace(/\.mdx?$/, ''));
 
 /** URL paths (with trailing slash) of copies, given src/content/. */
 export function getCopyPaths(content: URL): Set<string> {

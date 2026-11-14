@@ -198,12 +198,16 @@ line and one above the next title, so it belongs to the entry above it.
 | Route | Pattern | Source |
 |---|---|---|
 | `/`, `/en/`, `/zh-CN/` | home | `layouts/Home.astro` |
-| `/page/N/`, `/en/page/N/`, `/zh-CN/page/N/` | list | `layouts/BlogList.astro` (pending: kept reachable as is until the home redesign settles pagination and redirects) |
+| `/page/N/`, `/en/page/N/`, `/zh-CN/page/N/` (N ≥ 2) | list | `layouts/BlogList.astro`; page 1 is the post list: `/page/1/` is not built and `public/_redirects` sends it to `/blog/` (301, per locale) |
 | `/blog/`, `/en/blog/`, `/zh-CN/blog/` | list | `layouts/BlogArchive.astro` |
 | `/blog/<slug>/`, `/en/blog/<slug>/`, `/zh-CN/blog/<slug>/` | article | `layouts/BlogPost.astro` |
 | `/about/`, `/en/about/`, `/zh-CN/about/` | page, shell session (`$ cat ~/about.md`, `hideTitle`) | `layouts/Page.astro` |
-| `/link-exchange` | page, shell session (`$ ls ~/friends`, then `$ ls ~/communities`, `hideTitle`) | `pages/link-exchange.astro` |
-| `/404` | page | `pages/404.astro` |
+| `/link-exchange/` (root only) | page, shell session (`$ ls ~/friends`, then `$ ls ~/communities`, `hideTitle`) | `pages/link-exchange.astro` |
+| `/404.html`, `/en/404.html`, `/zh-CN/404.html` | page, noindex | `layouts/NotFound.astro` via `pages/404.astro` and `pages/[lang]/404.astro`; `integrations/localized-404.ts` moves `<locale>/404/index.html` to `<locale>/404.html`, and Cloudflare Pages answers a missing address with the nearest one |
+
+Every internal link ends with a slash (`/about/`, `/en/blog/<slug>/`,
+`/link-exchange/`), the shape the build writes, so no click costs a 308.
+Canonical and hreflang follow `src/i18n/seo.ts`.
 
 Endpoints that are not HTML pages have no pattern: `/rss.xml`
 (`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)

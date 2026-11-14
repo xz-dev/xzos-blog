@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -73,23 +74,40 @@ test('a Chinese original lists its English translation; the zh-CN copy points it
 });
 
 test('an English original is en at the root; its /en/ copy is not a second en alternate', () => {
-	const { source, versions, alternates } = postHead('hello-world');
+	const slug = 'azure-custom-vision-mi';
+	const { source, versions, alternates } = postHead(slug);
 	assert.equal(source, 'en');
 	assert.deepEqual(versions.copies, ['en']);
 	assert.deepEqual(alternates, [
-		{ hreflang: 'en', path: '/blog/hello-world/' },
-		{ hreflang: 'zh-CN', path: '/zh-CN/blog/hello-world/' },
-		{ hreflang: 'x-default', path: '/blog/hello-world/' },
+		{ hreflang: 'en', path: `/blog/${slug}/` },
+		{ hreflang: 'zh-CN', path: `/zh-CN/blog/${slug}/` },
+		{ hreflang: 'x-default', path: `/blog/${slug}/` },
 	]);
-	assert.equal(getCanonicalPath('en', '/blog/hello-world/', versions), '/blog/hello-world/');
+	assert.equal(getCanonicalPath('en', `/blog/${slug}/`, versions), `/blog/${slug}/`);
 });
 
-test('original languages: five English posts, the rest Chinese', () => {
+test('hello-world is a Chinese original with an English translation', () => {
+	const { source, versions, alternates } = postHead('hello-world');
+	assert.equal(source, 'zh');
+	assert.deepEqual(versions.copies, ['zh-CN']);
+	assert.deepEqual(alternates.map((alternate) => alternate.hreflang), ['zh-Hans', 'en', 'x-default']);
+	// The /en/ file is a translation the translate step keeps: its source_hash is the root file's.
+	const root = readFileSync(new URL('hello-world.md', blog), 'utf8');
+	const hash = createHash('md5').update(root).digest('hex').slice(0, 8);
+	for (const dir of ['en/', 'zh-CN/']) {
+		const text = readFileSync(new URL(`${dir}hello-world.md`, blog), 'utf8');
+		assert.match(text, new RegExp(`^source_hash: "${hash}"$`, 'm'), dir);
+		assert.match(text, /^source_lang: "zh"$/m, dir);
+	}
+	assert.match(root, /^lang: "zh"$/m);
+	assert.match(readFileSync(new URL('en/hello-world.md', blog), 'utf8'), /^title: "Hello, World!"$/m);
+});
+
+test('original languages: four English posts, the rest Chinese', () => {
 	const english = rootSlugs.filter((slug) => postHead(slug).source === 'en').sort();
 	assert.deepEqual(english, [
 		'azure-custom-vision-mi',
 		'cut-and-move-runs-via-python-docx',
-		'hello-world',
 		// No lang field and an English /en/ version not marked as a copy: the English title decides.
 		'steam-for-linux-no-sound-when-streaming',
 		'webm-webp-to-gif-with-semi-transparency',
@@ -185,13 +203,38 @@ test('robots.txt allows all and names the sitemap; /page/1/ redirects to the pos
 
 test('the sitemap leaves out copies, whose canonical is the root original', () => {
 	const copies = getCopyPaths(new URL('../src/content/', import.meta.url));
-	for (const path of ['/zh-CN/blog/new-start/', '/en/blog/hello-world/', '/en/blog/steam-for-linux-no-sound-when-streaming/', '/zh-CN/about/']) {
+	for (const path of ['/zh-CN/blog/new-start/', '/zh-CN/blog/hello-world/', '/en/blog/azure-custom-vision-mi/', '/en/blog/steam-for-linux-no-sound-when-streaming/', '/zh-CN/about/']) {
 		assert.ok(copies.has(path), path);
 	}
-	for (const path of ['/blog/new-start/', '/en/blog/new-start/', '/zh-CN/blog/hello-world/', '/en/about/']) {
+	for (const path of ['/blog/new-start/', '/en/blog/new-start/', '/en/blog/hello-world/', '/zh-CN/blog/azure-custom-vision-mi/', '/en/about/']) {
 		assert.equal(copies.has(path), false, path);
 	}
-	// 60 zh-CN copies of Chinese originals, 5 en copies of English originals, the zh-CN about page.
+	// 61 zh-CN copies of Chinese originals, 4 en copies of English originals, the zh-CN about page.
 	assert.equal(copies.size, 66);
-	assert.match(read('../astro.config.mjs'), /copyPaths\.has\(path\)/);
+	// Read lazily, after the translate step has written its files.
+	assert.match(read('../astro.config.mjs'), /\(copyPaths \?\?= getCopyPaths\(/);
+});
+
+test('a root English original keeps the zh-Hans chrome and marks its title and body en', () => {
+	const post = read('../src/layouts/BlogPost.astro');
+	assert.match(post, /const htmlLang = getLangTag\(lang\);/);
+	assert.match(post, /const contentLang = lang === defaultLang && source === 'en' \? 'en' : undefined;/);
+	assert.match(post, /<PageFrame title=\{title\} pattern="article" contentLang=\{contentLang\}>/);
+	const frame = read('../src/components/PageFrame.astro');
+	assert.match(frame, /<h1 class="page-title" lang=\{contentLang\}>/);
+	assert.match(frame, /<div class="article-body" lang=\{contentLang\}>/);
+});
+
+test('the translation notice names the original language', () => {
+	for (const lang of locales) assert.ok(ui[lang]['notice.translatedLinkEn'], lang);
+	assert.equal(ui['zh-CN']['notice.translatedLinkEn'], '英文原文');
+	assert.equal(ui.en['notice.translatedLinkEn'], 'English original');
+	const notice = read('../src/components/LanguageVersionNotice.astro');
+	assert.match(notice, /hreflang=\{getLangTag\(defaultLang, source\)\}>\{t\(source === 'en' \? 'notice\.translatedLinkEn' : 'notice\.translatedLink'\)\}/);
+	assert.match(notice, /!isCopyOfSource\(lang, source, data\)/);
+	assert.match(read('../src/layouts/BlogPost.astro'), /<LanguageVersionNotice [^>]*source=\{source\}/);
+});
+
+test('page 1 of the paged list links to the post list, not the home page', () => {
+	assert.match(read('../src/layouts/BlogList.astro'), /page === 1 \? `\$\{blogPrefix\}\/`/);
 });

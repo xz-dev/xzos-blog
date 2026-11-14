@@ -16,9 +16,11 @@ interface Props {
 	title: string;
 	pattern?: 'list' | 'page' | 'article' | 'home';
 	hideTitle?: boolean;
+	/** article: the language of the title and body when it differs from the page's (a root post written in English). */
+	contentLang?: string;
 }
 
-const { title, pattern = 'page', hideTitle = pattern === 'home' } = Astro.props;
+const { title, pattern = 'page', hideTitle = pattern === 'home', contentLang } = Astro.props;
 ---
 
 <main class:list={['page-frame', `page-frame-${pattern}`]}>
@@ -28,11 +30,11 @@ const { title, pattern = 'page', hideTitle = pattern === 'home' } = Astro.props;
 				<header class="article-head">
 					<slot name="hero" />
 					<slot name="meta" />
-					<h1 class="page-title">{title}</h1>
+					<h1 class="page-title" lang={contentLang}>{title}</h1>
 					<slot name="head" />
 				</header>
 				<slot name="aside" />
-				<div class="article-body">
+				<div class="article-body" lang={contentLang}>
 					<slot />
 				</div>
 			</article>

@@ -10,8 +10,11 @@ import translate from './src/integrations/translate';
 import { daySyntaxTheme } from './src/lib/syntax-day';
 import { tableScroll } from './src/lib/table-scroll';
 
-const copyPaths = getCopyPaths(new URL('./src/content/', import.meta.url));
-const isOutOfSitemap = (path) => /\/(?:page\/1|404)\/$/.test(path) || copyPaths.has(path);
+// Read on first use, in astro:build:done, so the files the translate step
+// wrote in astro:build:start are included.
+let copyPaths;
+const isOutOfSitemap = (path) =>
+  /\/(?:page\/1|404)\/$/.test(path) || (copyPaths ??= getCopyPaths(new URL('./src/content/', import.meta.url))).has(path);
 
 // https://astro.build/config
 export default defineConfig({

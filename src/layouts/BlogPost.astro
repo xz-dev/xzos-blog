@@ -41,7 +41,10 @@ const versions = {
 	source,
 	copies: locales.filter((locale) => isCopyOfSource(locale, source, versionData[locale])),
 };
-const htmlLang = getLangTag(lang, lang === defaultLang ? source : undefined);
+// The page chrome follows the locale, so a root post written in English stays
+// a zh-Hans document; its title and body carry lang="en". Its hreflang is en.
+const htmlLang = getLangTag(lang);
+const contentLang = lang === defaultLang && source === 'en' ? 'en' : undefined;
 ---
 
 <!doctype html>
@@ -57,10 +60,10 @@ const htmlLang = getLangTag(lang, lang === defaultLang ? source : undefined);
 
 	<body>
 		<Header />
-		<PageFrame title={title} pattern="article">
+		<PageFrame title={title} pattern="article" contentLang={contentLang}>
 			{heroImage && <Image slot="hero" class="hero-image" width={1020} height={510} src={heroImage} alt="" />}
 			<PostMeta slot="meta" lang={lang} pubDate={pubDate} pubDateSource={pubDateSource} updatedDate={updatedDate} updatedDateSource={updatedDateSource} />
-			<LanguageVersionNotice slot="head" slug={postSlug} lang={lang} />
+			<LanguageVersionNotice slot="head" slug={postSlug} lang={lang} source={source} />
 			<TableOfContents slot="aside" headings={headings} lang={lang} />
 			<slot />
 			<section slot="after" class="article-comments" aria-labelledby="xz-comments-title">
