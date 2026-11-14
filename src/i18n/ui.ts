@@ -66,6 +66,11 @@ export const ui = {
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
+    // 终端提示符（命令按原样显示，三种语言相同）
+    'term.recent': 'ls -t ~/blog | head -{count}',
+    'term.cat': 'cat ~/{file}',
+    'term.friends': 'ls ~/friends',
+
     // 分页
     'pagination.label': '分页',
     'pagination.prev': '← 上一页',
@@ -131,6 +136,11 @@ export const ui = {
     'home.recent': 'Recent posts',
     'home.allPosts': '→ All posts',
 
+    // Terminal prompts (commands shown verbatim, the same in every locale)
+    'term.recent': 'ls -t ~/blog | head -{count}',
+    'term.cat': 'cat ~/{file}',
+    'term.friends': 'ls ~/friends',
+
     // Pagination
     'pagination.label': 'Pagination',
     'pagination.prev': '← Previous',
@@ -188,6 +198,11 @@ export const ui = {
     'home.links': 'Links',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
+
+    // 终端提示符（命令按原样显示，三种语言相同）
+    'term.recent': 'ls -t ~/blog | head -{count}',
+    'term.cat': 'cat ~/{file}',
+    'term.friends': 'ls ~/friends',
 
     // 分页
     'pagination.label': '分页',

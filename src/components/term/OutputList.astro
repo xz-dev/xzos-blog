@@ -1,0 +1,38 @@
+---
+/**
+ * 两列对齐的命令输出（`left  right`），如 `ls -t` 的日期与标题、`ls ~/friends` 的名字与主机。
+ * 左列取最长一项的宽度（最多到行宽的一半），不换行；右列在自己的列内换行对齐。
+ * 有链接的格子用正文色，纯文本格子用 --secondary。stack 为真时，手机上右列换到下一行并缩进 2ch。
+ */
+interface Cell {
+	text: string;
+	href?: string;
+	/** 新标签页打开的外部链接。 */
+	external?: boolean;
+	/** 有此值时渲染为 <time datetime>。 */
+	datetime?: string;
+}
+
+interface Props {
+	rows: { left: Cell; right: Cell }[];
+	stack?: boolean;
+}
+
+const { rows, stack = false } = Astro.props;
+---
+
+<ul class:list={['term-output', stack && 'term-output-stack']}>
+	{rows.map(({ left, right }) => (
+		<li>
+			{[left, right].map((cell) =>
+				cell.href ? (
+					<a href={cell.href} {...(cell.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{cell.text}</a>
+				) : cell.datetime ? (
+					<time datetime={cell.datetime}>{cell.text}</time>
+				) : (
+					<span>{cell.text}</span>
+				),
+			)}
+		</li>
+	))}
+</ul>

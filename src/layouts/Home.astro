@@ -9,6 +9,8 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PageFrame from '../components/PageFrame.astro';
 import PixelArrowText from '../components/PixelArrowText.astro';
+import OutputList from '../components/term/OutputList.astro';
+import Prompt from '../components/term/Prompt.astro';
 import { getBlogPrefix, getHomePath, getHtmlLang } from '../i18n/collections';
 import { languages, type Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
@@ -147,42 +149,12 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 				height: var(--line-height);
 			}
 
-			/* ls -t output: dates in their own column, titles wrap under theirs. */
-			/* One blank line after the fetch output, as in a terminal. */
-			.recent {
-				margin-top: var(--space-4);
-			}
-			.prompt {
-				margin: 0;
-				color: var(--secondary);
-			}
-			.prompt span {
-				color: var(--foreground);
-			}
-			.recent ul {
-				list-style: none;
-				margin: 0 0 var(--space-2) 0;
-			}
-			.recent li {
-				display: grid;
-				grid-template-columns: 10ch minmax(0, 1fr);
-				column-gap: 2ch;
-			}
-			.recent time {
-				color: var(--secondary);
-				white-space: nowrap;
-			}
-			.recent li a {
-				color: var(--foreground);
-				text-decoration: none;
-				overflow-wrap: anywhere;
-			}
-			.recent li a:hover {
-				text-decoration: underline;
-			}
+			/* The ls prompt and its rows are the shared terminal primitives
+			 * (terminal.css); the prompt's top margin is the one blank line after
+			 * the fetch output. */
 			.all-posts {
 				display: inline-block;
-				margin-bottom: var(--space-4);
+				margin-top: var(--space-2);
 			}
 
 			@media (max-width: 720px) {
@@ -262,17 +234,15 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 
 			<section class="recent" aria-labelledby="recent-heading">
 				<h2 id="recent-heading" class="sr-only">{t('home.recent')}</h2>
-				<p class="prompt" aria-hidden="true">$ <span>ls -t ~/blog | head -{posts.length}</span></p>
-				<ul>
-					{posts.map((post) => (
-						<li>
-							<time datetime={formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime}>{day(post)}</time>
-							<a href={`${blogPrefix}/${post.id}/`}>{post.data.title}</a>
-						</li>
-					))}
-				</ul>
+				<Prompt command={t('term.recent', { count: posts.length })} />
+				<OutputList
+					rows={posts.map((post) => ({
+						left: { text: day(post), datetime: formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime },
+						right: { text: post.data.title, href: `${blogPrefix}/${post.id}/` },
+					}))}
+				/>
 				<a class="all-posts" href={`${blogPrefix}/`}><PixelArrowText text={t('home.allPosts')} /></a>
-				<p class="prompt" aria-hidden="true">$ <span class="cursor">█</span></p>
+				<Prompt cursor blink />
 			</section>
 		</PageFrame>
 		<Footer />
