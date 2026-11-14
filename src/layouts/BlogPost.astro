@@ -10,10 +10,13 @@ import PageFrame from '../components/PageFrame.astro';
 import PostMeta from '../components/PostMeta.astro';
 import Remark42Comments from '../components/Remark42Comments.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import Prompt from '../components/term/Prompt.astro';
 import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import type { Heading } from '../lib/toc-tree';
 
 type Props = CollectionEntry<'blog'>['data'] & {
-	headings?: { depth: number; slug: string; text: string }[];
+	headings?: Heading[];
 	ogImage?: ImageMetadata | string;
 	lang?: Lang;
 	slug?: string;
@@ -21,6 +24,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 
 const { title, description, pubDate, updatedDate, pubDateSource, updatedDateSource, heroImage, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
 const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
+const t = useTranslations(lang);
 ---
 
 <!doctype html>
@@ -28,9 +32,6 @@ const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || 
 	<head>
 		<BaseHead title={title} description={description} image={ogImage} />
 		<style>
-			:global(.page-frame-article .post-meta) {
-				margin-bottom: var(--space-2);
-			}
 			.hero-image {
 				margin: 0 auto var(--space-4);
 			}
@@ -42,11 +43,14 @@ const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || 
 		<PageFrame title={title} pattern="article">
 			{heroImage && <Image slot="hero" class="hero-image" width={1020} height={510} src={heroImage} alt="" />}
 			<PostMeta slot="meta" lang={lang} pubDate={pubDate} pubDateSource={pubDateSource} updatedDate={updatedDate} updatedDateSource={updatedDateSource} />
-			<LanguageVersionNotice slug={postSlug} lang={lang} />
-			<TableOfContents headings={headings} lang={lang} />
+			<LanguageVersionNotice slot="head" slug={postSlug} lang={lang} />
+			<TableOfContents slot="aside" headings={headings} lang={lang} />
 			<slot />
-			<hr />
-			<Remark42Comments lang={lang} />
+			<section slot="after" class="article-comments" aria-labelledby="xz-comments-title">
+				<Prompt command={t('term.comments')} />
+				<h2 id="xz-comments-title" class="sr-only">{t('blog.comments')}</h2>
+				<Remark42Comments lang={lang} />
+			</section>
 		</PageFrame>
 		<Footer />
 	</body>

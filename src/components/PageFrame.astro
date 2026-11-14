@@ -4,6 +4,10 @@
  * list（文章列表）与 page（静态页）用 --page-width，article（文章）用
  * --prose-width；页面自身不再设定宽度。
  * home（首页开机画面）同样用 --page-width。
+ * article 由头部、正文和文章之后的评论三块组成，另有可选的目录：头部（hero、meta、
+ * h1、head 槽里的语言说明）以一条结构线收尾；aside 槽放目录（窄屏在头部之后，
+ * 1280px 起移到右栏，与头部和正文并排并粘性定位，文章因此分左右两列）；
+ * 正文在 .article-body 里；after 槽放文章之后的独立区块（评论），占满框架内容宽度。
  * hideTitle：h1 仍由框架绘制，但只对读屏器可见（sr-only），画面上的标题由页面自己的
  * 一行承担（首页是 fastfetch 的 xz@xzos，关于与友链是 `$ cat …` / `$ ls …` 提示符）。
  * home 默认隐藏。
@@ -20,12 +24,19 @@ const { title, pattern = 'page', hideTitle = pattern === 'home' } = Astro.props;
 <main class:list={['page-frame', `page-frame-${pattern}`]}>
 	{pattern === 'article' ? (
 		<>
-			<slot name="hero" />
-			<article class="prose">
-				<slot name="meta" />
-				<h1 class="page-title">{title}</h1>
-				<slot />
+			<article class="prose article">
+				<header class="article-head">
+					<slot name="hero" />
+					<slot name="meta" />
+					<h1 class="page-title">{title}</h1>
+					<slot name="head" />
+				</header>
+				<slot name="aside" />
+				<div class="article-body">
+					<slot />
+				</div>
 			</article>
+			<slot name="after" />
 		</>
 	) : (
 		<>

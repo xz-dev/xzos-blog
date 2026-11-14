@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
-import { navItems, ui } from '../src/i18n/ui.ts';
+import { langCodes, navItems, ui } from '../src/i18n/ui.ts';
+import { cssRules, ruleFor } from './css-rules.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const base = read('../src/styles/terminal.css');
@@ -160,14 +161,15 @@ test('the header is a tmux-style status line of plain text, shared by both theme
 	const link = read('../src/components/HeaderLink.astro');
 	assert.match(link, /aria-current=\{current\}/);
 	assert.match(link, /<span class="menu-label" aria-hidden="true">\{index\}:<\/span><slot \/>/);
-	// `lang: zh* en zh-CN`: short codes on screen, the full name first in the
+	// `lang: src* en zh-CN`: short codes on screen (the root locale is `src`), the full name first in the
 	// accessible name, the prefix from i18n.
 	const languages = read('../src/components/LanguageSwitcher.astro');
 	assert.match(languages, /<span class="menu-label" aria-hidden="true">\{t\('lang\.prefix'\)\}<\/span>/);
-	assert.match(languages, /const name = `\$\{languages\[lang\]\} \(\$\{lang\}\)`;/);
+	assert.match(languages, /const name = `\$\{languages\[lang\]\} \(\$\{langCodes\[lang\]\}\)`;/);
 	assert.match(languages, /aria-label=\{name\}/);
 	assert.match(languages, /aria-current=\{lang === currentLang \? 'page' : undefined\}/);
-	assert.match(languages, />\s*\{lang\}\s*<\/a>/);
+	assert.match(languages, />\s*\{langCodes\[lang\]\}\s*<\/a>/);
+	assert.deepEqual(langCodes, { zh: 'src', en: 'en', 'zh-CN': 'zh-CN' });
 	for (const lang of ['zh', 'en', 'zh-CN'] as const) assert.equal(ui[lang]['lang.prefix'], 'lang:');
 	// Contrast: entries, dim fields, the current and hovered entry and the
 	// focus ring on the bar, and the bar's edge on the page.
@@ -223,10 +225,16 @@ test('controls and menu items share one flat box and one focus ring in both them
 	// No guard for buttons that do not exist: the only button is a menu item.
 	assert.doesNotMatch(base, /button:not|\.control:active|\.control-icon/);
 	assert.doesNotMatch(ttyRules, /(?:width|height|padding|margin|font-size|line-height):/);
-	// The contents summary is a plain text line, not a control.
+	// The contents summary is a plain text line, not a control; the contents
+	// sit in the code-block box (surface, hairline structural frame), nothing more.
 	const toc = read('../src/components/TableOfContents.astro');
 	assert.doesNotMatch(toc, /class(?::list)?=[^>]*control/);
-	assert.doesNotMatch(toc.slice(toc.indexOf('<style>')), /background|border|box-shadow/);
+	const tocStyle = toc.slice(toc.indexOf('<style>'));
+	assert.deepEqual([...tocStyle.matchAll(/(background|border(?:-[a-z-]+)?|box-shadow):\s*([^;]+);/g)].map((m) => `${m[1]}: ${m[2]}`), [
+		'background: var(--surface)',
+		'border: var(--hairline) solid var(--border-strong)',
+		'border-radius: var(--radius)',
+	]);
 });
 
 test('no frame, fill or bevel exists in one theme and not the other', () => {
@@ -258,8 +266,8 @@ test('structural borders reach 3:1 in both themes; the soft border is decorative
 		}
 	}
 	// Tables, code and quotes outline structure; hr, list rules and image frames decorate.
-	const rules = [...base.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)];
-	const borderOf = (selector: string) => rules.filter((r) => r[1].split(',').map((x) => x.trim()).includes(selector)).map((r) => r[2]).join('');
+	const rules = cssRules(base);
+	const borderOf = (selector: string) => ruleFor(rules, selector);
 	for (const selector of ['pre', 'kbd', 'td', 'blockquote']) assert.match(borderOf(selector), /border(?:-inline-start)?:[^;]*var\(--border-strong\)/, selector);
 	for (const selector of ['hr', 'img', '.post-item']) assert.doesNotMatch(borderOf(selector), /--border-strong/, selector);
 });

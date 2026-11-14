@@ -1,42 +1,52 @@
 ---
+/**
+ * 文章目录：像 `tree` 一样画出 h2 / h3 的层级，放在与代码块同样的框里。
+ * 窄屏时在文章头部之后；1280px 起在右栏做粘性侧栏，与头部和正文并排（terminal.css 的
+ * .article 网格），并以 accent 加尾随 `*` 标出当前阅读的小节。
+ * 少于两个标题的文章不画目录（buildTocTree 返回空）。
+ */
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
+import { buildTocTree, type Heading } from '../lib/toc-tree';
 import PixelIcon from './PixelIcon.astro';
+import TocActive from './TocActive.astro';
+import TocList from './TocList.astro';
 
 interface Props {
-	headings: { depth: number; slug: string; text: string }[];
+	headings: Heading[];
 	lang: Lang;
 }
 
 const { headings, lang } = Astro.props;
 const t = useTranslations(lang);
-const entries = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const tree = buildTocTree(headings);
 ---
 
-{entries.length > 0 && (
-	<nav class="toc">
+{tree.length > 0 && (
+	<nav class="toc" aria-labelledby="xz-toc-label">
 		<details open>
-			<summary><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t('blog.toc')}</summary>
-			<ul>
-				{entries.map((heading) => (
-					<li class:list={{ sub: heading.depth === 3 }}>
-						<a href={`#${heading.slug}`}>{heading.text}</a>
-					</li>
-				))}
-			</ul>
+			<summary id="xz-toc-label"><PixelIcon name="chevron-right" class="toc-closed" /><PixelIcon name="chevron-down" class="toc-open" />{t('blog.toc')}</summary>
+			<TocList nodes={tree} />
 		</details>
+		<TocActive />
 	</nav>
 )}
 
 <style>
+	/* The code-block box: --surface, a hairline --border-strong frame and
+	 * pre's padding, one blank line above and below. The label line is
+	 * `▾ 目录` with a pixel chevron in place of the native marker; hover
+	 * colours and underlines it like a link. */
 	.toc {
-		margin-block-end: var(--space-5);
+		margin-block: var(--space-4);
+		padding: var(--space-3);
+		background: var(--surface);
+		border: var(--hairline) solid var(--border-strong);
+		border-radius: var(--radius);
+		line-height: var(--line-height);
+		overflow-wrap: anywhere;
 	}
 
-	/* A plain text line, `▸ 目录` or `▾ 目录`, the same in both themes: no box,
-	 * fill or bevel. A pixel chevron replaces the native disclosure marker.
-	 * Hover colours and underlines it like a link; the block padding keeps a
-	 * 32px target and room for the focus ring. */
 	.toc summary {
 		display: block;
 		list-style: none;
@@ -67,17 +77,45 @@ const entries = headings.filter((heading) => heading.depth === 2 || heading.dept
 		display: none;
 	}
 
-	.toc ul {
+	/* `tree` output: one row per heading, the branch prefix in --secondary and
+	 * kept as typed (white-space: pre); a wrapped title hangs under its text. */
+	.toc :global(ul) {
 		list-style: none;
-		margin-block: var(--space-2) 0;
-		margin-inline: var(--space-4) 0;
+		margin: 0;
 	}
 
-	.toc li {
-		margin: var(--space-1) 0;
+	.toc details > :global(ul) {
+		margin-block-start: var(--space-2);
 	}
 
-	.toc .sub {
-		padding-inline-start: var(--space-4);
+	.toc :global(.toc-row) {
+		display: flex;
+	}
+
+	.toc :global(.toc-branch) {
+		flex: none;
+		color: var(--secondary);
+		white-space: pre;
+	}
+
+	.toc :global(a) {
+		min-width: 0;
+	}
+
+	/* The section in view: accent and a trailing `*`, as the status line marks
+	 * its current item. Every link reserves the `*` cell, so marking one never
+	 * rewraps its title. */
+	.toc :global(a)::after {
+		content: "*";
+		content: "*" / "";
+		visibility: hidden;
+	}
+
+	.toc :global(a[aria-current]) {
+		color: var(--accent);
+	}
+
+	.toc :global(a[aria-current])::after {
+		visibility: visible;
 	}
 </style>

@@ -1,0 +1,22 @@
+---
+/**
+ * 目录树的一层：真正嵌套的 <ul>，每项前面是 `tree` 的连线前缀（aria-hidden），
+ * 子标题递归画在同一项里。
+ */
+import type { TocNode } from '../lib/toc-tree';
+
+interface Props {
+	nodes: TocNode[];
+}
+
+const { nodes } = Astro.props;
+---
+
+<ul>
+	{nodes.map((node) => (
+		<li>
+			<span class="toc-row"><span class="toc-branch" aria-hidden="true">{node.prefix}</span><a href={`#${node.slug}`}>{node.text}</a></span>
+			{node.children.length > 0 && <Astro.self nodes={node.children} />}
+		</li>
+	))}
+</ul>

@@ -10,7 +10,7 @@ const posts = Array.from({ length: 12 }, (_, i) => ({
 }));
 const data: ShellData = {
 	lang: 'en',
-	homes: { zh: '/', en: '/en/', 'zh-CN': '/zh-CN/' },
+	homes: { src: '/', en: '/en/', 'zh-CN': '/zh-CN/' },
 	blog: '/en/blog/',
 	about: '/en/about',
 	links: '/link-exchange',
@@ -29,7 +29,7 @@ test('help lists every command with its description, then the keys', () => {
 	assert.equal(rows.type, 'rows');
 	const left = rows.type === 'rows' ? rows.rows.map((row) => row.left.text) : [];
 	assert.deepEqual(left.map((synopsis) => synopsis.split(' ')[0]), ['help', 'ls', 'cat', 'cd', 'theme', 'lang', 'whoami', 'uname', 'date', 'uptime', 'clear']);
-	assert.ok(left.includes('lang zh|en|zh-CN'));
+	assert.ok(left.includes('lang src|en|zh-CN'));
 	assert.equal(rows.type === 'rows' && rows.rows[1].right.text, 'recent posts');
 	assert.deepEqual(keys, { type: 'text', text: 'Tab completes' });
 });
@@ -64,9 +64,9 @@ test('theme toggles without an argument and sets day or night with one', () => {
 
 test('lang, cd and cat navigate; bad targets print an error', () => {
 	assert.deepEqual(run('lang zh-cn', data, env).action, { type: 'navigate', href: '/zh-CN/' });
-	assert.deepEqual(run('lang zh', data, env).action, { type: 'navigate', href: '/' });
+	assert.deepEqual(run('lang src', data, env).action, { type: 'navigate', href: '/' });
 	assert.deepEqual(texts('lang fr'), ['lang: unknown language: fr']);
-	assert.deepEqual(texts('lang'), ['usage: lang zh|en|zh-CN']);
+	assert.deepEqual(texts('lang'), ['usage: lang src|en|zh-CN']);
 	assert.deepEqual(run('cd ~', data, env).action, { type: 'navigate', href: '/en/' });
 	assert.deepEqual(run('cd blog', data, env).action, { type: 'navigate', href: '/en/blog/' });
 	assert.deepEqual(run('cd links', data, env).action, { type: 'navigate', href: '/link-exchange' });

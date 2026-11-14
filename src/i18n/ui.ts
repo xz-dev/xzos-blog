@@ -8,6 +8,15 @@ export const languages = {
   'zh-CN': '简体中文',
 } as const;
 
+/** The code shown in the status line and accepted by the shell. The root
+ * locale holds each post in the language it was written in (mostly Chinese,
+ * some English), so it is `src`, not `zh`. */
+export const langCodes = {
+  zh: 'src',
+  en: 'en',
+  'zh-CN': 'zh-CN',
+} as const;
+
 export type Lang = keyof typeof languages;
 
 export const defaultLang: Lang = 'zh';
@@ -45,6 +54,7 @@ export const ui = {
     'blog.authorLabel': '作者：',
     'blog.categoryLabel': '分类：',
     'blog.toc': '目录',
+    'blog.comments': '评论',
 
     // 语言版本提示
     'notice.translatedBefore': '本文由大语言模型译自',
@@ -57,7 +67,6 @@ export const ui = {
     'home.pause': '暂停',
     'home.pauseLabel': '暂停动画',
     'home.themeCurrent': '（当前）',
-    'home.packages': '{count} (文章)',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
@@ -66,6 +75,7 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+    'term.comments': 'tail -f ~/comments',
 
     // 首页命令行（xzsh）：命令名保留英文
     'shell.label': 'xzOS 命令行',
@@ -129,6 +139,7 @@ export const ui = {
     'blog.authorLabel': 'Author: ',
     'blog.categoryLabel': 'Category: ',
     'blog.toc': 'Table of Contents',
+    'blog.comments': 'Comments',
 
     // Language notices
     'notice.translatedBefore': 'Machine-translated from the ',
@@ -141,7 +152,6 @@ export const ui = {
     'home.pause': 'pause',
     'home.pauseLabel': 'Pause animation',
     'home.themeCurrent': '(current)',
-    'home.packages': '{count} (posts)',
     'home.recent': 'Recent posts',
     'home.allPosts': '→ All posts',
 
@@ -150,6 +160,7 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+    'term.comments': 'tail -f ~/comments',
 
     // Home page shell (xzsh): command names stay English
     'shell.label': 'xzOS shell',
@@ -206,6 +217,7 @@ export const ui = {
     'blog.authorLabel': '作者：',
     'blog.categoryLabel': '分类：',
     'blog.toc': '目录',
+    'blog.comments': '评论',
 
     // 语言版本提示
     'notice.translatedBefore': '本文由大语言模型译自',
@@ -218,7 +230,6 @@ export const ui = {
     'home.pause': '暂停',
     'home.pauseLabel': '暂停动画',
     'home.themeCurrent': '（当前）',
-    'home.packages': '{count} (文章)',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
@@ -227,6 +238,7 @@ export const ui = {
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
     'term.communities': 'ls ~/communities',
+    'term.comments': 'tail -f ~/comments',
 
     // 首页命令行（xzsh）：命令名保留英文
     'shell.label': 'xzOS 命令行',

@@ -1,0 +1,48 @@
+---
+/**
+ * 目录的当前小节标记：只在画出目录的文章里使用，所以脚本只随这些页面发送。
+ */
+---
+
+<script>
+	// Marks the section being read: the last heading above the top 30% of the
+	// viewport. Without script the contents stay a plain list of links.
+	const toc = document.querySelector<HTMLElement>('.toc');
+	const links = new Map<string, HTMLAnchorElement>();
+	for (const link of document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]')) {
+		links.set(decodeURIComponent(link.hash.slice(1)), link);
+	}
+	const headings = [...document.querySelectorAll<HTMLElement>('.article-body :is(h2, h3)[id]')].filter((heading) => links.has(heading.id));
+
+	// A scrollable contents box (the sticky column on a long post) follows the
+	// marker: scroll the box itself, never the page.
+	const reveal = (link: HTMLAnchorElement) => {
+		if (!toc || toc.scrollHeight <= toc.clientHeight) return;
+		const box = toc.getBoundingClientRect();
+		const row = link.getBoundingClientRect();
+		const edge = parseFloat(getComputedStyle(toc).paddingBlockStart) || 0;
+		if (row.top < box.top + edge) toc.scrollTop += row.top - box.top - edge;
+		else if (row.bottom > box.bottom - edge) toc.scrollTop += row.bottom - box.bottom + edge;
+	};
+
+	if (headings.length > 0 && 'IntersectionObserver' in window) {
+		let current: HTMLAnchorElement | undefined;
+		const update = () => {
+			const line = window.innerHeight * 0.3;
+			let active: HTMLElement | undefined;
+			for (const heading of headings) {
+				if (heading.getBoundingClientRect().top <= line) active = heading;
+				else break;
+			}
+			const next = active && links.get(active.id);
+			if (next === current) return;
+			current?.removeAttribute('aria-current');
+			next?.setAttribute('aria-current', 'location');
+			current = next;
+			if (next) reveal(next);
+		};
+		const observer = new IntersectionObserver(update, { rootMargin: '0px 0px -70% 0px' });
+		for (const heading of headings) observer.observe(heading);
+		update();
+	}
+</script>

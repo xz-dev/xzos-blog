@@ -13,7 +13,7 @@ import OutputList from '../components/term/OutputList.astro';
 import Prompt from '../components/term/Prompt.astro';
 import Shell from '../components/term/Shell.astro';
 import { getBlogPrefix, getHomePath, getHtmlLang } from '../i18n/collections';
-import { languages, type Lang } from '../i18n/ui';
+import { langCodes, languages, type Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
 import { formatPostDate } from '../lib/post-date';
@@ -251,14 +251,14 @@ const recent = posts.slice(0, LS);
 						<div><dt>Init System<span>:</span></dt> <dd>OpenRC</dd></div>
 						<div><dt>Kernel<span>:</span></dt> <dd>{kernel}</dd></div>
 						<div><dt>Uptime<span>:</span></dt> <dd><span data-uptime={SITE_SINCE}>{formatUptime(SITE_SINCE, Date.now())}</span></dd></div>
-						<div><dt>Packages<span>:</span></dt> <dd>{t('home.packages', { count: postCount })}</dd></div>
+						<div><dt>Packages<span>:</span></dt> <dd>{postCount} (posts)</dd></div>
 						<div><dt>Shell<span>:</span></dt> <dd>xzsh</dd></div>
 						<div><dt>Theme<span>:</span></dt> <dd><span class="fetch-theme-day">{THEME_NAMES.day} [day]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span>, <span class="fetch-theme-night">{THEME_NAMES.night} [night]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span></dd></div>
 						<div><dt>Font<span>:</span></dt> <dd>GNU {font.family} {font.version}</dd></div>
 						{/* One plain space after the key, as fastfetch prints it; each item after the first opens
 						    with a plain space, where the line may break, then `· ` and the link. */}
 						<div><dt>Locale<span>:</span></dt> <dd>{locales.map((locale, index) => (
-							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={getHomePath(locale)} hreflang={locale} aria-current={locale === lang ? 'page' : undefined}>{languages[locale]}</a></span></>
+							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={getHomePath(locale)} hreflang={locale} aria-current={locale === lang ? 'page' : undefined} aria-label={`${languages[locale]} (${langCodes[locale]})`}>{langCodes[locale]}</a></span></>
 						))}</dd></div>
 						<div><dt>Links<span>:</span></dt> <dd>{links.map((link, index) => (
 							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
