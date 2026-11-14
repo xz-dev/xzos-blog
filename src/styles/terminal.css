@@ -521,12 +521,13 @@ a :is(strong, b, em, i) {
 
 /* `left  right` rows. Every row shares the parent's two tracks (subgrid),
  * so the right column lines up: the left track is as wide as its longest
- * entry, up to half the row, and the right one wraps inside itself. Linked
+ * entry, up to --term-left-max (half the row unless the list sets one; a
+ * longer entry wraps inside it), and the right one wraps inside itself. Linked
  * cells use the text colour and underline on hover, like post titles;
  * plain cells (dates, hosts) are dim. */
 .term-output {
   display: grid;
-  grid-template-columns: fit-content(50%) minmax(0, 1fr);
+  grid-template-columns: fit-content(var(--term-left-max, 50%)) minmax(0, 1fr);
   column-gap: 2ch;
   margin: 0;
   list-style: none;
@@ -550,6 +551,39 @@ a :is(strong, b, em, i) {
 
 .term-output li > a:hover {
   text-decoration: underline;
+}
+
+/* A page's content as command output (`cat`), right under its prompt: body
+ * line height, paragraphs one blank line apart, quotes as indented output
+ * behind the shared 2px rule, list items as `- ` rows with a hanging
+ * indent. Links keep their underline. */
+.term-text {
+  line-height: var(--line-height);
+}
+
+.term-text > :first-child {
+  margin-top: 0;
+}
+
+.term-text > :last-child {
+  margin-bottom: 0;
+}
+
+.term-text ul {
+  margin-inline-start: 0;
+  list-style: none;
+}
+
+.term-text ul > li {
+  padding-inline-start: 2ch;
+}
+
+.term-text ul > li::before {
+  content: "- ";
+  content: "- " / "";
+  position: absolute;
+  inset-inline-start: 0;
+  color: var(--secondary);
 }
 
 /* Phones: a stacked list puts the right cell on its own line, 2ch in. */

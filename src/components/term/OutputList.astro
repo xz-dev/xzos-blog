@@ -1,7 +1,7 @@
 ---
 /**
  * 两列对齐的命令输出（`left  right`），如 `ls -t` 的日期与标题、`ls ~/friends` 的名字与主机。
- * 左列取最长一项的宽度（最多到行宽的一半），不换行；右列在自己的列内换行对齐。
+ * 左列取最长一项的宽度，最多到 leftMax（默认行宽的一半），超出上限的项在列内换行；右列在自己的列内换行对齐。
  * 有链接的格子用正文色，纯文本格子用 --secondary。stack 为真时，手机上右列换到下一行并缩进 2ch。
  */
 interface Cell {
@@ -15,13 +15,15 @@ interface Cell {
 
 interface Props {
 	rows: { left: Cell; right: Cell }[];
+	/** 左列宽度上限（CSS 长度）。 */
+	leftMax?: string;
 	stack?: boolean;
 }
 
-const { rows, stack = false } = Astro.props;
+const { rows, leftMax, stack = false } = Astro.props;
 ---
 
-<ul class:list={['term-output', stack && 'term-output-stack']}>
+<ul class:list={['term-output', stack && 'term-output-stack']} style={leftMax ? `--term-left-max: ${leftMax}` : undefined}>
 	{rows.map(({ left, right }) => (
 		<li>
 			{[left, right].map((cell) =>
