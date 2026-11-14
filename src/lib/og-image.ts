@@ -8,13 +8,17 @@ import { defaultLang, langCodes, ui } from '../i18n/ui.ts';
 
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
+// The night palette (tokens.css :root[data-theme="tty"]): a dark card reads
+// as a terminal screen in every feed. Titles take the emphasized colour, as
+// on the site.
 export const OG_PALETTE = {
-	background: '#fdf6e3',
-	surface: '#eee8d5',
-	foreground: '#073642',
-	secondary: '#566a71',
-	accent: '#b04010',
-	borderStrong: '#778888',
+	background: '#002b36',
+	surface: '#073642',
+	foreground: '#93a1a1',
+	emphasized: '#eee8d5',
+	secondary: '#8b9b9d',
+	accent: '#ee7d47',
+	borderStrong: '#647e86',
 } as const;
 
 export interface OgImageContent {
@@ -82,7 +86,7 @@ export async function renderOgImage(content: OgImageContent): Promise<Buffer> {
 		props: { children: value, style: { position: 'absolute', left, top, fontSize: size, color, whiteSpace: 'pre', lineHeight: 1 } },
 	});
 	const output = isPost ? [
-		...titleLines.map((line, index) => text(line, 48, 208 + index * 64, fontSize)),
+		...titleLines.map((line, index) => text(line, 48, 208 + index * 64, fontSize, OG_PALETTE.emphasized)),
 		text(meta, 48, 448, 32, OG_PALETTE.secondary),
 	] : [
 		text('xz@xzos', 48, 208, 48, OG_PALETTE.accent),

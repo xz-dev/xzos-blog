@@ -64,7 +64,7 @@ other settings stay intact. Each declared syntax foreground reaches 4.5:1
 on its code surface. Inline code uses the page foreground. The 16 home
 swatches retain Solarized's standard terminal order; they are decorative.
 `docs/theme/tty-dark.json` retains only the night favicon's foreground; a
-test checks it against the CSS token. OG cards use the fixed day palette.
+test checks it against the CSS token. OG cards use the fixed night palette, titles in the emphasized colour.
 
 ### Semantic colours
 
@@ -276,7 +276,7 @@ Endpoints that are not HTML pages have no pattern: `/rss.xml`
 (`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)
 and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
 
-**Open Graph.** The 1200×630 PNG cards use the day palette from the exported
+**Open Graph.** The 1200×630 PNG cards use the night palette from the exported
 `OG_PALETTE` in `src/lib/og-image.ts` and only GNU Unifont 18.0.01. A flat
 status line uses the site navigation translations on the surface colour
 with a 1px strong bottom border. Post cards mark the Posts entry as current;
