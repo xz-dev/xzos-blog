@@ -57,14 +57,22 @@ const pageHref = (page: number) => (page === 1 ? `${blogPrefix}/` : `${pagePrefi
 				margin: var(--space-3) 0;
 			}
 			/* Excerpt headings start at h3 (src/lib/excerpt.ts) and all read
-			 * as one sub-heading size under the entry title. */
+			 * as one sub-heading under the entry title: body size, so they are
+			 * marked like an article's h3, an accent `### ` before the
+			 * emphasized title. */
 			.post-excerpt :global(h3),
 			.post-excerpt :global(h4),
 			.post-excerpt :global(h5),
 			.post-excerpt :global(h6) {
 				font-size: var(--text-h3);
 				line-height: var(--leading-h3);
+				color: var(--emphasized);
 				margin: var(--space-3) 0 var(--space-2) 0;
+			}
+			.post-excerpt :global(:is(h3, h4, h5, h6))::before {
+				content: "### ";
+				content: "### " / "";
+				color: var(--accent);
 			}
 			.post-excerpt :global(p) {
 				margin: var(--space-2) 0;

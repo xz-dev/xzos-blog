@@ -438,6 +438,14 @@ pre code {
   border: none;
 }
 
+/* The UA draws these "smaller"; Unifont has no smaller grid, so they keep
+ * their context's size. */
+small,
+sub,
+sup {
+  font-size: inherit;
+}
+
 sup {
   line-height: 0;
 }
@@ -453,10 +461,11 @@ mark {
   text-shadow: none;
 }
 
-/* Editorial opacity in posts must not silently reduce the verified text
- * contrast. */
+/* Editorial opacity and size in posts (inline styles) must not silently
+ * reduce the verified text contrast or leave Unifont's 16px grid. */
 .prose small {
   opacity: 1 !important;
+  font-size: inherit !important;
 }
 
 /* One quote style in both themes: a rule, no fill, one blank line above and
