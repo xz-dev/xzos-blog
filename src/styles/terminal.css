@@ -430,6 +430,38 @@ pre {
   border: var(--hairline) solid var(--border-strong);
 }
 
+/* An article's code block with its `[copy]` control (CodeCopy): the control
+ * sits on the block's first line at the right, inside the frame, on the
+ * block's own surface so a long first line passes under it. It stays visible
+ * on touch screens, where there is no hover. */
+.code-block {
+  position: relative;
+  margin: var(--space-4) 0;
+}
+
+.code-block > pre {
+  margin: 0;
+}
+
+.code-copy {
+  position: absolute;
+  top: var(--hairline);
+  right: var(--hairline);
+  gap: 0;
+  min-height: var(--leading-code);
+  padding: var(--space-3) var(--space-3) 0 var(--space-1);
+  background: var(--surface);
+  color: var(--secondary);
+  font-size: var(--text-code);
+  line-height: var(--leading-code);
+}
+
+.code-copy:hover,
+.code-copy:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 pre code {
   background: none !important;
   margin: 0;

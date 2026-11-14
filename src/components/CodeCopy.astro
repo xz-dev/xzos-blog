@@ -1,0 +1,63 @@
+---
+/**
+ * 文章代码块的复制按钮：脚本给 .article-body 里的每个 <pre> 加一个 `[复制]`，
+ * 点击后复制代码原文，按钮短暂显示 `[已复制]`。没有脚本时不出现按钮。
+ */
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+	lang: Lang;
+}
+
+const t = useTranslations(Astro.props.lang);
+---
+
+<code-copy data-copy={t('code.copy')} data-copied={t('code.copied')} data-failed={t('code.copyFailed')} data-label={t('code.copyLabel')} hidden></code-copy>
+
+<script>
+	// Each code block gets a plain-text `[copy]` control at its top right,
+	// like the status line's menu items. It copies the code's text exactly
+	// (no prompt or line numbers are added by the page) and reports the
+	// result in place for two seconds; a polite live region announces it.
+	const host = document.querySelector<HTMLElement>('code-copy');
+	const labels = host?.dataset;
+	if (labels && navigator.clipboard) {
+		const set = (button: HTMLButtonElement, text: string) => {
+			button.querySelector('.code-copy-text')!.textContent = text;
+		};
+		for (const pre of document.querySelectorAll<HTMLPreElement>('.article-body pre')) {
+			const block = document.createElement('div');
+			block.className = 'code-block';
+			pre.replaceWith(block);
+			block.append(pre);
+			const button = document.createElement('button');
+			button.type = 'button';
+			button.className = 'control code-copy';
+			button.setAttribute('aria-label', labels.label ?? '');
+			button.innerHTML = '<span aria-hidden="true">[</span><span class="code-copy-text"></span><span aria-hidden="true">]</span>';
+			set(button, labels.copy ?? '');
+			const status = document.createElement('span');
+			status.className = 'sr-only';
+			status.setAttribute('role', 'status');
+			let timer = 0;
+			button.addEventListener('click', async () => {
+				let done = true;
+				try {
+					await navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? pre.textContent ?? '');
+				} catch {
+					done = false;
+				}
+				const message = (done ? labels.copied : labels.failed) ?? '';
+				set(button, message);
+				status.textContent = message;
+				window.clearTimeout(timer);
+				timer = window.setTimeout(() => {
+					set(button, labels.copy ?? '');
+					status.textContent = '';
+				}, 2000);
+			});
+			block.append(button, status);
+		}
+	}
+</script>
