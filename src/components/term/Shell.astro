@@ -1,7 +1,8 @@
 ---
 /**
  * 首页最后一行的迷你 shell（xzsh）：有 JS 时取代前面那行静态的 `$ █` 提示符，
- * 位置与行高不变；没有 JS 时保持隐藏，页面与原来一样。
+ * 行高不变，但上方多出一行登录提示（help 提示），后面的内容随之下移；
+ * 没有 JS 时保持隐藏，页面与原来一样。
  * 命令表在 src/lib/xzsh.ts；这里只负责绘制输出、编辑键与执行动作。
  */
 import { getBlogPrefix, getHomePath } from '../../i18n/collections';
@@ -292,7 +293,7 @@ const data: ShellData = {
 			input.focus({ preventScroll: true });
 		});
 
-		// Swap the static prompt for the shell: same line, same place.
+		// Swap the static prompt for the shell; the login message adds one line above it.
 		const prompt = shell.previousElementSibling as HTMLElement | null;
 		if (prompt) prompt.hidden = true;
 		shell.hidden = false;

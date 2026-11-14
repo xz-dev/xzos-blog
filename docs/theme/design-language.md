@@ -155,8 +155,9 @@ info; below that the art stacks above the info.
   Life`), visually hidden (`home` sets `hideTitle` by default); the visible
   title line is the info block's `xz@xzos`.
 - **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
-  (`src/lib/ascii-ring.ts`), on a fixed grid of 45 × 15 cells, as many rows
-  as the info block has lines, and 30 × 10 at 420px and below. Cells are
+  (`src/lib/ascii-ring.ts`), on a fixed grid of 42 × 14 cells, one row per
+  line of the info block (the blank line and the palette row included),
+  and 30 × 10 at 420px and below. Cells are
   8 × 24 (one character on a body line), so x is scaled three times y to
   keep the ring round, and the box never changes size. The dashes are a flat band (half-width 0.17 across the ring,
   0.08 along its axis, dash 42% of each 1/16 arc) with back faces culled, so
@@ -166,9 +167,10 @@ info; below that the art stacks above the info.
   `--secondary`, the rest `--foreground`. The build renders frame 0; the
   page script animates it at 12 fps while it is on screen and the tab is
   visible. The art is `aria-hidden` with a visually hidden text alternative.
-- **Pause:** `[pause]` is a plain menu item centred directly under the art
-  (the art column is as wide as the ring), with `aria-pressed` and a
-  constant accessible name. Pressed (paused) is marked like the status
+- **Pause:** `[pause]` is a plain menu item at the bottom right of the boot
+  block, on the palette row's line, so it takes no line of its own. It has
+  `aria-pressed` and a constant accessible name, and the page script
+  unhides it; without script the page has no motion to stop. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It
   stops the logo and the cursor (`data-paused` on the frame).
 - **Info block:** fastfetch's layout: `xz@xzos` (names in `--accent`, `@`
@@ -189,10 +191,17 @@ info; below that the art stacks above the info.
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a
   link to the locale's archive (the `→ ` stays off its underline), then `$`
-  and the blinking block cursor.
+  and the blinking block cursor. With script, the shell (xzsh) takes that
+  prompt's place and prints its login message above its prompt: the
+  localized help hint (`shell.hint`) in `--secondary`. `clear` wipes it.
 - **Motion:** the logo and the cursor are the site's only motion, in both
   themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
-  control and stops the blink.
+  control and stops the blink. The cursor blinks only while the script has
+  shown the pause control (`data-pausable`), so without script it is
+  steady. The ring rewrites its `innerHTML` 12 times a second; at 4× CPU
+  throttling on `/` (1440px, day) five seconds of animation produced no long
+  task, about 6 ms of script and 1 ms of layout per ring frame, and the page
+  kept its 60 fps animation-frame rate.
 
 ## Night-only rules that remain
 
