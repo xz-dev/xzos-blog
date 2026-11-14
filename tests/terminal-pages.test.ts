@@ -112,12 +112,14 @@ test('status line: items 2ch apart, a reserved `*` cell, `│` between groups, g
 
 test('only the home cursor blinks', () => {
 	// The cursor blinks only with data-blink, set by `blink`, which only the
-	// home page (it has a pause control) passes.
+	// home page (it has a pause control) passes, and only under [data-pausable],
+	// which the home script sets while the pause control is shown: no script, no blink.
 	assert.match(read('../src/components/term/Cursor.astro'), /data-blink=\{blink \? '' : undefined\}/);
-	assert.match(css, /@media \(prefers-reduced-motion: no-preference\)\s*\{\s*\.cursor\[data-blink\]\s*\{\s*animation:\s*var\(--cursor-blink\);/);
+	assert.match(css, /@media \(prefers-reduced-motion: no-preference\)\s*\{\s*:where\(\[data-pausable\]\) \.cursor\[data-blink\]\s*\{\s*animation:\s*var\(--cursor-blink\);/);
 	assert.doesNotMatch(css, /\n\s*\.cursor\s*\{[^}]*animation/);
-	assert.match(tty, /\.cursor\[data-blink\]:not\(\[data-paused\] \*\)\s*\{\s*animation:\s*var\(--cursor-blink\) !important;/);
+	assert.match(tty, /\[data-pausable\] \.cursor\[data-blink\]:not\(\[data-paused\] \*\)\s*\{\s*animation:\s*var\(--cursor-blink\) !important;/);
 	assert.match(pages.home, /<Prompt cursor blink \/>/);
+	assert.match(pages.home, /button\.hidden = reduce\.matches;\s*(?:\/\/[^\n]*\n\s*)?main\?\.toggleAttribute\('data-pausable', !button\.hidden\);/);
 	assert.match(pages.about, /<Prompt cursor \/>/);
 	assert.match(pages.links, /<Prompt cursor \/>/);
 });

@@ -325,8 +325,11 @@ const recent = posts.slice(0, LS);
 						art.innerHTML = ringHtml(time, { cols: Number(art.dataset.cols), rows: Number(art.dataset.rows) });
 					}
 				};
+				const main = root.closest('main');
 				const update = () => {
 					button.hidden = reduce.matches;
+					// The cursor blinks only while this control is there to stop it.
+					main?.toggleAttribute('data-pausable', !button.hidden);
 					const run = !paused && !reduce.matches && !document.hidden && shown.size > 0;
 					if (run && !frame) {
 						last = 0;
@@ -350,7 +353,7 @@ const recent = posts.slice(0, LS);
 					paused = !paused;
 					button.setAttribute('aria-pressed', String(paused));
 					// Pausing stops the cursor too (WCAG 2.2.2): [data-paused] in terminal.css.
-					root.closest('main')?.toggleAttribute('data-paused', paused);
+					main?.toggleAttribute('data-paused', paused);
 					update();
 				});
 				document.addEventListener('visibilitychange', update);

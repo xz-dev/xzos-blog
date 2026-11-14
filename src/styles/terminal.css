@@ -616,9 +616,11 @@ a :is(strong, b, em, i) {
 
 /* Block cursor: a full Unifont cell (U+2588) after a prompt. Only a cursor
  * on a page with a pause control blinks ([data-blink], the home page), and
- * not when the user asks for reduced motion or a [data-paused] ancestor
- * stops it; tty.css lets it through night's motion reset. Other cursors are
- * steady, so no page blinks without a way to stop it (WCAG 2.2.2). */
+ * only once the page script has shown that control ([data-pausable] on the
+ * frame), so without script the cursor is steady. Reduced motion or a
+ * [data-paused] ancestor stops it; tty.css lets it through night's motion
+ * reset. Other cursors are steady, so no page blinks without a way to stop
+ * it (WCAG 2.2.2). */
 @keyframes cursor-blink {
   50% {
     opacity: 0;
@@ -626,7 +628,7 @@ a :is(strong, b, em, i) {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .cursor[data-blink] {
+  :where([data-pausable]) .cursor[data-blink] {
     animation: var(--cursor-blink);
   }
 }

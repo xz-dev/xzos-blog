@@ -30,10 +30,11 @@
 }
 
 /* The one exception (README, Night / TTY): the home page's block cursor
- * blinks in night too. Reduced motion, the page's pause control
- * ([data-paused]) and the switch guard still stop it. */
+ * blinks in night too, once the script has shown the pause control
+ * ([data-pausable]). Reduced motion, that control ([data-paused]) and the
+ * switch guard still stop it. */
 @media (prefers-reduced-motion: no-preference) {
-  :root[data-theme="tty"]:not([data-theme-switching]) .cursor[data-blink]:not([data-paused] *) {
+  :root[data-theme="tty"]:not([data-theme-switching]) [data-pausable] .cursor[data-blink]:not([data-paused] *) {
     animation: var(--cursor-blink) !important;
   }
 }
