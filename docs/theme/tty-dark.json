@@ -5,7 +5,7 @@
     "sourceSha256": "71092ff150ff18f72d72070032d0e819c080b4052da3d51de29b0f00e80c851c"
   },
   "derivation": {
-    "method": "Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground, --edge-dark is black and --code-foreground is the syntax foreground.",
+    "method": "Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground and --code-foreground is the syntax foreground.",
     "anchors": {
       "--background": "#141a03",
       "--surface": "#1d2606",
@@ -14,11 +14,7 @@
       "--accent": "#f0ff9a"
     },
     "mixFactors": {
-      "--control-face": 0.08,
-      "--control-hover": 0.11,
-      "--border-color": 0.45,
-      "--edge-light": 0.55,
-      "--edge-inner": 0.45
+      "--border-color": 0.45
     },
     "syntaxPolicy": "Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not shades of the phosphor UI."
   },
@@ -35,13 +31,8 @@
     "--secondary": "#a8cc2a",
     "--accent": "#f0ff9a",
     "--emphasized": "#d4ff3a",
-    "--edge-dark": "#000000",
     "--code-foreground": "#e8fff0",
-    "--control-face": "#232c07",
-    "--control-hover": "#293309",
-    "--border-color": "#6a811c",
-    "--edge-light": "#7e9821",
-    "--edge-inner": "#6a811c"
+    "--border-color": "#6a811c"
   },
   "syntax": {
     "background": "#1d2606",
@@ -55,9 +46,8 @@
   "contrast": {
     "foregroundOnBackground": 15.409096631290469,
     "secondaryOnBackground": 9.616034068995285,
-    "secondaryOnControlHover": 7.212014660083702,
     "borderOnBackground": 4.046178912888542,
-    "minimumTextOnField": 7.212014660083702,
+    "minimumTextOnField": 8.509420877685535,
     "backgroundRelativeLuminance": 0.008940857581238484,
     "minimumSyntaxOnSurface": 7.182526415647145,
     "normalTextWcagAAA": true,

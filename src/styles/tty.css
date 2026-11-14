@@ -1,7 +1,7 @@
 /*
  * Night (data-theme="tty"): yellow-green phosphor on a dark olive field.
- * Palette, glow, overlay, bevels and selection are tokens in tokens.css; the
- * rules left here cannot be tokens:
+ * Palette, glow, overlay, code colour and selection are tokens in tokens.css;
+ * the rules left here cannot be tokens:
  * - motion: night is static by contract, so it switches animation and
  *   transition off on every element, which no single token can reach;
  * - Shiki: syntax colours are per-element variables (--shiki-dark) that
@@ -26,11 +26,6 @@
   animation: none !important;
   transition: none !important;
   scroll-behavior: auto !important;
-}
-
-/* Inline code is not highlighted, so it has no --shiki-dark colour. */
-:root[data-theme="tty"] code {
-  color: var(--shiki-dark, var(--code-foreground));
 }
 
 /* Shiki's dual-theme switch: each span carries its night colour inline. */

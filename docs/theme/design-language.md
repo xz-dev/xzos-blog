@@ -2,7 +2,8 @@
 
 One layout and one font in both themes; night only recolours. Day
 (`data-theme="solarized"`) is peach paper and night (`data-theme="tty"`) is
-phosphor on olive. Switching theme never moves or resizes anything.
+phosphor on olive. Switching theme never moves or resizes anything, and no
+frame, fill or bevel exists in one theme but not the other.
 
 ## Tokens
 
@@ -11,39 +12,66 @@ palette, the type scale, spacing, widths, sizes and the role tokens. The night
 block redefines colours and the role tokens only.
 
 - **Font:** `--font-ui` is GNU Unifont (`src/styles/fonts.css`), set once on
-  `body`. It has one weight and no italic, so synthesis is off; `strong`, `b`
-  and `em` are underlined.
+  `body`. It has one weight and no italic, so synthesis is off and emphasis
+  follows the terminal rule "bold is bright": `strong` and `b` take
+  `--accent`, `em` and `i` take `--secondary`, and neither is underlined.
+  The underline means a link and nothing else. Inside a link, the link colour
+  wins.
 - **Type scale (rem; line heights land on whole pixels):** body 16/24,
   prose 16/28, page title 32/40, card title 24/32, h2 22/32, h3 20/28,
   meta 14/20, code 16/24.
 - **Spacing:** `--space-1` to `--space-7` (4, 8, 16, 24, 32, 48, 64 px).
 - **Radius:** `--radius: 0`. Every box is square.
-- **Roles:** `--control-*` (fill, edge, bevel, hover, current), `--field-*`,
-  `--menu-hover`, `--code-color`, `--selection-*`, `--text-glow` and
-  `--field-overlay`. Day controls are flat. Night adds a hard bevel, a glow
-  and a scanline-and-vignette layer. `prefers-contrast: more` removes the
-  glow and the layer.
+- **Roles:** `--code-color`, `--selection-*`, `--text-glow` and
+  `--field-overlay`. Night redefines the palette and these roles only: a glow
+  and a scanline-and-vignette layer behind the content, and reverse-video
+  selection. Controls, menu items and form fields are drawn the same in both
+  themes. `prefers-contrast: more` removes the glow and the layer.
 
 ## Primitives
 
 | Role | Primitive | Where |
 |---|---|---|
 | Page frame and title | `PageFrame` (`list`, `page`, `article`) with `.page-title` | `src/components/PageFrame.astro`, `terminal.css` |
-| Menu item | `.menu-item`, `.menu-item-icon` | header bar, footer social links |
-| Control | `.control` and `button` | pagination, contents summary |
+| Menu item | `.menu-item`, `.menu-label`, `.menu-item-icon` | header status line, footer social links |
+| Control | `.control` | pagination |
+| Pixel mark (both themes) | `PixelIcon bothThemes` (`.pixel-icon`) | header logo, theme toggle |
 | Meta line | `PostMeta` (`.post-meta`) | post lists, posts |
 
-## Menu bar
+## Status line
 
-The header is one flat row on `--surface` with a 1px `--border-strong`
-bottom edge. The row holds the logo, the site name, the menus (home, blog,
-about, links) and a status area (languages, theme toggle, social links).
-Menu items are plain text, 32px tall, with `--space-2` inline padding. Hover
-tints the bar with `--menu-hover`. The current page (`aria-current`) shows
-accent background with page-colour text. The theme toggle carries
-`aria-pressed` (pressed = night). Tablets put the menus on a second row.
-Phones use three rows (title, menus, status) and hide the tagline and social
-links, which the footer repeats.
+The header is a terminal status line, like tmux's, the same in both themes:
+
+```
+◌ xzOS   0:首页  1:博客*  2:关于  3:友链        lang: zh*  en  zh-CN   ☾
+```
+
+It is one flat row of plain text on `--surface` with a 1px `--border-strong`
+bottom edge (`border-block-end`). The row holds the pixel logo (`--accent`),
+the site name, the menus and a status area (the language field, the theme
+toggle and the social links). Menu and language items are `.menu-item`s,
+32px tall with `--space-1` inline padding; `--space-2` gaps leave two
+character cells between entries.
+
+- **Menus** read `index:label`. The order and labels come from `navItems` and
+  `nav.*` in `src/i18n/ui.ts`; the index is a dim `.menu-label`
+  (`--secondary`), hidden from assistive technology.
+- **Languages** read `lang: zh en zh-CN`: the `lang.prefix` label, then the
+  short codes. Each link's accessible name and tooltip is the full name from
+  `languages` with the code, for example `English (en)`.
+- **Current page or section** (`aria-current`) takes `--accent` and a
+  trailing `*`, generated with empty alternative text. Nothing is filled or
+  inverted.
+- **Hover** turns the entry `--accent` and underlines it. **Focus** is the
+  shared 2px `--accent` outline.
+- **Theme toggle:** a pixel sun in day and moon at night, chosen by CSS from
+  `data-theme`. `aria-pressed` (pressed = night) is set by an inline script
+  right after the button, so it matches the theme at first paint.
+
+Tablets put the menus on a second row. At 720px and below the title takes
+its own row, the menus and the status area follow and share a row only when
+both fit, and the tagline and social links (which the footer repeats) are
+hidden.
 
 Text slots wrap or stay on one line by declaration. A menu label never breaks
 (`nowrap`); a row that runs out of room wraps whole items. Post titles and
@@ -52,7 +80,7 @@ tables scroll in their own container.
 
 ## Routes and patterns
 
-Every route renders through `PageFrame`. `list` and `page` use
+Every HTML page renders through `PageFrame`. `list` and `page` use
 `--page-width` (960px). `article` uses `--prose-width` (720px) and puts the
 meta line above the title. The `/en/` and `/zh-CN/` variants use the same
 pattern as the `zh` route.
@@ -67,11 +95,16 @@ pattern as the `zh` route.
 | `/link-exchange` | page | `pages/link-exchange.astro` |
 | `/404` | page | `pages/404.astro` |
 
+Endpoints that are not HTML pages have no pattern: `/rss.xml`
+(`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)
+and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
+
 ## Night-only rules that remain
 
 `src/styles/tty.css` turns motion off on every element, which a token cannot
 reach. It also applies Shiki's per-span `--shiki-dark` colours, which Shiki
-writes inline. `src/styles/tty-pixel-icons.css` swaps the original icons for
-hand-drawn 16×16 pixel icons, because night uses a different set of drawn
-assets. `ThemeToggle.astro` shows the sun or moon from `data-theme` because
-the icon must be right at first paint, before its script runs.
+writes inline. `src/styles/tty-pixel-icons.css` swaps the social, notice,
+contents and pagination icons for hand-drawn 16×16 pixel icons, because night
+uses a different set of drawn assets. The logo and the theme toggle use the
+pixel drawings in both themes. `ThemeToggle.astro` shows the sun or moon from
+`data-theme` so the icon is right at first paint, before any script runs.

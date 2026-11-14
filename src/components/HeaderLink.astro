@@ -2,14 +2,17 @@
 import type { HTMLAttributes } from 'astro/types';
 import { getNavCurrent } from '../i18n/utils';
 
-type Props = HTMLAttributes<'a'>;
+type Props = HTMLAttributes<'a'> & {
+	/** The window number shown before the label, as on a tmux status line. */
+	index: number;
+};
 
-const { href, class: className, ...props } = Astro.props;
+const { href, index, class: className, ...props } = Astro.props;
 // Compared without the language prefix and trailing slash, so /en/blog/,
 // /zh-CN/blog/foo/ and /page/2/ mark their section too.
 const current = getNavCurrent(Astro.url.pathname, String(href ?? ''));
 ---
 
 <a href={href} class:list={[className, 'menu-item']} aria-current={current} {...props}>
-	<slot />
+	<span class="menu-label" aria-hidden="true">{index}:</span><slot />
 </a>

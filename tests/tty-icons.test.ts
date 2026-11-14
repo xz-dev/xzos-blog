@@ -104,6 +104,8 @@ test('PixelIcon is monochrome, crisp, accessible and hidden by default rather th
 	assert.match(component, /aria-hidden=/);
 	assert.match(component, /aria-label=\{label\}/);
 	assert.match(component, /focusable="false"/);
+	// Night-only by default; bothThemes switches to the shared .pixel-icon class.
+	assert.match(component, /class:list=\{\[bothThemes \? 'pixel-icon' : 'tty-pixel-icon', className\]\}/);
 	assert.match(ruleFor('.tty-pixel-icon'), /display:\s*none\s*!important/);
 	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon'), /display:\s*inline-block\s*!important/);
 	assert.match(ruleFor(':root[data-theme="tty"] .tty-original-icon'), /display:\s*none\s*!important/);
@@ -117,26 +119,44 @@ test('Header and Footer cover all social marks, preserve original SVGs and retai
 		assert.equal((component.match(/<path\s+fill="currentColor"\s+d=/g) ?? []).length, 3);
 		for (const key of ['social.mastodon', 'social.github', 'social.stackOverflow']) assert.ok(component.includes(`<span class="sr-only">{t('${key}')}</span>`));
 	}
+	// One logo in both themes: the pixel drawing, coloured by the accent; the
+	// PNG stays only as the day favicon.
 	const header = read('../src/components/Header.astro');
-	assert.ok(header.includes("<img src=\"/dotted_circle.png\" alt={t('site.logoAlt')} class=\"site-logo tty-original-icon\" />"));
-	assert.ok(header.includes("<PixelIcon name=\"logo\" class=\"tty-site-logo\" label={t('site.logoAlt')} />"));
+	assert.doesNotMatch(header, /dotted_circle\.png|<img/);
+	assert.ok(header.includes("<PixelIcon name=\"logo\" class=\"site-logo\" label={t('site.logoAlt')} bothThemes />"));
+	assert.match(header, /\.site-title :global\(\.site-logo\)\s*\{[^}]*width:\s*var\(--logo-size\);[^}]*color:\s*var\(--accent\);/);
 });
 
-test('the theme button retains its original sun/moon, while TTY selects only the hand-drawn moon', () => {
+test('the theme button is a plain status-line item with the same pixel sun and moon in both themes', () => {
 	const toggle = read('../src/components/ThemeToggle.astro');
-	for (const name of ['sun', 'moon']) {
-		assert.ok(toggle.includes(`class="${name}-icon tty-original-icon"`));
-		assert.ok(toggle.includes(`<PixelIcon name="${name}" class="tty-theme-${name}" />`));
-	}
-	assert.match(toggle, /<circle cx="10" cy="10" r="4"/);
-	assert.match(toggle, /<path d="M17 10\.5C/);
-	assert.match(toggle, /aria-label=\{t\('theme\.toggle'\)\}/);
-	assert.match(ruleFor(':root[data-theme="tty"] #theme-toggle .tty-theme-sun'), /display:\s*none\s*!important/);
-	assert.match(ruleFor(':root[data-theme="tty"] #theme-toggle .tty-theme-moon'), /display:\s*inline-block\s*!important/);
-	const positioning = ruleFor(':root[data-theme="tty"] #theme-toggle .tty-pixel-icon');
-	assert.match(positioning, /position:\s*absolute/);
-	assert.match(positioning, /transform:\s*translate\(-50%, -50%\)/);
+	for (const name of ['sun', 'moon']) assert.ok(toggle.includes(`<PixelIcon name="${name}" class="theme-${name}" bothThemes />`));
+	assert.doesNotMatch(toggle, /tty-original-icon|<circle|<path|position:\s*absolute/);
+	assert.match(toggle, /<button id="theme-toggle" class="menu-item" aria-label=\{t\('theme\.toggle'\)\}/);
+	assert.match(toggle, /:root\[data-theme="tty"\] #theme-toggle :global\(\.theme-sun\),\s*:root:not\(\[data-theme="tty"\]\) #theme-toggle :global\(\.theme-moon\)\s*\{\s*display:\s*none;/);
+	assert.doesNotMatch(css(), /theme-toggle|tty-site-logo/);
+	const shared = read('../src/styles/terminal.css').match(/\n\.pixel-icon\s*\{([^}]*)\}/)![1];
+	assert.match(shared, /display:\s*inline-block;/);
+	assert.match(shared, /width:\s*var\(--pixel-icon-size\);/);
 });
+
+// aria-pressed must match the theme from first paint: an inline script right
+// after the button sets it from the data-theme the head script chose.
+for (const theme of ['tty', 'solarized', null] as const) {
+	test(`the theme button reports pressed=${theme === 'tty'} at first paint for ${theme ?? 'no'} data-theme`, () => {
+		const toggle = read('../src/components/ThemeToggle.astro');
+		const button = toggle.indexOf('<button id="theme-toggle"');
+		const inline = toggle.match(/<\/button>\s*<script is:inline>([\s\S]*?)<\/script>/);
+		assert.ok(inline && toggle.indexOf(inline[0]) > button, 'inline script directly after the button');
+		const attributes = new Map<string, string>([['aria-pressed', 'false']]);
+		runInNewContext(inline![1], {
+			document: {
+				documentElement: { getAttribute: (name: string) => (name === 'data-theme' ? theme : null) },
+				getElementById: (id: string) => (id === 'theme-toggle' ? { setAttribute: (name: string, value: string) => attributes.set(name, value) } : null),
+			},
+		});
+		assert.equal(attributes.get('aria-pressed'), String(theme === 'tty'));
+	});
+}
 
 test('language and translation notices get distinct pixel marks without hiding the new marks with notice-icon', () => {
 	const notice = read('../src/components/LanguageVersionNotice.astro');
@@ -148,7 +168,7 @@ test('language and translation notices get distinct pixel marks without hiding t
 
 test('TOC replaces only the night native marker and preserves the day label without additional whitespace', () => {
 	const toc = read('../src/components/TableOfContents.astro');
-	assert.ok(toc.includes('<summary class="control"><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />{t(\'blog.toc\')}</summary>'));
+	assert.ok(toc.includes('<summary><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />{t(\'blog.toc\')}</summary>'));
 	assert.match(ruleFor(':root[data-theme="tty"] .toc summary'), /list-style:\s*none/);
 	assert.match(ruleFor(':root[data-theme="tty"] .toc summary::marker'), /content:\s*''/);
 	assert.match(ruleFor(':root[data-theme="tty"] .toc summary::-webkit-details-marker'), /display:\s*none/);
@@ -227,13 +247,12 @@ test('all visible night marks use integer-size grid scaling, currentColor and ze
 	const base = ruleFor(':root[data-theme="tty"] .tty-pixel-icon');
 	assert.match(base, /width:\s*var\(--pixel-icon-size\)\s*!important/);
 	assert.match(base, /height:\s*var\(--pixel-icon-size\)\s*!important/);
-	// One 16px grid unit (Unifont's), and the logo shares the day logo's size token.
+	// One 16px grid unit (Unifont's); the header logo is two units (Header.astro).
 	const tokens = read('../src/styles/tokens.css');
 	assert.match(tokens, /--pixel-icon-size:\s*1rem;/);
 	assert.match(tokens, /--logo-size:\s*2rem;/);
 	assert.match(base, /fill:\s*currentColor/);
 	for (const property of ['animation', 'transition', 'filter', 'box-shadow', 'text-shadow']) assert.match(base, new RegExp(`${property}:\\s*none\\s*!important`));
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon.tty-site-logo'), /width:\s*var\(--logo-size\)\s*!important/);
 });
 
 test('the same-origin static night favicon uses the same hand-drawn logo grid as page UI', async () => {

@@ -18,6 +18,13 @@ test('every element in both themes uses one CJK-capable pixel family, set once',
 	// Elements the UA gives another family take the page's instead; nothing else sets one.
 	const families = [...base.matchAll(/font-family:\s*([^;]+);/g)].map((m) => m[1].trim());
 	assert.deepEqual([...new Set(families)].sort(), ['inherit', 'var(--font-ui)']);
+	// Form controls and the status-line button take the family through the
+	// font shorthand, which the family scan above cannot see.
+	const rules = [...base.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)];
+	for (const selector of ['input', 'textarea', 'select', '.menu-item']) {
+		const body = rules.filter((r) => r[1].split(',').map((x) => x.trim()).includes(selector)).map((r) => r[2]).join('');
+		assert.match(body, /\bfont:\s*inherit;/, selector);
+	}
 	assert.doesNotMatch(tty, /font-family|font-synthesis/);
 	for (const file of ['tty-pixel-icons.css', 'tokens.css']) assert.doesNotMatch(read(`../src/styles/${file}`).replace(/--font-ui:[^;]+;/, ''), /font-family/, file);
 	for (const file of ['Header', 'HeaderLink', 'LanguageSwitcher', 'ThemeToggle', 'Footer', 'TableOfContents', 'PostMeta']) {
@@ -29,6 +36,12 @@ test('every element in both themes uses one CJK-capable pixel family, set once',
 	assert.ok(head.indexOf("import '../styles/fonts.css';") > 0);
 	assert.ok(head.indexOf("import '../styles/fonts.css';") < head.indexOf("import '../styles/terminal.css';"));
 	assert.doesNotMatch(head, /fira/i);
+	// Both themes paint in Unifont first: the Latin subset is preloaded on every
+	// page and the common CJK subset on the Chinese ones, and nothing else.
+	const preloads = [...head.matchAll(/<link rel="preload" href="([^"]+)" as="font" type="font\/woff2" crossorigin \/>/g)].map((m) => m[1]);
+	assert.deepEqual(preloads, ['/fonts/unifont-18.0.01-latin.woff2', '/fonts/unifont-18.0.01-cjk-common.woff2']);
+	assert.match(head, /\{currentLang !== 'en' && <link rel="preload" href="\/fonts\/unifont-18\.0\.01-cjk-common\.woff2"/);
+	for (const file of preloads) assert.ok(fonts.includes(`url('${file}')`), file);
 	assert.doesNotMatch(fonts, /data-theme/);
 });
 
@@ -64,9 +77,30 @@ test('self-hosted Unifont preserves its grid, Unicode coverage, metrics and lice
 	assert.match(license, /SIL OPEN FONT LICENSE Version 1\.1/);
 });
 
-test('single-weight bitmap outlines are not artificially emboldened or slanted', () => {
+test('single-weight bitmap outlines are not faked; bold is bright, emphasis is dim, only links are underlined', () => {
 	assert.match(base, /body\s*\{[^}]*font-synthesis:\s*none;/);
-	assert.match(base, /\nstrong,\s*b,\s*em\s*\{[^}]*text-decoration:\s*underline;/);
+	const strong = base.match(/\nstrong,\s*b\s*\{([^}]*)\}/)![1];
+	const em = base.match(/\nem,\s*i\s*\{([^}]*)\}/)![1];
+	assert.match(strong, /color:\s*var\(--accent\);/);
+	assert.match(em, /color:\s*var\(--secondary\);/);
+	for (const body of [strong, em]) assert.match(body, /text-decoration:\s*none;/);
+	// The underline is the link's alone.
+	assert.match(base, /\na\s*\{[^}]*text-decoration:\s*underline;/);
+	assert.match(base, /\na :is\(strong, b, em, i\)\s*\{\s*color:\s*inherit;/);
+	// Both colours read as text (4.5:1) on the page and the code surface, in both themes.
+	const tokens = read('../src/styles/tokens.css');
+	const block = (re: RegExp) => Object.fromEntries([...tokens.match(re)![1].matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
+	const lum = (hex: string) => hex.match(/[\da-f]{2}/gi)!.map((c) => parseInt(c, 16) / 255)
+		.reduce((sum, c, i) => sum + (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][i], 0);
+	const contrast = (a: string, b: string) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+	for (const [theme, colors] of Object.entries({ day: block(/:root\s*\{([^}]+)\}/), night: block(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/) })) {
+		for (const role of ['--accent', '--secondary']) {
+			for (const field of ['--background', '--surface']) {
+				const ratio = contrast(colors[role], colors[field]);
+				assert.ok(ratio >= 4.5, `${theme} ${role} on ${field}: ${ratio.toFixed(2)}`);
+			}
+		}
+	}
 });
 
 test('supplementary emoji and symbols use the companion pixel font, not a color emoji fallback', () => {

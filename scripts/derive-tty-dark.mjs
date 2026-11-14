@@ -9,8 +9,8 @@ const mix = (a, b, t) => '#' + rgb(a).map((c, i) => Math.round(c * t + rgb(b)[i]
 const luminance = (hex) => rgb(hex).reduce((sum, c, i) => sum + decode(c / 255) * [0.2126, 0.7152, 0.0722][i], 0);
 const contrast = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
 const anchors = { '--background': '#141a03', '--surface': '#1d2606', '--foreground': '#d4ff3a', '--secondary': '#a8cc2a', '--accent': '#f0ff9a' };
-const mixFactors = { '--control-face': 0.08, '--control-hover': 0.11, '--border-color': 0.45, '--edge-light': 0.55, '--edge-inner': 0.45 };
-const fixed = { '--emphasized': anchors['--foreground'], '--edge-dark': '#000000', '--code-foreground': '#e8fff0' };
+const mixFactors = { '--border-color': 0.45 };
+const fixed = { '--emphasized': anchors['--foreground'], '--code-foreground': '#e8fff0' };
 const palette = {
   ...anchors,
   ...fixed,
@@ -19,12 +19,12 @@ const palette = {
 // Explicit exception: multicolour fluorescent code, independent of the phosphor UI.
 const syntax = { background: palette['--surface'], foreground: palette['--code-foreground'], comment: '#53d98f', keyword: '#ff8acd', string: '#32eaff', function: '#cc99ff', parameter: '#f3ff57' };
 const text = ['--foreground', '--secondary', '--accent'];
-const fields = ['--background', '--surface', '--control-face', '--control-hover'];
+const fields = ['--background', '--surface'];
 console.log(JSON.stringify({
   intent: 'Yellow-green phosphor on a dark olive field. Chosen anchors, not a measured CRT state; the B photograph stays as historical evidence only.',
   reference: { manifest: 'docs/theme/tektronix-4052-b.json', sourceSha256: photo.source.sha256 },
   derivation: {
-    method: 'Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground, --edge-dark is black and --code-foreground is the syntax foreground.',
+    method: 'Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground and --code-foreground is the syntax foreground.',
     anchors,
     mixFactors,
     syntaxPolicy: 'Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not shades of the phosphor UI.',
@@ -40,7 +40,6 @@ console.log(JSON.stringify({
   contrast: {
     foregroundOnBackground: contrast(palette['--foreground'], palette['--background']),
     secondaryOnBackground: contrast(palette['--secondary'], palette['--background']),
-    secondaryOnControlHover: contrast(palette['--secondary'], palette['--control-hover']),
     borderOnBackground: contrast(palette['--border-color'], palette['--background']),
     minimumTextOnField: Math.min(...text.flatMap((t) => fields.map((f) => contrast(palette[t], palette[f])))),
     backgroundRelativeLuminance: luminance(palette['--background']),

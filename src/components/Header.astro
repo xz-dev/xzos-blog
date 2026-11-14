@@ -4,6 +4,7 @@ import HeaderLink from './HeaderLink.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import PixelIcon from './PixelIcon.astro';
+import { navItems } from '../i18n/ui';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
@@ -14,16 +15,14 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 <header>
 	<nav>
 		<div class="site-title">
-			<img src="/dotted_circle.png" alt={t('site.logoAlt')} class="site-logo tty-original-icon" />
-			<PixelIcon name="logo" class="tty-site-logo" label={t('site.logoAlt')} />
+			<PixelIcon name="logo" class="site-logo" label={t('site.logoAlt')} bothThemes />
 			<h2><a class="menu-item" href={`${basePath}/`}>{SITE_TITLE}</a></h2>
 			<p class="tagline">{t('site.tagline')}</p>
 		</div>
 		<div class="internal-links">
-			<HeaderLink href={`${basePath}/`}>{t('nav.home')}</HeaderLink>
-			<HeaderLink href={`${basePath}/blog`}>{t('nav.blog')}</HeaderLink>
-			<HeaderLink href={`${basePath}/about`}>{t('nav.about')}</HeaderLink>
-			<HeaderLink href="/link-exchange">{t('nav.links')}</HeaderLink>
+			{navItems.map((item, index) => (
+				<HeaderLink index={index} href={item.localized ? `${basePath}${item.path}` : item.path}>{t(item.key)}</HeaderLink>
+			))}
 		</div>
 		<div class="right-section">
 			<LanguageSwitcher />
@@ -64,15 +63,16 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	</nav>
 </header>
 <style>
-	/* An OS-style menu bar: one flat row on the surface colour with a
-	 * structural bottom edge. Every item is a .menu-item (terminal.css), so
-	 * both themes share one shape and night only recolours it. The vertical
-	 * padding leaves room for the focus ring inside the bar. */
+	/* A terminal status line, like tmux's: one flat row of plain text on the
+	 * surface colour with a structural bottom edge, the same in both themes.
+	 * Menus read `0:首页 1:博客*`, the language field `lang: zh* en zh-CN`;
+	 * nothing is boxed, filled or bevelled. Every entry is a .menu-item
+	 * (terminal.css). The block padding leaves room for the focus ring. */
 	header {
 		margin: 0;
 		padding: var(--space-1) var(--space-3);
 		background: var(--surface);
-		border-bottom: var(--hairline) solid var(--border-strong);
+		border-block-end: var(--hairline) solid var(--border-strong);
 	}
 
 	nav {
@@ -90,14 +90,12 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		gap: var(--space-1);
 	}
 
-	/* terminal.css gives every img a block margin; night's pixel logo is an
-	 * svg without it, so the row would change height with the theme. */
-	.site-logo {
+	/* The logo is the same pixel drawing in both themes, two grid units
+	 * square, coloured by the accent token. */
+	.site-title :global(.site-logo) {
 		width: var(--logo-size);
 		height: var(--logo-size);
-		margin: 0;
-		border: none;
-		padding: 0;
+		color: var(--accent);
 	}
 
 	h2 {
@@ -108,21 +106,23 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	}
 
 	.tagline {
-		margin: 0 0 0 var(--space-1);
+		margin: 0;
+		margin-inline-start: var(--space-1);
 		font-size: var(--text-meta);
 		line-height: var(--leading-meta);
 		color: var(--secondary);
 		white-space: nowrap;
 	}
 
-	/* Menus follow the site name, as on an OS menu bar; the status area
-	 * (languages, theme, social links) sits at the right end. */
+	/* Menus follow the site name; the status area (languages, theme, social
+	 * links) sits at the right end. Two character cells separate entries:
+	 * each item's inline padding plus the gap. */
 	.internal-links,
 	.right-section,
 	.social-links {
 		display: flex;
 		align-items: center;
-		gap: var(--space-1);
+		gap: var(--space-2);
 	}
 
 	/* Text slots: an item's label never breaks (white-space: nowrap on
@@ -135,12 +135,12 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		min-width: 0;
 	}
 
-	.right-section :global(.language-switcher) {
-		flex-wrap: wrap;
-	}
-
 	.right-section {
 		gap: var(--space-3);
+	}
+
+	.social-links {
+		gap: var(--space-1);
 	}
 
 	@media (max-width: 960px) {
@@ -159,9 +159,9 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		}
 	}
 
-	/* Phone: rows follow the source order, so focus moves the way the eye does:
-	 * logo and title, then the navigation, then the language links with the
-	 * theme toggle at the end. The last two share a row when they fit. */
+	/* Phone: the status line wraps into rows of the same plain text, in source
+	 * order, so focus moves the way the eye does: logo and title, then the
+	 * menus, then the language field with the theme toggle at the end. */
 	@media (max-width: 720px) {
 		nav {
 			justify-content: flex-start;
@@ -174,12 +174,11 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 
 		.internal-links {
 			flex: 0 1 auto;
-			flex-wrap: wrap;
 		}
 
 		.right-section {
 			flex: 1 1 auto;
-			gap: var(--space-1);
+			gap: var(--space-2);
 		}
 
 		.right-section :global(#theme-toggle) {

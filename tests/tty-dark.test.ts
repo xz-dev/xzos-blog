@@ -20,8 +20,8 @@ test('the active night background is dark, not the earlier illuminated photo fie
   }
 });
 
-test('controls, focus and code keep usable contrast without bright green panels', () => {
-  for (const surface of ['--surface', '--control-face', '--control-hover']) {
+test('the code and header surface keeps usable contrast without a bright green panel', () => {
+  for (const surface of ['--surface']) {
     assert.ok(luminance(colors[surface]) < 0.03, `${surface}: avoid large bright panels`);
     for (const role of ['--foreground', '--secondary']) assert.ok(contrast(colors[role], colors[surface]) >= 7, `${role} on ${surface}`);
   }

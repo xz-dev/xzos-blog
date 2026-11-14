@@ -1,15 +1,16 @@
 /* Design tokens for both themes: palettes, type scale, spacing, widths and
  * control sizes. Day is :root; night (data-theme="tty") overrides colours and
  * effects only, so switching theme never moves or resizes anything.
- * terminal.css styles elements and shared classes from these tokens, glow,
- * overlay and control bevels included; tty.css keeps only the night rules a
- * token cannot express. One font serves both themes. */
+ * terminal.css styles elements and shared classes from these tokens, glow and
+ * overlay included; tty.css keeps only the night rules a token cannot
+ * express. One font serves both themes, and no frame, fill or bevel exists in
+ * one theme but not the other. */
 
 /* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
- * links reach WCAG AA (>= 4.5:1) on the page, the surface (code, inline code,
- * the header menu bar) and the menu hover tint. Two borders: --border-strong (the
+ * links reach WCAG AA (>= 4.5:1) on the page and the surface (code, inline
+ * code, the header status line). Two borders: --border-strong (the
  * accent mixed 80% into the page) outlines structure that must stay visible,
- * such as tables, code, quotes and the menu bar's edge, at >= 3:1 on the page
+ * such as tables, code, quotes and the header's edge, at >= 3:1 on the page
  * and the surface;
  * --border-color (30%) is for decorative separators only. */
 :root {
@@ -21,35 +22,18 @@
   --secondary: #76605a;
   --emphasized: #42302a;
   --border-color: #e9c1ae;        /* decorative separators: hr, list rules, image frames */
-  --border-strong: #c3663c;       /* structural: tables, code, quotes, menu bar edge */
-  /* Menu item hover: the accent tinted into the bar. Declared once; it resolves
-   * against whichever palette is active. */
-  --menu-hover: color-mix(in srgb, var(--accent) 15%, var(--surface));
+  --border-strong: #c3663c;       /* structural: tables, code, quotes, header edge */
 
-  /* Role tokens. terminal.css draws every state from these, and the night
-   * block redefines them, so no element rule depends on the theme. Day
-   * controls are flat: no fill, no edge, the accent on hover and when
-   * current or pressed. */
-  --control-bg: transparent;
-  --control-edge: transparent;    /* border-color: one value or four (bevel) */
-  --control-bevel: none;          /* box-shadow at rest and on hover */
-  --control-hover-bg: var(--accent);
-  --control-hover-fg: var(--background);
-  --control-hover-edge: var(--accent);
-  --control-current-bg: var(--accent);   /* pressed, and the current page */
-  --control-current-fg: var(--background);
-  --control-current-edge: var(--accent);
-  --control-pressed-bevel: none;
-  --field-bg: transparent;        /* inputs, textareas, selects */
-  --field-edge: var(--foreground);
+  /* Role tokens that differ between the themes in colour or effect only;
+   * the night block redefines them, so no element rule depends on the theme. */
   --code-color: var(--foreground);
   --selection-bg: Highlight;
   --selection-fg: HighlightText;
   --text-glow: none;              /* text-shadow on body text */
   --field-overlay: none;          /* fixed layer painted behind the content */
 
-  /* Size, spacing, width and font system shared by both themes. tty.css
-   * changes colour and decoration only, so switching theme never moves or
+  /* Size, spacing, width and font system shared by both themes. The night
+   * block changes colour and effects only, so switching theme never moves or
    * resizes anything. Body text is 16px, Unifont's native grid, and every
    * line height is a rem length so lines land on whole pixels. */
   --font-ui: "Unifont", "Unifont Upper", monospace; /* every element, both themes (fonts.css) */
@@ -62,7 +46,7 @@
   --leading-card-title: 2rem;     /* 32px */
   --text-h2: 1.375rem;            /* section heading: 22px */
   --leading-h2: 2rem;             /* 32px */
-  --text-h3: 1.25rem;             /* sub-heading, site title: 20px */
+  --text-h3: 1.25rem;             /* sub-heading: 20px */
   --leading-h3: 1.75rem;          /* 28px */
   --text-meta: 0.875rem;          /* dates, tags, notices, footer: 14px */
   --leading-meta: 1.25rem;        /* 20px */
@@ -81,14 +65,14 @@
   --page-width: 60rem;            /* list and static-page frame: 960px */
   --header-width: 75rem;          /* header row: 1200px */
 
-  --control-size: 2.5rem;         /* every control's height, icon controls' width: 40px */
-  --menu-item-height: 2rem;       /* header menu items and the logo: 32px */
-  --icon-size: 1.25rem;           /* icon inside a control: 20px */
+  --control-size: 2.5rem;         /* pagination entries' height: 40px */
+  --menu-item-height: 2rem;       /* status-line items, square icon items' width: 32px */
+  --icon-size: 1.25rem;           /* day social icons: 20px */
   --logo-size: 2rem;              /* header logo, two pixel-icon grid units: 32px */
   --thumb-size: 4rem;             /* archive thumbnail square: 64px */
-  --pixel-icon-size: 1rem;        /* night pixel icons: Unifont's 16px grid */
-  --rule: 2px;                    /* header, quote and control rules */
-  --hairline: 1px;                /* borders, underlines and bevel edges */
+  --pixel-icon-size: 1rem;        /* pixel icons: Unifont's 16px grid */
+  --rule: 2px;                    /* quote, footer and hr rules */
+  --hairline: 1px;                /* borders, underlines and the header's edge */
   --radius: 0;                    /* the one corner radius: every box is square, both themes */
   --focus-width: 2px;             /* keyboard focus ring */
   --focus-offset: 2px;
@@ -97,8 +81,8 @@
 
 :root[data-theme="tty"] {
   color-scheme: dark;
-  /* Chosen anchors; the other shades mix --foreground over --background at the
-   * weights in docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
+  /* Chosen anchors; --border-color mixes --foreground over --background at the
+   * weight in docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
   --background: #141a03;
   --surface: #1d2606;
   --foreground: #d4ff3a;
@@ -107,28 +91,10 @@
   --secondary: #a8cc2a;
   --border-color: #6a811c;
   --border-strong: var(--border-color);
-  --control-face: #232c07;
-  --control-hover: #293309;
-  --edge-light: #7e9821;
-  --edge-dark: #000000;
-  --edge-inner: #6a811c;
   --code-foreground: #e8fff0;
   --code-color: var(--code-foreground);
   --selection-bg: var(--accent);  /* reverse video, like mark */
   --selection-fg: var(--background);
-  /* Controls: a raised hard bevel, pressed when current or held down. */
-  --control-bg: var(--control-face);
-  --control-edge: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
-  --control-bevel: inset var(--hairline) var(--hairline) 0 var(--edge-inner), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-dark);
-  --control-hover-bg: var(--control-hover);
-  --control-hover-fg: var(--emphasized);
-  --control-hover-edge: var(--control-edge);
-  --control-current-bg: var(--surface);
-  --control-current-fg: var(--emphasized);
-  --control-current-edge: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
-  --control-pressed-bevel: inset var(--hairline) var(--hairline) 0 var(--edge-dark), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-inner);
-  --field-bg: var(--surface);
-  --field-edge: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
   /* Static phosphor glow and a scanline and vignette layer behind the content. */
   --text-glow: var(--tty-glow);
   --field-overlay: var(--tty-scanlines), var(--tty-vignette);

@@ -1,4 +1,7 @@
-/* Night-only hand-drawn UI marks; do not rasterize photographs or article SVGs.
+/* Night-only hand-drawn UI marks that replace a day drawing (social icons,
+ * notices, contents chevrons, pagination arrows); do not rasterize photographs
+ * or article SVGs. The logo and the theme toggle draw the same pixel marks in
+ * both themes (.pixel-icon, terminal.css) and are not styled here.
  * The only day rules hide the additions and keep original arrow text boxless.
  * !important beats component-scoped SVG sizing without touching day layout. */
 .tty-pixel-icon {
@@ -41,30 +44,6 @@
   text-shadow: none !important;
   animation: none !important;
   transition: none !important;
-}
-
-:root[data-theme="tty"] .tty-pixel-icon.tty-site-logo {
-  width: var(--logo-size) !important;
-  height: var(--logo-size) !important;
-}
-
-/* PixelIcon is a separate Astro component, so do not rely on the parent's
- * scoped `#theme-toggle svg` rule reaching its root element. */
-:root[data-theme="tty"] #theme-toggle .tty-pixel-icon {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Keep the existing current-theme indicator convention: sun in day, moon at
- * night. Both manual drawings exist; the original day sun stays untouched. */
-:root[data-theme="tty"] #theme-toggle .tty-theme-sun {
-  display: none !important;
-}
-
-:root[data-theme="tty"] #theme-toggle .tty-theme-moon {
-  display: inline-block !important;
 }
 
 /* Separate manual marks from the original emoji; preserve natural wrapping. */

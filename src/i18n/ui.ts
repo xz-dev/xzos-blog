@@ -13,6 +13,17 @@ export type Lang = keyof typeof languages;
 export const defaultLang: Lang = 'zh';
 
 /**
+ * 页眉菜单，按状态栏顺序排列；每项前显示的编号就是它的下标（0:首页 1:博客 …）。
+ * localized 为 true 的路径带语言前缀，友链页只有一份。
+ */
+export const navItems = [
+  { key: 'nav.home', path: '/', localized: true },
+  { key: 'nav.blog', path: '/blog', localized: true },
+  { key: 'nav.about', path: '/about', localized: true },
+  { key: 'nav.links', path: '/link-exchange', localized: false },
+] as const;
+
+/**
  * UI 字符串翻译
  */
 export const ui = {
@@ -49,6 +60,7 @@ export const ui = {
 
     // 页眉与页脚
     'lang.switch': '切换语言',
+    'lang.prefix': 'lang:',
     'theme.toggle': '夜间模式',
     'social.mastodon': '在 Mastodon 上关注',
     'social.github': '前往 GitHub',
@@ -99,6 +111,7 @@ export const ui = {
 
     // Header and footer
     'lang.switch': 'Switch language',
+    'lang.prefix': 'lang:',
     'theme.toggle': 'Night mode',
     'social.mastodon': 'Follow on Mastodon',
     'social.github': 'Go to GitHub',
@@ -142,6 +155,7 @@ export const ui = {
 
     // 页眉与页脚
     'lang.switch': '切换语言',
+    'lang.prefix': 'lang:',
     'theme.toggle': '夜间模式',
     'social.mastodon': '在 Mastodon 上关注',
     'social.github': '前往 GitHub',

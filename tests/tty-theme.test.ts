@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
+import { navItems, ui } from '../src/i18n/ui.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const base = read('../src/styles/terminal.css');
@@ -44,7 +45,6 @@ test('the active dark field stays on the green-dominant phosphor axis with AAA t
 	assert.ok(Math.abs(contrast(palette['--foreground'], palette['--background']) - reference.contrast.foregroundOnBackground) < 1e-10);
 	assert.equal(reference.contrast.normalTextWcagAAA, true);
 	assert.ok(contrast(palette['--secondary'], palette['--surface']) >= 7);
-	assert.ok(contrast(palette['--secondary'], palette['--control-hover']) >= 7);
 	for (const [role, color] of Object.entries(reference.syntax)) {
 		if (role !== 'background') assert.ok(contrast(String(color), palette['--surface']) >= 7, role);
 	}
@@ -78,7 +78,7 @@ test('night differs from day through tokens; glow, scanlines and vignette are st
 	assert.match(more, /:root,\s*:root\[data-theme="tty"\]\s*\{[^}]*--text-glow:\s*none;[^}]*--field-overlay:\s*none;/);
 	// Static only: no motion, flicker, curvature or blur.
 	assert.doesNotMatch(tty + base, /@keyframes|animation:(?!\s*none)|perspective|backdrop-filter|filter:\s*blur|transform:\s*(?:scale|rotate|skew|matrix)/i);
-	assert.doesNotMatch(base, /drop-shadow\(|text-shadow:(?!\s*(?:none|var\(--text-glow\)))|box-shadow:(?!\s*(?:none|var\(--control-))/i);
+	assert.doesNotMatch(base, /drop-shadow\(|text-shadow:(?!\s*(?:none|var\(--text-glow\)))|box-shadow:(?!\s*none)/i);
 	assert.match(tty, /transition:\s*none\s*!important/);
 	// One radius, a token: no literal radius anywhere else.
 	assert.match(dayTokens, /--radius:\s*0;/);
@@ -117,45 +117,60 @@ test('day palette keeps the peach hues', () => {
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
 });
 
-// --menu-hover is declared once as color-mix(accent 15%, surface); resolve it per palette.
-const mixHex = (a: string, b: string, weight: number) =>
-	'#' + [0, 1, 2].map((i) => {
-		const channel = (hex: string) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
-		return Math.round(channel(a) * weight + channel(b) * (1 - weight)).toString(16).padStart(2, '0');
-	}).join('');
-const menuHover = (colors: Record<string, string>) => {
-	const [, weight] = dayTokens.match(/--menu-hover:\s*color-mix\(in srgb, var\(--accent\) (\d+)%, var\(--surface\)\);/)!;
-	return mixHex(colors['--accent'], colors['--surface'], Number(weight) / 100);
-};
-
-test('the header is a flat OS-style menu bar, shared by both themes', () => {
+test('the header is a tmux-style status line of plain text, shared by both themes', () => {
 	const header = read('../src/components/Header.astro');
 	const bar = header.match(/\n\theader\s*\{([^}]*)\}/)![1];
 	assert.match(bar, /background:\s*var\(--surface\);/);
-	assert.match(bar, /border-bottom:\s*var\(--hairline\) solid var\(--border-strong\);/);
+	assert.match(bar, /border-block-end:\s*var\(--hairline\) solid var\(--border-strong\);/);
+	// Logical properties only, as everywhere else in the change.
+	assert.doesNotMatch(header.slice(header.indexOf('<style>')), /(?:margin|padding|border)-(?:top|right|bottom|left)\b|margin:\s*0 0 0 /);
 	assert.doesNotMatch(header, /gradient/);
-	assert.doesNotMatch(tokens, /--header-top/);
-	assert.doesNotMatch(tty.replace(/\/\*[\s\S]*?\*\//g, ''), /header|menu-bar/i);
-	// Menu items: plain text, hover tints the bar, the current page inverts.
-	assert.match(base, /\.menu-item\s*\{[^}]*min-height:\s*var\(--menu-item-height\);[^}]*border:\s*0;[^}]*background:\s*transparent;/);
-	assert.match(base, /\.menu-item:hover\s*\{\s*background:\s*var\(--menu-hover\);/);
-	assert.match(base, /\.menu-item\[aria-current\]\s*\{\s*background:\s*var\(--accent\);\s*color:\s*var\(--background\);/);
+	assert.doesNotMatch(tokens, /--header-top|--menu-hover/);
+	// Nothing in the bar is themed by rule: no data-theme selector in the bar's
+	// components except the toggle's sun/moon swap, and no night token for it.
+	for (const file of ['Header', 'HeaderLink', 'LanguageSwitcher']) {
+		assert.doesNotMatch(read(`../src/components/${file}.astro`), /data-theme/, file);
+	}
+	assert.doesNotMatch(nightTokens, /menu|header/i);
+	// Entries: plain text, no fill on hover or when current; hover recolours
+	// and underlines, the current entry takes the accent and a trailing `*`.
+	assert.match(base, /\n\.menu-item,\s*\.control\s*\{[^}]*border:\s*0;[^}]*background:\s*transparent;/);
+	assert.match(base, /\n\.menu-item\s*\{[^}]*min-height:\s*var\(--menu-item-height\);/);
+	const hover = base.match(/\n\.menu-item:hover,\s*a\.control:hover\s*\{([^}]*)\}/)![1];
+	assert.match(hover, /color:\s*var\(--accent\);/);
+	assert.match(hover, /text-decoration:\s*underline;/);
+	assert.doesNotMatch(hover, /background/);
+	const current = base.match(/\n\.menu-item\[aria-current\],\s*\.control\[aria-current\]\s*\{([^}]*)\}/)![1];
+	assert.match(current, /^\s*color:\s*var\(--accent\);\s*$/);
+	assert.match(base, /\n\.menu-item\[aria-current\]::after\s*\{\s*content:\s*"\*";\s*content:\s*"\*" \/ "";/);
+	assert.match(base, /\n\.menu-label\s*\{\s*color:\s*var\(--secondary\);/);
 	for (const file of ['HeaderLink', 'LanguageSwitcher', 'ThemeToggle']) {
 		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*menu-item/, file);
 	}
 	assert.doesNotMatch(header, /class="control/);
-	// Night bevels skip menu items, so both themes share one flat style.
-	assert.match(base, /\.control,\s*button:not\(\.menu-item\)\s*\{/);
-	// Contrast: text on the bar and on the hover tint, the inverted item, icons, and the bar's edge.
+	// `0:首页 1:博客 …`: the number is the entry's place in navItems, hidden
+	// from assistive technology; aria-current stays on the link.
+	assert.deepEqual(navItems.map((item) => item.key), ['nav.home', 'nav.blog', 'nav.about', 'nav.links']);
+	assert.match(header, /navItems\.map\(\(item, index\) =>[\s\S]*<HeaderLink index=\{index\}/);
+	const link = read('../src/components/HeaderLink.astro');
+	assert.match(link, /aria-current=\{current\}/);
+	assert.match(link, /<span class="menu-label" aria-hidden="true">\{index\}:<\/span><slot \/>/);
+	// `lang: zh* en zh-CN`: short codes on screen, the full name first in the
+	// accessible name, the prefix from i18n.
+	const languages = read('../src/components/LanguageSwitcher.astro');
+	assert.match(languages, /<span class="menu-label" aria-hidden="true">\{t\('lang\.prefix'\)\}<\/span>/);
+	assert.match(languages, /const name = `\$\{languages\[lang\]\} \(\$\{lang\}\)`;/);
+	assert.match(languages, /aria-label=\{name\}/);
+	assert.match(languages, /aria-current=\{lang === currentLang \? 'page' : undefined\}/);
+	assert.match(languages, />\s*\{lang\}\s*<\/a>/);
+	for (const lang of ['zh', 'en', 'zh-CN'] as const) assert.equal(ui[lang]['lang.prefix'], 'lang:');
+	// Contrast: entries, dim fields, the current and hovered entry and the
+	// focus ring on the bar, and the bar's edge on the page.
 	for (const [theme, colors] of Object.entries({ day, night: palette })) {
-		const hover = menuHover(colors);
 		const checks: [string, string, string, number][] = [
 			['text on bar', colors['--foreground'], colors['--surface'], 4.5],
-			['tagline on bar', colors['--secondary'], colors['--surface'], 4.5],
-			['text on hover', colors['--foreground'], hover, 4.5],
-			['inverted item', colors['--background'], colors['--accent'], 4.5],
-			['icon on bar', colors['--accent'], colors['--surface'], 3],
-			['icon on hover', colors['--accent'], hover, 3],
+			['dim field and tagline on bar', colors['--secondary'], colors['--surface'], 4.5],
+			['current and hover on bar', colors['--accent'], colors['--surface'], 4.5],
 			['focus ring on bar', colors['--accent'], colors['--surface'], 3],
 			['bar edge on page', colors['--border-strong'], colors['--background'], 3],
 		];
@@ -169,7 +184,7 @@ test('both palettes keep every text colour at 4.5:1 or more on each field it sit
 	const night = palette;
 	const fields = {
 		day: { background: day['--background'], surface: day['--surface'] },
-		night: { background: night['--background'], surface: night['--surface'], 'control-face': night['--control-face'], 'control-hover': night['--control-hover'] },
+		night: { background: night['--background'], surface: night['--surface'] },
 	};
 	const text = {
 		day: { foreground: day['--foreground'], secondary: day['--secondary'], accent: day['--accent'] },
@@ -184,24 +199,43 @@ test('both palettes keep every text colour at 4.5:1 or more on each field it sit
 	}
 });
 
-test('controls share one box, focus ring and states; night only redefines their tokens', () => {
+test('controls and menu items share one flat box and one focus ring in both themes', () => {
 	// One focus ring for both themes, keyboard only.
 	assert.match(base, /:focus-visible\s*\{\s*outline:\s*var\(--focus-width\) solid var\(--accent\);/);
 	const ttyRules = tty.replace(/\/\*[\s\S]*?\*\//g, '');
 	assert.doesNotMatch(ttyRules, /focus-visible|outline|\.control|button/);
-	for (const state of ['.control:hover', '.control:active', '.control[aria-current]']) assert.ok(base.includes(state), state);
-	const box = base.match(/\n\.control,\s*button:not\(\.menu-item\)\s*\{([^}]*)\}/)![1];
-	assert.match(box, /min-height:\s*var\(--control-size\);/);
+	const box = base.match(/\n\.menu-item,\s*\.control\s*\{([^}]*)\}/)![1];
 	assert.match(box, /border-radius:\s*var\(--radius\);/);
-	assert.match(box, /box-shadow:\s*var\(--control-bevel\);/);
-	assert.match(base, /\.control\[aria-current\]\s*\{[^}]*box-shadow:\s*var\(--control-pressed-bevel\);/);
-	// Day controls are flat; night draws a raised and a pressed bevel, no new geometry.
-	assert.match(dayTokens, /--control-bevel:\s*none;/);
-	assert.match(nightTokens, /--control-bevel:\s*inset/);
-	assert.match(nightTokens, /--control-pressed-bevel:\s*inset/);
+	assert.match(box, /background:\s*transparent;/);
+	assert.match(base, /\n\.control\s*\{[^}]*min-height:\s*var\(--control-size\);/);
+	// No guard for buttons that do not exist: the only button is a menu item.
+	assert.doesNotMatch(base, /button:not|\.control:active|\.control-icon/);
 	assert.doesNotMatch(ttyRules, /(?:width|height|padding|margin|font-size|line-height):/);
-	assert.match(read('../src/components/TableOfContents.astro'), /class(?::list)?=[^>]*control/);
-	assert.doesNotMatch(base, /\.control-icon/);
+	// The contents summary is a plain text line, not a control.
+	const toc = read('../src/components/TableOfContents.astro');
+	assert.doesNotMatch(toc, /class(?::list)?=[^>]*control/);
+	assert.doesNotMatch(toc.slice(toc.indexOf('<style>')), /background|border|box-shadow/);
+});
+
+test('no frame, fill or bevel exists in one theme and not the other', () => {
+	// The night block may redefine palette colours and the static effects only.
+	const allowed = new Set([
+		'--background', '--surface', '--foreground', '--emphasized', '--accent', '--secondary',
+		'--border-color', '--border-strong', '--code-foreground', '--code-color',
+		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay',
+		'--tty-glow', '--tty-scanlines', '--tty-vignette',
+	]);
+	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name), name);
+	assert.doesNotMatch(tokens.replace(/\/\*[\s\S]*?\*\//g, ''), /bevel|--edge-|--control-(?!size)|--field-(?!overlay)/);
+	// Every box-shadow, background and border in the shared rules reads a
+	// value both themes define the same way, or a palette colour.
+	assert.doesNotMatch(base, /box-shadow:(?!\s*none)/);
+	for (const [, value] of base.matchAll(/(?:background|border(?:-[a-z-]+)?):\s*([^;]+);/g)) {
+		for (const [, name] of value.matchAll(/var\((--[\w-]+)/g)) {
+			assert.ok(!nightTokens.includes(`${name}:`) || /^--(?:background|surface|accent|foreground|border-color|border-strong|field-overlay|selection-bg)$/.test(name), `${name} in ${value}`);
+		}
+	}
+	assert.match(base, /\ninput,\s*textarea,\s*select\s*\{[^}]*background:\s*transparent;[^}]*border:\s*var\(--hairline\) solid var\(--foreground\);/);
 });
 
 test('structural borders reach 3:1 in both themes; the soft border is decorative only', () => {

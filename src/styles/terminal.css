@@ -135,66 +135,16 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Controls: pagination, the contents summary and buttons share one box, one
- * hover and one current state. Colours, edges and bevels are role tokens, so
- * night redefines tokens rather than rules. Menu items (below) are the
- * header's own primitive and are excluded. */
-.control,
-button:not(.menu-item) {
+/* Menu items and controls: plain text, like a terminal status line, with
+ * one box for both (a row that never breaks its label). No fill, frame or
+ * bevel in either theme. Hover changes the colour and underlines; the current
+ * item takes the accent. Menu items are the header's and footer's entries,
+ * controls the pagination entries. */
+.menu-item,
+.control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  min-height: var(--control-size);
-  padding: 0 var(--space-3);
-  border: var(--rule) solid;
-  border-color: var(--control-edge);
-  border-radius: var(--radius);
-  background: var(--control-bg);
-  box-shadow: var(--control-bevel);
-  color: var(--foreground);
-  font: inherit;
-  font-weight: 500;
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-  appearance: none;
-}
-
-/* The current page number is not a link. */
-span.control {
-  cursor: default;
-}
-
-.control:hover,
-button:not(.menu-item):hover {
-  background: var(--control-hover-bg);
-  border-color: var(--control-hover-edge);
-  color: var(--control-hover-fg);
-}
-
-.control:active,
-button:not(.menu-item):active,
-.control[aria-current] {
-  background: var(--control-current-bg);
-  border-color: var(--control-current-edge);
-  box-shadow: var(--control-pressed-bevel);
-  color: var(--control-current-fg);
-  font-weight: 700;
-}
-
-/* Menu items: everything on the header's menu bar (site name, navigation,
- * language links, theme toggle, social links). Flat text in both themes, like
- * an OS menu bar: hover tints the bar, the current page inverts. tty.css skips
- * them when it bevels controls, so night only recolours them. */
-.menu-item {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: var(--menu-item-height);
-  padding: 0 var(--space-2);
   border: 0;
   border-radius: var(--radius);
   background: transparent;
@@ -206,19 +156,51 @@ button:not(.menu-item):active,
   appearance: none;
 }
 
-.menu-item:hover {
-  background: var(--menu-hover);
-  color: var(--foreground);
+/* The status-line entries: text cells abut (index, label, marker). */
+.menu-item {
+  position: relative;
+  min-height: var(--menu-item-height);
+  padding: 0 var(--space-1);
 }
 
-.menu-item[aria-current] {
-  background: var(--accent);
-  color: var(--background);
-  /* Dark text on the accent: a glow would blur it. */
-  text-shadow: none;
+/* Pagination: a taller target; night's arrow icons sit apart from the text. */
+.control {
+  gap: var(--space-2);
+  min-height: var(--control-size);
+  padding: 0 var(--space-2);
 }
 
-/* Icon-only menu items (theme toggle, social links) are square. */
+.menu-item:hover,
+a.control:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: var(--hairline);
+  text-underline-offset: var(--underline-offset);
+}
+
+.menu-item[aria-current],
+.control[aria-current] {
+  color: var(--accent);
+}
+
+/* tmux marks the current window with a trailing asterisk. The alternative
+ * text is empty, so screen readers announce aria-current instead. */
+.menu-item[aria-current]::after {
+  content: "*";
+  content: "*" / "";
+}
+
+/* The current page number is not a link. */
+span.control {
+  cursor: default;
+}
+
+/* Dim fields of the status line: window numbers and the `lang:` label. */
+.menu-label {
+  color: var(--secondary);
+}
+
+/* Icon-only menu items (social links) are square. */
 .menu-item-icon {
   width: var(--menu-item-height);
   padding: 0;
@@ -230,19 +212,29 @@ button:not(.menu-item):active,
   height: var(--icon-size);
 }
 
+/* Pixel marks drawn the same in both themes (PixelIcon bothThemes): the logo
+ * and the theme toggle. One 16px grid unit, Unifont's; night-only marks that
+ * replace a day drawing are in tty-pixel-icons.css. */
+.pixel-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--pixel-icon-size);
+  height: var(--pixel-icon-size);
+}
+
 /* One keyboard focus ring for every focusable element, in both themes. */
 :focus-visible {
   outline: var(--focus-width) solid var(--accent);
   outline-offset: var(--focus-offset);
 }
 
+/* Form fields: a plain 1px frame, the same in both themes. */
 input,
 textarea,
 select {
-  background: var(--field-bg);
+  background: transparent;
   color: var(--foreground);
-  border: var(--hairline) solid;
-  border-color: var(--field-edge);
+  border: var(--hairline) solid var(--foreground);
   border-radius: var(--radius);
   padding: var(--space-2);
   font: inherit;
@@ -268,13 +260,6 @@ img {
   border: var(--hairline) solid var(--border-color);
   border-radius: var(--radius);
   overflow: hidden;
-}
-
-/* Remove border from logo images */
-header img,
-nav img {
-  border: none;
-  padding: 0;
 }
 
 figure img,
@@ -496,13 +481,26 @@ th {
   font-weight: 600;
 }
 
-/* The font has one real weight. Keep emphasis visible without fake bold. */
+/* The font has one weight and no italic, so emphasis follows the terminal
+ * convention "bold is bright": strong text takes the accent and emphasised
+ * text the secondary colour. Neither is underlined; the underline means a
+ * link. */
 strong,
-b,
-em {
-  text-decoration: underline;
-  text-decoration-thickness: var(--hairline);
-  text-underline-offset: var(--underline-offset);
+b {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+em,
+i {
+  color: var(--secondary);
+  font-style: normal;
+  text-decoration: none;
+}
+
+/* Inside a link the link colour wins, so the whole link reads as one. */
+a :is(strong, b, em, i) {
+  color: inherit;
 }
 
 /* Screen reader only */

@@ -37,7 +37,10 @@ test('code is a multi-hue fluorescent exception, not green-only syntax', () => {
   assert.equal(active.palette['--foreground'], '#d4ff3a', 'ordinary page UI uses the yellow-green phosphor');
   assert.notEqual(active.syntax.foreground, active.palette['--foreground'], 'code has its own foreground');
   assert.match(config, /name:\s*'tty-neon'/);
-  assert.match(tty, /color:\s*var\(--shiki-dark,\s*var\(--code-foreground\)\)/);
+  // Inline code takes the code foreground through a token, not a night rule.
+  assert.doesNotMatch(tty.replace(/\/\*[\s\S]*?\*\//g, ''), /(?:^|\s)code\s*\{/);
+  assert.match(read('../src/styles/tokens.css'), /:root\[data-theme="tty"\]\s*\{[^}]*--code-color:\s*var\(--code-foreground\);/);
+  assert.match(read('../src/styles/terminal.css'), /\ncode,\s*kbd\s*\{[^}]*color:\s*var\(--code-color\);/);
   assert.equal(active.palette['--code-foreground'], active.syntax.foreground);
   assert.match(read('../src/styles/terminal.css'), /font-synthesis:\s*none/);
 });

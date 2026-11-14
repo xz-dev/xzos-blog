@@ -16,7 +16,7 @@ const entries = headings.filter((heading) => heading.depth === 2 || heading.dept
 {entries.length > 0 && (
 	<nav class="toc">
 		<details open>
-			<summary class="control"><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />{t('blog.toc')}</summary>
+			<summary><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />{t('blog.toc')}</summary>
 			<ul>
 				{entries.map((heading) => (
 					<li class:list={{ sub: heading.depth === 3 }}>
@@ -30,16 +30,26 @@ const entries = headings.filter((heading) => heading.depth === 2 || heading.dept
 
 <style>
 	.toc {
-		margin-bottom: var(--space-5);
+		margin-block-end: var(--space-5);
 	}
 
-	/* A summary keeps its disclosure marker only as a list item. The marker
-	 * sits outside the control's box, on the page, so it keeps the accent
-	 * instead of inheriting the hovered control's page-coloured text. */
+	/* A plain text line, `▸ 目录` or `▾ 目录`, the same in both themes: no box,
+	 * fill or bevel. Day draws the native disclosure marker, night a pixel
+	 * chevron (tty-pixel-icons.css). Hover colours and underlines it like a
+	 * link; the block padding keeps a 32px target and room for the focus ring. */
 	.toc summary {
 		display: list-item;
 		width: fit-content;
-		padding-block: var(--space-2);
+		padding-block: var(--space-1);
+		color: var(--foreground);
+		cursor: pointer;
+	}
+
+	.toc summary:hover {
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-thickness: var(--hairline);
+		text-underline-offset: var(--underline-offset);
 	}
 
 	.toc summary::marker {
@@ -48,7 +58,8 @@ const entries = headings.filter((heading) => heading.depth === 2 || heading.dept
 
 	.toc ul {
 		list-style: none;
-		margin: var(--space-2) 0 0 var(--space-4);
+		margin-block: var(--space-2) 0;
+		margin-inline: var(--space-4) 0;
 	}
 
 	.toc li {
