@@ -91,9 +91,9 @@ bottom edge (`border-block-end`). The row holds the pixel logo (`--accent`),
 the site name, the menus and a status area (the language field, the theme
 toggle and the social links). The row is a character grid: menu and
 language items are `.menu-item`s, 32px tall with no inline padding, so the
-`--cell-gap` (2ch) between two items is their distance edge to edge. Items
-that can be current (menus, languages) reserve the cell of the `*`; the
-others draw it invisibly, so marking one moves nothing. The status area's
+`--cell-gap` (2ch) between two items is their distance edge to edge. Only the
+current item draws its `*`; no cell is reserved for it, so the visible gap
+between any two items is the same 2ch. The status area's
 groups (languages, theme, social links) are split by an `aria-hidden` `│` in
 `--secondary` with a `--cell-gap` on each side. Icons (theme toggle, social
 links) are 16px glyphs in a 2ch cell, centred on the row like the labels.

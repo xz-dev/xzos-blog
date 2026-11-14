@@ -119,21 +119,6 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		padding-inline: 0;
 	}
 
-	/* An item that can be current reserves the cell of its `*`: the others
-	 * draw it invisibly, so marking one never moves its neighbours and the
-	 * columns stay put from page to page. */
-	.internal-links :global(.menu-item)::after,
-	.right-section :global(.lang-link)::after {
-		content: "*";
-		content: "*" / "";
-		visibility: hidden;
-	}
-
-	.internal-links :global(.menu-item[aria-current])::after,
-	.right-section :global(.lang-link[aria-current])::after {
-		visibility: visible;
-	}
-
 	/* Icons are glyphs of the grid: 16px (Unifont's cell height) and two
 	 * cells wide, centred on the row like the labels, in both themes. */
 	.right-section :global(#theme-toggle),
