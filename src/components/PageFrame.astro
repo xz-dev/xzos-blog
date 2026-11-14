@@ -1,0 +1,15 @@
+---
+/**
+ * 列表页与静态页的共用框架：同一宽度、同一个 h1、同样的标题位置
+ */
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<main class="page-frame">
+	<h1 class="page-title">{title}</h1>
+	<slot />
+</main>

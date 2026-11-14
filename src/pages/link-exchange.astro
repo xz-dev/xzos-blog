@@ -2,50 +2,32 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import PageFrame from '../components/PageFrame.astro';
+import { SITE_TITLE } from '../consts';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('zh');
 ---
 
 <!doctype html>
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={`友链 - ${SITE_TITLE}`} description="xzOS 的友情链接页面" />
+		<BaseHead title={`${t('nav.links')} - ${SITE_TITLE}`} description={t('links.description')} />
 		<style>
-			main {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 3em 1em;
-			}
-			.prose {
-				color: rgb(var(--gray-dark));
-			}
-			h1 {
-				margin-bottom: 1em;
-			}
 			.links-list {
 				list-style-type: none;
-				padding: 0;
-				margin: 2em 0;
+				margin: 0;
 			}
 			.links-list li {
-				margin-bottom: 1em;
-			}
-			.links-list a {
-				color: var(--accent);
-				text-decoration: none;
-				font-size: 1.1em;
-			}
-			.links-list a:hover {
-				text-decoration: underline;
+				margin-bottom: var(--space-3);
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
+		<PageFrame title={t('nav.links')}>
 			<article>
 				<div class="prose">
-					<h1>友链</h1>
 
 					<ul class="links-list">
 						<li><a href="https://moonbegonia.xyz/" target="_blank" rel="noopener noreferrer">简记</a></li>
@@ -64,7 +46,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 					</ul>
 				</div>
 			</article>
-		</main>
+		</PageFrame>
 		<Footer />
 	</body>
 </html>

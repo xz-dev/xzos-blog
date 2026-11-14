@@ -18,62 +18,6 @@
   unicode-range: U+100-130, U+132-151, U+154-17E, U+192, U+1FC-1FF, U+218-21B, U+237, U+2B9-2BA, U+2C7, U+2C9, U+2DD, U+301, U+370-377, U+37A-37F, U+384-38A, U+38C, U+38E-3A1, U+3A3-3E1, U+3F0-479, U+48A-52F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3, U+1F00-1F15, U+1F18-1F1D, U+1F20-1F45, U+1F48-1F4D, U+1F50-1F57, U+1F59, U+1F5B, U+1F5D, U+1F5F-1F7D, U+1F80-1FB4, U+1FB6-1FC4, U+1FC6-1FD3, U+1FD6-1FDB, U+1FDD-1FEF, U+1FF2-1FF4, U+1FF6-1FFE, U+2007-2008, U+2020, U+20AF, U+20B9-20BA, U+20BD, U+2113, U+2116, U+2500-259F;
 }
 
-/* Default (day) theme: Solarized Light backgrounds.
- * Text tokens are darkened Solarized base01/blue so text, links and secondary
- * text reach WCAG AA (>= 4.5:1) on the page and code-block backgrounds. */
-:root {
-  --background: #fdf6e3;
-  --foreground: #475b62;
-  --accent: #1a659c;
-  --secondary: #566a70;
-  --emphasized: #586e75;
-  --radius: 0;
-  --border-color: #93a1a1;
-
-  /* Size, spacing and width system shared by both themes. tty.css changes
-   * colour, font family and decoration only, so switching theme never moves
-   * or resizes anything. Body text is 16px, Unifont's native grid, and every
-   * line height is a rem length so lines land on whole pixels. */
-  --font-size: 1rem;              /* body: 16px */
-  --line-height: 1.5rem;          /* body and UI: 24px */
-  --leading-prose: 1.75rem;       /* running text in posts, pages, excerpts: 28px */
-  --text-page-title: 2rem;        /* the page's one h1: 32px */
-  --leading-page-title: 2.5rem;   /* 40px */
-  --text-card-title: 1.5rem;      /* post-list titles: 24px */
-  --leading-card-title: 2rem;     /* 32px */
-  --text-h2: 1.375rem;            /* section heading: 22px */
-  --leading-h2: 2rem;             /* 32px */
-  --text-h3: 1.25rem;             /* sub-heading, site title: 20px */
-  --leading-h3: 1.75rem;          /* 28px */
-  --text-meta: 0.875rem;          /* dates, tags, notices, footer: 14px */
-  --leading-meta: 1.25rem;        /* 20px */
-  --text-code: 1rem;              /* inline and block code: 16px */
-  --leading-code: 1.5rem;         /* 24px */
-
-  --space-1: 0.25rem;             /* 4px */
-  --space-2: 0.5rem;              /* 8px */
-  --space-3: 1rem;                /* 16px */
-  --space-4: 1.5rem;              /* 24px */
-  --space-5: 2rem;                /* 32px */
-  --space-6: 3rem;                /* 48px */
-  --space-7: 4rem;                /* 64px */
-
-  --prose-width: 45rem;           /* post column incl. padding: 720px */
-  --page-width: 60rem;            /* list and static-page frame: 960px */
-  --header-width: 75rem;          /* header row: 1200px */
-
-  /* Older layout tokens (tty.css bridges them for night). Without them the
-   * rgb(var(--gray)) colors and the TOC panel are invalid in day.
-   * --bg-secondary stays undefined here on purpose: its only users are the
-   * home post-title links and the About blockquotes, which have no
-   * background in day; night draws its surface there. */
-  --fg-primary: var(--foreground);
-  --gray: 86, 106, 112;
-  --gray-dark: 71, 91, 98;
-  --gray-light: 147, 161, 161;
-  --black: 71, 91, 98;
-}
-
 html {
   box-sizing: border-box;
 }
@@ -105,7 +49,6 @@ body {
   -webkit-text-size-adjust: 100%;
   margin: 0;
   padding: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Also fix for solarized theme */
@@ -150,12 +93,20 @@ h1, h2, h3, h4, h5, h6,
 p, ul, ol,
 img, figure, video,
 table {
-  margin: 25px 0;
+  margin: var(--space-4) 0;
 }
 
-a {
-  color: var(--accent);
-  transition: all 0.2s ease;
+/* Page frame: every list and static page shares one width and one title. */
+.page-frame {
+  width: var(--page-width);
+  max-width: calc(100% - var(--space-5));
+  margin: auto;
+  padding: var(--space-6) var(--space-3);
+}
+
+.page-title {
+  font-weight: 700;
+  margin: 0 0 var(--space-5) 0;
 }
 
 /* Long paths, option names and URLs in prose (plain text, inline code, links,
@@ -170,60 +121,93 @@ a {
   word-break: break-word;
 }
 
-button {
-  position: relative;
-  font: inherit;
-  font-weight: bold;
-  text-decoration: none;
-  text-align: center;
-  background: transparent;
+/* Links. Text links are underlined; title and contents links show the
+ * underline on hover only. Both themes, no transitions. */
+a {
   color: var(--accent);
-  padding: 5px 18px;
-  border: 4px solid var(--accent);
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
-  appearance: none;
-  cursor: pointer;
-  outline: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: var(--underline-offset);
 }
 
+a:hover {
+  color: var(--emphasized);
+}
+
+.post-title a,
+.toc a {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.post-title a:hover,
+.toc a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* Controls: header navigation, language links, the theme toggle, social
+ * links, pagination, the contents summary and buttons share one box, one
+ * hover and one current state. tty.css only recolours them and adds bevels. */
+.control,
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--control-size);
+  padding: 0 var(--space-3);
+  border: var(--rule) solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* The current page number is not a link. */
+span.control {
+  cursor: default;
+}
+
+/* Icon-only controls (theme toggle, social links) are square and framed. */
+.control-icon {
+  position: relative;
+  width: var(--control-size);
+  height: var(--control-size);
+  padding: var(--space-2);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.control-icon svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.control:hover,
 button:hover {
   background: var(--accent);
+  border-color: var(--accent);
   color: var(--background);
 }
 
-button:focus-visible,
-a:focus-visible {
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
+.control.active,
+.control[aria-current] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--background);
+  font-weight: 700;
 }
 
-fieldset {
-  display: inline-block;
-  border: 2px solid var(--foreground);
-  border-radius: calc(var(--radius) * 1.6);
-  padding: 10px;
-}
-
-fieldset *:first-child {
-  margin-top: 0;
-}
-
-fieldset input,
-fieldset select,
-fieldset textarea,
-fieldset label,
-fieldset button {
-  margin-top: calc(var(--line-height) * 0.5);
-  width: 100%;
-}
-
-label {
-  display: inline-block;
-}
-
-label input {
-  margin-top: 0;
+/* One keyboard focus ring for every focusable element, in both themes. */
+:focus-visible {
+  outline: var(--focus-width) solid var(--accent);
+  outline-offset: var(--focus-offset);
 }
 
 input,
@@ -232,64 +216,18 @@ select {
   background: transparent;
   color: var(--foreground);
   border: 1px solid var(--foreground);
-  border-radius: var(--radius);
-  padding: 10px;
+  border-radius: 0;
+  padding: var(--space-2);
   font: inherit;
   appearance: none;
 }
 
-input[type="checkbox"] {
-  width: auto;
-}
-
-input:focus-visible,
-input:active,
-textarea:focus-visible,
-textarea:active,
-select:focus-visible,
-select:active {
-  border-color: var(--accent);
-  outline: 1px solid var(--accent);
-  outline-offset: 2px;
-}
-
-input:active,
-textarea:active,
-select:active {
-  box-shadow: none;
-}
-
-select {
-  background-image: linear-gradient(
-      45deg,
-      transparent 50%,
-      var(--foreground) 50%
-    ),
-    linear-gradient(135deg, var(--foreground) 50%, transparent 50%);
-  background-position: calc(100% - 20px), calc(100% - 15px);
-  background-size:
-    5px 5px,
-    5px 5px;
-  background-repeat: no-repeat;
-  padding-right: 40px;
-}
-
-select option {
-  background: var(--background);
-}
-
 input[type="checkbox"],
 input[type="radio"] {
+  width: var(--space-3);
+  height: var(--space-3);
+  padding: 0;
   vertical-align: middle;
-  padding: 10px;
-  box-shadow: inset 0 0 0 3px var(--background);
-}
-
-input[type="radio"] {
-  display: inline-block;
-  width: 10px !important;
-  height: 10px !important;
-  border-radius: 20px;
 }
 
 input[type="checkbox"]:checked,
@@ -300,9 +238,8 @@ input[type="radio"]:checked {
 img {
   display: block;
   max-width: 100%;
-  border: 4px solid var(--accent);
-  border-radius: var(--radius);
-  padding: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -319,18 +256,15 @@ figure video {
 }
 
 figure figcaption {
-  background: var(--accent);
-  color: var(--background);
-  text-align: center;
-  font-size: 1em;
-  font-weight: normal;
-  margin-top: -8px;
-  border-radius: 0 0 var(--radius) var(--radius);
+  margin-top: var(--space-2);
+  color: var(--secondary);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
 }
 
 ul,
 ol {
-  margin-left: 4ch;
+  margin-left: var(--space-5);
   padding: 0;
 }
 
@@ -360,25 +294,17 @@ kbd {
     Ubuntu Mono,
     monospace !important;
   font-feature-settings: normal;
-  background: color-mix(in srgb, var(--accent) 10%, var(--background));
+  background: var(--surface);
   color: var(--foreground);
-  padding: 0 6px;
-  margin: 0 2px;
+  padding: 0 var(--space-1);
   /* Inline code takes its context's size (a heading's code stays heading-size);
    * in body text that is --text-code, which equals the body size. */
   font-size: inherit;
 }
 
-code {
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--background));
-}
-
+code,
 kbd {
-  border-top: 1px solid var(--border-color);
-  border-left: 1px solid var(--accent);
-  border-right: 1px solid var(--accent);
-  border-bottom: 4px solid var(--accent);
-  border-radius: 4px;
+  border: 1px solid var(--border-color);
 }
 
 code code {
@@ -392,14 +318,14 @@ pre {
    * than the Fira Code inside and add a pixel to every code line. */
   font-family: inherit;
   tab-size: 4;
-  background: color-mix(in srgb, var(--accent) 10%, var(--background)) !important;
+  background: var(--surface) !important;
   color: var(--foreground);
-  padding: 20px 10px;
+  padding: var(--space-3);
   font-size: var(--text-code) !important;
   line-height: var(--leading-code);
   overflow: auto;
-  border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--background));
+  border-radius: 0;
+  border: 1px solid var(--border-color);
 }
 
 pre code {
@@ -422,40 +348,21 @@ sup {
   line-height: 0;
 }
 
-abbr {
-  position: relative;
-  text-decoration-style: wavy;
-  text-decoration-color: var(--accent);
-  cursor: help;
-}
-
-sub {
-  bottom: -0.25em;
-}
-
-sup {
-  top: -0.25em;
-}
-
 mark {
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
-  color: var(--foreground);
+  background: var(--accent);
+  color: var(--background);
 }
 
+/* One quote style in both themes: a thin rule, no fill, no bar. */
 blockquote {
-  position: relative;
-  border-top: 1px solid var(--accent);
-  border-bottom: 1px solid var(--accent);
-  margin: 0;
-  padding: 25px;
+  margin: var(--space-4) 0;
+  padding: 0 0 0 var(--space-3);
+  border-left: var(--rule) solid var(--border-color);
+  font-style: normal;
 }
 
-blockquote:before {
-  content: ">";
-  display: block;
-  position: absolute;
-  left: 0;
-  color: var(--accent);
+blockquote p {
+  margin: var(--space-2) 0;
 }
 
 blockquote p:first-child {
@@ -476,16 +383,11 @@ table {
 .table-scroll {
   max-width: 100%;
   overflow-x: auto;
-  margin: 25px 0;
+  margin: var(--space-4) 0;
 }
 
 .table-scroll > table {
   margin: 0;
-}
-
-.table-scroll:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 
 /* CJK text breaks between any two characters; keep phrases whole so a narrow
@@ -505,31 +407,54 @@ td code {
 table,
 th,
 td {
-  border: 2px solid var(--foreground);
-  padding: 10px;
+  border: 1px solid var(--border-color);
+  padding: var(--space-2);
 }
 
 th {
-  border-style: solid;
-  color: var(--foreground);
+  background: var(--surface);
+  color: var(--emphasized);
   text-align: left;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 hr {
   width: 100%;
   border: none;
-  background: var(--accent);
-  height: 2px;
+  background: var(--border-color);
+  height: var(--rule);
+}
+
+/* Post lists (home and archive): a title, then the meta line (PostMeta); a
+ * thin rule between entries. */
+.post-list {
+  list-style: none;
+  margin: 0 0 var(--space-6) 0;
+  padding: 0;
+}
+
+.post-item {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post-item:last-child {
+  border-bottom: none;
+}
+
+.post-title {
+  font-size: var(--text-card-title);
+  line-height: var(--leading-card-title);
+  font-weight: 600;
+  margin: 0 0 var(--space-3) 0;
+  overflow-wrap: anywhere;
 }
 
 /* Bold elements */
 
 h1, h2, h3, h4, h5, h6,
 b, strong,
-th,
-button {
+th {
   font-weight: 600;
 }
 

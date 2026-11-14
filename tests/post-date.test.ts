@@ -91,9 +91,11 @@ test('all three blog collections capture original sources and every date entry p
   assert.match(schema, /z\.preprocess\(captureDateSources/);
   assert.match(schema, /pubDateSource:\s*z\.string\(\)\.optional\(\)/);
   assert.match(schema, /updatedDateSource:\s*z\.string\(\)\.optional\(\)/);
-  for (const path of ['BlogList.astro', 'BlogArchive.astro']) assert.match(read('../src/layouts/' + path), /<FormattedDate date=\{post\.data\.pubDate\} source=\{post\.data\.pubDateSource\}/);
-  const post = read('../src/layouts/BlogPost.astro');
-  assert.match(post, /<FormattedDate date=\{pubDate\} source=\{pubDateSource\}/);
-  assert.match(post, /<FormattedDate date=\{updatedDate\} source=\{updatedDateSource\}/);
+  // Every page draws dates through PostMeta, which forwards both sources.
+  for (const path of ['BlogList.astro', 'BlogArchive.astro']) assert.match(read('../src/layouts/' + path), /<PostMeta [^>]*pubDate=\{post\.data\.pubDate\} pubDateSource=\{post\.data\.pubDateSource\}/);
+  assert.match(read('../src/layouts/BlogPost.astro'), /<PostMeta [^>]*pubDate=\{pubDate\} pubDateSource=\{pubDateSource\} updatedDate=\{updatedDate\} updatedDateSource=\{updatedDateSource\}/);
+  const meta = read('../src/components/PostMeta.astro');
+  assert.match(meta, /<FormattedDate date=\{pubDate\} source=\{pubDateSource\}/);
+  assert.match(meta, /<FormattedDate date=\{updatedDate\} source=\{updatedDateSource\}/);
   assert.doesNotMatch(read('../src/layouts/BlogList.astro'), /<time>\s*<FormattedDate/);
 });

@@ -1,29 +1,22 @@
 ---
-/**
- * 语言切换组件
- */
-import { languages, defaultLang, type Lang } from '../i18n/ui';
-import { getAlternateLanguagePath, getLangFromUrl } from '../i18n/utils';
+import { languages, type Lang } from '../i18n/ui';
+import { getAlternateLanguagePath, getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const currentLang = getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
 ---
 
-<nav class="language-switcher" aria-label="Language switcher">
-  {Object.entries(languages).map(([lang, label]) => {
-    const isActive = lang === currentLang;
-    const href = getAlternateLanguagePath(Astro.url, lang as Lang);
-    
-    return (
-      <a 
-        href={href}
-        class:list={['lang-link', { active: isActive }]}
-        aria-current={isActive ? 'page' : undefined}
-        hreflang={lang}
-      >
-        {label}
-      </a>
-    );
-  })}
+<nav class="language-switcher" aria-label={t('lang.switch')}>
+  {(Object.keys(languages) as Lang[]).map((lang) => (
+    <a
+      href={getAlternateLanguagePath(Astro.url, lang)}
+      class="lang-link control"
+      aria-current={lang === currentLang ? 'page' : undefined}
+      hreflang={lang}
+    >
+      {languages[lang]}
+    </a>
+  ))}
 </nav>
 
 <style>
@@ -31,24 +24,5 @@ const currentLang = getLangFromUrl(Astro.url);
     display: flex;
     gap: var(--space-2);
     align-items: center;
-  }
-  
-  .lang-link {
-    padding: var(--space-1) var(--space-2);
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: var(--text-meta);
-    line-height: var(--leading-meta);
-    color: rgb(var(--gray));
-    transition: color 0.2s, background-color 0.2s;
-  }
-  
-  .lang-link:hover {
-    color: var(--accent);
-  }
-  
-  .lang-link.active {
-    color: var(--accent);
-    font-weight: 600;
   }
 </style>

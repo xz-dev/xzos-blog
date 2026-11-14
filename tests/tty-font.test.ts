@@ -7,7 +7,7 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf
 const tty = read('../src/styles/tty.css');
 
 test('all night text, including forms and generated text, uses one CJK-capable pixel family', () => {
-	assert.match(tty, /--tty-font:\s*"Unifont",\s*"Unifont Upper",\s*monospace;/);
+	assert.match(read('../src/styles/tokens.css'), /--tty-font:\s*"Unifont",\s*"Unifont Upper",\s*monospace;/);
 	assert.doesNotMatch(tty, /IBM Plex Mono|Microsoft YaHei|PingFang SC|Noto Sans/);
 	const universal = tty.match(/:root\[data-theme="tty"\] \*,\s*:root\[data-theme="tty"\] \*::before,\s*:root\[data-theme="tty"\] \*::after\s*\{([^}]+)\}/)![1];
 	assert.match(universal, /font-family:\s*var\(--tty-font\)\s*!important;/);

@@ -48,11 +48,6 @@
   height: 48px !important;
 }
 
-:root[data-theme="tty"] .tty-pixel-icon.tty-placeholder-logo {
-  width: 80px !important;
-  height: 80px !important;
-}
-
 /* PixelIcon is a separate Astro component, so do not rely on the parent's
  * scoped `#theme-toggle svg` rule reaching its root element. */
 :root[data-theme="tty"] #theme-toggle .tty-pixel-icon {
@@ -74,7 +69,7 @@
 
 /* Separate manual marks from the original emoji; preserve natural wrapping. */
 :root[data-theme="tty"] .tty-notice-icon {
-  margin-inline-end: 8px;
+  margin-inline-end: var(--space-2);
 }
 
 /* Leave the native day disclosure marker and its exact text spacing alone. */
@@ -91,7 +86,7 @@
 }
 
 :root[data-theme="tty"] .toc .tty-pixel-icon {
-  margin-inline-end: 8px;
+  margin-inline-end: var(--space-2);
 }
 
 :root[data-theme="tty"] .toc details[open] .tty-toc-closed,

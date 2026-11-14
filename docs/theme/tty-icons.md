@@ -17,10 +17,10 @@
 | `src/components/Header.astro` | 品牌 `logo`；`mastodon`、`github`、`stack-overflow` | 原 `/dotted_circle.png` 与三枚原曲线 SVG；社交链接、`sr-only` 名称不变 |
 | `src/components/Footer.astro` | 同三枚社交图标 | 原三枚曲线 SVG 与链接名称 |
 | `src/components/ThemeToggle.astro` | `moon` 当前夜间指示；也定义了配对 `sun` 网格 | 原 `sun-icon` / `moon-icon` SVG、20 px 尺寸与切换逻辑；维持日间太阳、夜间月亮的现有约定，手绘 `sun` 不会在夜间同时出现 |
-| `src/components/LanguageVersionNotice.astro` | `globe` 语言版本标记；`translation` 机器人翻译标记 | 原 🌐 / 🤖；所有原提示文案、语言名与链接 |
+| `src/components/LanguageVersionNotice.astro` | `globe` 语言版本标记；`translation` 机器人翻译标记 | 无图标（原 🌐 / 🤖 已移除，改为纯文字说明行）；夜间仍用像素标记；语言名与链接 |
 | `src/components/TableOfContents.astro` | 关闭 `chevron-right`；打开 `chevron-down` | 原生 `<summary>` marker、目录文字与空格；仍是原生 `<details>` 键盘交互 |
 | `src/layouts/BlogList.astro` | 上一页 `arrow-left`，下一页与继续阅读 `arrow-right` | 原中文/英文/简中文案与箭头字符，分页 URL、页码和省略号 |
-| `src/components/PostThumbnail.astro` | 仅 `type: 'generated'` 分支的占位品牌 `logo` | 原生成占位卡与 PNG；真实 `Image` / `<img class="thumbnail-image">` 分支完全保留 |
+| `src/components/PostThumbnail.astro` | 无（生成的渐变占位卡已移除，没有真实图片的文章不显示缩略图） | 真实 `Image` / `<img class="thumbnail-image">` 分支保留，改为归档列表中的小方图 |
 | `src/components/BaseHead.astro` + `src/pages/favicon-tty.svg.ts` | 同源静态 `/favicon-tty.svg`，使用相同 `logo` 网格 | favicon 的 `/dotted_circle.png`、`image/png`、`192x192`；Apple touch icon 仍为原 PNG |
 
 `LanguageSwitcher.astro` 是纯文字语言名称，页脚 RSS/Source/CC 是文字链接，不添加无必要的装饰图标。正文、摘要和页码中的 Unicode 标点属于内容/文字，继续使用原文字体；只替换列表 UI 标签中的 `←` / `→`。

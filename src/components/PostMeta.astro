@@ -1,0 +1,43 @@
+---
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	lang: Lang;
+	pubDate: Date;
+	pubDateSource?: string;
+	updatedDate?: Date;
+	updatedDateSource?: string;
+	author?: string;
+	category?: string;
+}
+
+const { lang, pubDate, pubDateSource, updatedDate, updatedDateSource, author, category } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div class="post-meta">
+	<FormattedDate date={pubDate} source={pubDateSource} />
+	{updatedDate && <span>{t('blog.updatedOn')} <FormattedDate date={updatedDate} source={updatedDateSource} /></span>}
+	{author && <span>{t('blog.authorLabel')}{author}</span>}
+	{category && <span>{t('blog.categoryLabel')}{category}</span>}
+	<slot />
+</div>
+
+<style>
+	.post-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3);
+		align-items: center;
+		color: var(--secondary);
+		font-size: var(--text-meta);
+		line-height: var(--leading-meta);
+	}
+
+	/* A date never breaks across lines. */
+	.post-meta :global(time) {
+		white-space: nowrap;
+	}
+</style>

@@ -1,0 +1,77 @@
+/* Design tokens for both themes: palettes, type scale, spacing, widths and
+ * control sizes. Day is :root; night (data-theme="tty") overrides colours and
+ * effects only, so switching theme never moves or resizes anything.
+ * terminal.css styles elements and shared classes from these tokens; tty.css
+ * adds the night font and control bevels. */
+
+/* Default (day) theme: Solarized Light backgrounds.
+ * Text tokens are darkened Solarized base01/blue so text, links and secondary
+ * text reach WCAG AA (>= 4.5:1) on the page and code-block backgrounds. */
+:root {
+  --background: #fdf6e3;
+  --surface: color-mix(in srgb, var(--accent) 10%, var(--background));
+  --foreground: #475b62;
+  --accent: #1a659c;
+  --secondary: #566a70;
+  --emphasized: #586e75;
+  --border-color: #93a1a1;
+
+  /* Size, spacing and width system shared by both themes. tty.css changes
+   * colour, font family and decoration only, so switching theme never moves
+   * or resizes anything. Body text is 16px, Unifont's native grid, and every
+   * line height is a rem length so lines land on whole pixels. */
+  --font-size: 1rem;              /* body: 16px */
+  --line-height: 1.5rem;          /* body and UI: 24px */
+  --leading-prose: 1.75rem;       /* running text in posts, pages, excerpts: 28px */
+  --text-page-title: 2rem;        /* the page's one h1: 32px */
+  --leading-page-title: 2.5rem;   /* 40px */
+  --text-card-title: 1.5rem;      /* post-list titles: 24px */
+  --leading-card-title: 2rem;     /* 32px */
+  --text-h2: 1.375rem;            /* section heading: 22px */
+  --leading-h2: 2rem;             /* 32px */
+  --text-h3: 1.25rem;             /* sub-heading, site title: 20px */
+  --leading-h3: 1.75rem;          /* 28px */
+  --text-meta: 0.875rem;          /* dates, tags, notices, footer: 14px */
+  --leading-meta: 1.25rem;        /* 20px */
+  --text-code: 1rem;              /* inline and block code: 16px */
+  --leading-code: 1.5rem;         /* 24px */
+
+  --space-1: 0.25rem;             /* 4px */
+  --space-2: 0.5rem;              /* 8px */
+  --space-3: 1rem;                /* 16px */
+  --space-4: 1.5rem;              /* 24px */
+  --space-5: 2rem;                /* 32px */
+  --space-6: 3rem;                /* 48px */
+  --space-7: 4rem;                /* 64px */
+
+  --prose-width: 45rem;           /* post column incl. padding: 720px */
+  --page-width: 60rem;            /* list and static-page frame: 960px */
+  --header-width: 75rem;          /* header row: 1200px */
+
+  --control-size: 2.5rem;         /* every control's height, icon controls' width: 40px */
+  --icon-size: 1.25rem;           /* icon inside a control: 20px */
+  --logo-size: 3rem;              /* header logo: 48px */
+  --thumb-size: 4rem;             /* archive thumbnail square: 64px */
+  --rule: 2px;                    /* header, quote and control rules */
+  --focus-width: 2px;             /* keyboard focus ring */
+  --focus-offset: 2px;
+  --underline-offset: 0.2em;
+}
+
+:root[data-theme="tty"] {
+  color-scheme: dark;
+  /* Derivation: docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
+  --background: #011307;
+  --surface: #031e0e;
+  --foreground: #31fea8;
+  --emphasized: #31fea8;
+  --accent: #31fea8;
+  --secondary: #28d98f;
+  --border-color: #11754b;
+  --control-face: #052814;
+  --control-hover: #07321a;
+  --edge-light: #1da96e;
+  --edge-dark: #000401;
+  --edge-inner: #11754b;
+  --tty-font: "Unifont", "Unifont Upper", monospace;
+}

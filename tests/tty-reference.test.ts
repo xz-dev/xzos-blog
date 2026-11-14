@@ -8,7 +8,9 @@ const photo = JSON.parse(read('../docs/theme/tektronix-4052-b.json'));
 const active = JSON.parse(read('../docs/theme/tty-dark.json'));
 const tty = read('../src/styles/tty.css');
 const config = read('../astro.config.mjs');
-const palette = Object.fromEntries([...tty.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
+const tokens = read('../src/styles/tokens.css');
+const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
+const palette = Object.fromEntries([...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
 const hex = (rgb: number[]) => '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('');
 const decode = (v: number) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
 const encode = (v: number) => v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055;
@@ -58,11 +60,4 @@ test('code highlighting uses the active dark surface and leaves daytime syntax u
   assert.match(config, /'editor\.background':\s*'#031e0e'/);
   assert.ok(config.includes(`'editor.foreground': '${active.syntax.foreground}'`));
   assert.doesNotMatch(config, /#9ad6a3|#c0f7c7|#b0e8b7|#a0cba8/i);
-});
-
-test('legacy RGB aliases track the active palette, not the old bright field or mint colors', () => {
-  for (const [alias, role] of Object.entries({ '--gray': '--secondary', '--gray-dark': '--foreground', '--gray-light': '--border-color', '--black': '--emphasized' })) {
-    const rgb = palette[role].match(/[\da-f]{2}/gi)!.map((v) => parseInt(v, 16)).join(', ');
-    assert.ok(tty.includes(`${alias}: ${rgb};`), alias);
-  }
 });

@@ -115,11 +115,11 @@ test('Header and Footer cover all social marks, preserve original SVGs and retai
 		for (const name of ['mastodon', 'github', 'stack-overflow']) assert.ok(component.includes(`<PixelIcon name="${name}"`));
 		assert.equal((component.match(/<svg class="tty-original-icon"/g) ?? []).length, 3);
 		assert.equal((component.match(/<path\s+fill="currentColor"\s+d=/g) ?? []).length, 3);
-		for (const label of ['Follow on Mastodon', 'Go to GitHub', 'Stack Overflow Profile']) assert.ok(component.includes(`<span class="sr-only">${label}</span>`));
+		for (const key of ['social.mastodon', 'social.github', 'social.stackOverflow']) assert.ok(component.includes(`<span class="sr-only">{t('${key}')}</span>`));
 	}
 	const header = read('../src/components/Header.astro');
-	assert.ok(header.includes('<img src="/dotted_circle.png" alt="xzOS logo" class="site-logo tty-original-icon" />'));
-	assert.ok(header.includes('<PixelIcon name="logo" class="tty-site-logo" label="xzOS logo" />'));
+	assert.ok(header.includes("<img src=\"/dotted_circle.png\" alt={t('site.logoAlt')} class=\"site-logo tty-original-icon\" />"));
+	assert.ok(header.includes("<PixelIcon name=\"logo\" class=\"tty-site-logo\" label={t('site.logoAlt')} />"));
 });
 
 test('the theme button retains its original sun/moon, while TTY selects only the hand-drawn moon', () => {
@@ -130,7 +130,7 @@ test('the theme button retains its original sun/moon, while TTY selects only the
 	}
 	assert.match(toggle, /<circle cx="10" cy="10" r="4"/);
 	assert.match(toggle, /<path d="M17 10\.5C/);
-	assert.match(toggle, /aria-label="Toggle theme"/);
+	assert.match(toggle, /aria-label=\{t\('theme\.toggle'\)\}/);
 	assert.match(ruleFor(':root[data-theme="tty"] #theme-toggle .tty-theme-sun'), /display:\s*none\s*!important/);
 	assert.match(ruleFor(':root[data-theme="tty"] #theme-toggle .tty-theme-moon'), /display:\s*inline-block\s*!important/);
 	const positioning = ruleFor(':root[data-theme="tty"] #theme-toggle .tty-pixel-icon');
@@ -140,16 +140,15 @@ test('the theme button retains its original sun/moon, while TTY selects only the
 
 test('language and translation notices get distinct pixel marks without hiding the new marks with notice-icon', () => {
 	const notice = read('../src/components/LanguageVersionNotice.astro');
-	assert.ok(notice.includes('<span class="notice-icon tty-original-icon">🤖</span>'));
-	assert.ok(notice.includes('<span class="notice-icon tty-original-icon">🌐</span>'));
+	assert.doesNotMatch(notice, /🤖|🌐/);
 	for (const name of ['globe', 'translation']) assert.ok(notice.includes(`<PixelIcon name="${name}" class="tty-notice-icon" />`));
 	assert.doesNotMatch(notice, /<PixelIcon[^>]*class="notice-icon/);
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-notice-icon'), /margin-inline-end:\s*8px/);
+	assert.match(ruleFor(':root[data-theme="tty"] .tty-notice-icon'), /margin-inline-end:\s*var\(--space-2\)/);
 });
 
 test('TOC replaces only the night native marker and preserves the day label without additional whitespace', () => {
 	const toc = read('../src/components/TableOfContents.astro');
-	assert.ok(toc.includes('<summary><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />目录</summary>'));
+	assert.ok(toc.includes('<summary class="control"><PixelIcon name="chevron-right" class="tty-toc-closed" /><PixelIcon name="chevron-down" class="tty-toc-open" />{t(\'blog.toc\')}</summary>'));
 	assert.match(ruleFor(':root[data-theme="tty"] .toc summary'), /list-style:\s*none/);
 	assert.match(ruleFor(':root[data-theme="tty"] .toc summary::marker'), /content:\s*''/);
 	assert.match(ruleFor(':root[data-theme="tty"] .toc summary::-webkit-details-marker'), /display:\s*none/);
@@ -190,13 +189,12 @@ test('pagination and read-more replace only arrows, retaining all original langu
 	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-label'), /display:\s*contents\s*!important/);
 });
 
-test('only the generated thumbnail mark changes; real hero/body thumbnails and article images remain unprocessed', () => {
+test('thumbnails are real images only, and article images remain unprocessed', () => {
 	const thumbnail = read('../src/components/PostThumbnail.astro');
-	assert.ok(thumbnail.includes('<Image width={720} height={360} src={thumbnail.src} alt="" class="thumbnail-image" />'));
-	assert.ok(thumbnail.includes('<img width={720} height={360} src={thumbnail.src} alt="" class="thumbnail-image" />'));
-	assert.ok(thumbnail.includes('<img src="/dotted_circle.png" class="placeholder-logo tty-original-icon" alt="" />'));
-	assert.ok(thumbnail.includes('<PixelIcon name="logo" class="tty-placeholder-logo" />'));
-	assert.ok(thumbnail.indexOf('<PixelIcon name="logo"') > thumbnail.indexOf('<div class="placeholder-card"'));
+	assert.ok(thumbnail.includes('<Image width={128} height={128} src={thumbnail.src} alt="" class="thumbnail-image" />'));
+	assert.ok(thumbnail.includes('<img width={128} height={128} src={thumbnail.src} alt="" class="thumbnail-image" />'));
+	// No generated placeholder: a post without a real image has no thumbnail.
+	assert.doesNotMatch(thumbnail, /placeholder|gradient|PixelIcon|box-shadow|transform|transition/);
 	const newCSS = css();
 	assert.doesNotMatch(newCSS, /image-rendering|url\(|backdrop-filter|(?:blur|drop-shadow)\(/);
 	for (const [, value] of newCSS.matchAll(/\bfilter:\s*([^;]+);/g)) assert.match(value, /^none\s*!important$/);
@@ -219,7 +217,6 @@ test('all visible night marks use integer-size grid scaling, currentColor and ze
 	assert.match(base, /fill:\s*currentColor/);
 	for (const property of ['animation', 'transition', 'filter', 'box-shadow', 'text-shadow']) assert.match(base, new RegExp(`${property}:\\s*none\\s*!important`));
 	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon.tty-site-logo'), /width:\s*48px\s*!important/);
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon.tty-placeholder-logo'), /width:\s*80px\s*!important/);
 });
 
 test('the same-origin static night favicon uses the same hand-drawn logo grid as page UI', async () => {

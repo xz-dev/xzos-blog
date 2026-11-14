@@ -14,11 +14,11 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 <header>
 	<nav>
 		<div class="site-title">
-			<img src="/dotted_circle.png" alt="xzOS logo" class="site-logo tty-original-icon" />
-			<PixelIcon name="logo" class="tty-site-logo" label="xzOS logo" />
+			<img src="/dotted_circle.png" alt={t('site.logoAlt')} class="site-logo tty-original-icon" />
+			<PixelIcon name="logo" class="tty-site-logo" label={t('site.logoAlt')} />
 			<div class="title-text">
 				<h2><a href="/">{SITE_TITLE}</a></h2>
-				<p class="tagline">For Coding Life</p>
+				<p class="tagline">{t('site.tagline')}</p>
 			</div>
 		</div>
 		<div class="internal-links">
@@ -31,8 +31,8 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 			<LanguageSwitcher />
 			<ThemeToggle />
 			<div class="social-links">
-				<a href="https://fosstodon.org/@xzdev" target="_blank">
-					<span class="sr-only">Follow on Mastodon</span>
+				<a class="control control-icon" href="https://fosstodon.org/@xzdev" target="_blank">
+					<span class="sr-only">{t('social.mastodon')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
 							fill="currentColor"
@@ -41,8 +41,8 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 					>
 					<PixelIcon name="mastodon" />
 				</a>
-				<a href="https://github.com/xz-dev" target="_blank">
-					<span class="sr-only">Go to GitHub</span>
+				<a class="control control-icon" href="https://github.com/xz-dev" target="_blank">
+					<span class="sr-only">{t('social.github')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
 							fill="currentColor"
@@ -51,8 +51,8 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 					>
 					<PixelIcon name="github" />
 				</a>
-				<a href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
-					<span class="sr-only">Stack Overflow Profile</span>
+				<a class="control control-icon" href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
+					<span class="sr-only">{t('social.stackOverflow')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
 							fill="currentColor"
@@ -70,7 +70,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		margin: 0;
 		padding: var(--space-3);
 		background: var(--background);
-		border-bottom: 2px solid var(--accent);
+		border-bottom: var(--rule) solid var(--accent);
 	}
 
 	nav {
@@ -88,11 +88,11 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		gap: var(--space-3);
 	}
 
-	/* terminal.css gives every img a 25px block margin; night's pixel logo is
-	 * an svg without it, so the row would change height with the theme. */
+	/* terminal.css gives every img a block margin; night's pixel logo is an
+	 * svg without it, so the row would change height with the theme. */
 	.site-logo {
-		width: 48px;
-		height: 48px;
+		width: var(--logo-size);
+		height: var(--logo-size);
 		margin: 0;
 		border: none;
 		padding: 0;
@@ -114,7 +114,6 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	h2 a {
 		color: var(--foreground);
 		text-decoration: none;
-		transition: color 0.2s ease;
 	}
 
 	h2 a:hover {
@@ -147,27 +146,8 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		gap: var(--space-2);
 	}
 
-	.social-links a {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		padding: 8px;
-		color: var(--accent);
-		border: 2px solid var(--accent);
-		transition: all 0.2s ease;
-	}
 
-	.social-links a:hover {
-		background: var(--accent);
-		color: var(--background);
-	}
 
-	.social-links a svg {
-		width: 100%;
-		height: 100%;
-	}
 
 	@media (max-width: 960px) {
 		nav {
@@ -191,12 +171,12 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	 * theme toggle at the end. The last two share a row when they fit. */
 	@media (max-width: 720px) {
 		header {
-			padding: 0.75rem 1rem;
+			padding: var(--space-2) var(--space-3);
 		}
 
 		nav {
 			justify-content: flex-start;
-			gap: 0.5rem;
+			gap: var(--space-2);
 		}
 
 		.site-title {
@@ -225,23 +205,14 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		.internal-links,
 		.right-section,
 		.right-section :global(.language-switcher) {
-			gap: 0.5rem;
+			gap: var(--space-2);
 		}
 
-		/* Every control in a row is at least as tall as the toggle; min-height
-		 * lets enlarged text grow the control instead of spilling out. */
-		.internal-links :global(a),
+		/* Narrower than the desktop padding so the four English links fit one
+		 * 360px row. */
+		.internal-links :global(.control),
 		.right-section :global(.lang-link) {
-			display: inline-flex;
-			align-items: center;
-			min-height: 40px;
-			padding-block: 0;
-			white-space: nowrap;
-		}
-
-		/* Narrower than the desktop 1em so the four English links fit one 360px row. */
-		.internal-links :global(a) {
-			padding-inline: 0.75em;
+			padding-inline: var(--space-2);
 		}
 
 		.social-links {

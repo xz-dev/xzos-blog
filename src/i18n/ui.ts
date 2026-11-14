@@ -22,38 +22,48 @@ export const ui = {
     'nav.blog': '博客',
     'nav.about': '关于',
     'nav.links': '友链',
-    
-    // 站点信息
-    'site.title': 'xzOS',
-    'site.fullTitle': 'xzOS - For Coding Life',
-    'site.description': "xzOS - xzdev's blog",
-    
+
+    // 站点
+    'site.tagline': 'For Coding Life',
+    'site.logoAlt': 'xzOS 标志',
+
     // 博客
     'blog.heading': '博客',
-    'blog.readMore': '阅读全文',
     'blog.continueReading': '继续阅读 →',
-    'blog.publishedOn': '发布于',
     'blog.updatedOn': '更新于',
-    'blog.author': '作者',
     'blog.authorLabel': '作者：',
     'blog.categoryLabel': '分类：',
     'blog.toc': '目录',
-    'blog.backToBlog': '返回博客',
-    
+
+    // 语言版本提示
+    'notice.translatedBefore': '本文由大语言模型译自',
+    'notice.translatedLink': '中文原文',
+    'notice.translatedAfter': '，可能有误，以原文为准。',
+    'notice.alsoIn': 'Also in: ',
+
     // 分页
+    'pagination.label': '分页',
     'pagination.prev': '← 上一页',
     'pagination.next': '下一页 →',
-    'pagination.page': '第 {page} 页',
     'pagination.pageTitle': '{title} - 第{page}页',
-    
-    // 页脚
-    'footer.copyright': '版权所有',
-    
-    // 语言切换
+
+    // 页眉与页脚
     'lang.switch': '切换语言',
+    'theme.toggle': '切换主题',
+    'social.mastodon': '在 Mastodon 上关注',
+    'social.github': '前往 GitHub',
+    'social.stackOverflow': 'Stack Overflow 主页',
+    'footer.source': '源代码',
+
+    // 正文
+    'links.description': 'xzOS 的友情链接页面',
+    'table.label': '表格',
 
     // 错误页面
     'error.pageNotFound': '页面未找到',
+    'error.description': '您访问的页面不存在。',
+    'error.message': '抱歉，我们找不到您要访问的页面。',
+    'error.backHome': '返回首页',
   },
   en: {
     // Navigation
@@ -61,38 +71,48 @@ export const ui = {
     'nav.blog': 'Blog',
     'nav.about': 'About',
     'nav.links': 'Links',
-    
-    // Site info
-    'site.title': 'xzOS',
-    'site.fullTitle': 'xzOS - For Coding Life',
-    'site.description': "xzOS - xzdev's blog",
-    
+
+    // Site
+    'site.tagline': 'For Coding Life',
+    'site.logoAlt': 'xzOS logo',
+
     // Blog
     'blog.heading': 'Blog',
-    'blog.readMore': 'Read more',
     'blog.continueReading': 'Read more →',
-    'blog.publishedOn': 'Published on',
     'blog.updatedOn': 'Updated on',
-    'blog.author': 'Author',
     'blog.authorLabel': 'Author: ',
     'blog.categoryLabel': 'Category: ',
     'blog.toc': 'Table of Contents',
-    'blog.backToBlog': 'Back to Blog',
-    
+
+    // Language notices
+    'notice.translatedBefore': 'Machine-translated from the ',
+    'notice.translatedLink': 'Chinese original',
+    'notice.translatedAfter': '; it may contain errors.',
+    'notice.alsoIn': '其他语言：',
+
     // Pagination
+    'pagination.label': 'Pagination',
     'pagination.prev': '← Previous',
     'pagination.next': 'Next →',
-    'pagination.page': 'Page {page}',
     'pagination.pageTitle': '{title} - Page {page}',
-    
-    // Footer
-    'footer.copyright': 'All rights reserved',
-    
-    // Language switch
+
+    // Header and footer
     'lang.switch': 'Switch language',
+    'theme.toggle': 'Toggle theme',
+    'social.mastodon': 'Follow on Mastodon',
+    'social.github': 'Go to GitHub',
+    'social.stackOverflow': 'Stack Overflow Profile',
+    'footer.source': 'Source',
+
+    // Content
+    'links.description': 'Links to friends of xzOS',
+    'table.label': 'Table',
 
     // Error page
     'error.pageNotFound': 'Page not found',
+    'error.description': 'The page you are looking for does not exist.',
+    'error.message': "Sorry, we couldn't find the page you're looking for.",
+    'error.backHome': 'Back to Home',
   },
   'zh-CN': {
     // 导航
@@ -100,38 +120,48 @@ export const ui = {
     'nav.blog': '博客',
     'nav.about': '关于',
     'nav.links': '友链',
-    
-    // 站点信息
-    'site.title': 'xzOS',
-    'site.fullTitle': 'xzOS - For Coding Life',
-    'site.description': "xzOS - xzdev's blog",
-    
+
+    // 站点
+    'site.tagline': 'For Coding Life',
+    'site.logoAlt': 'xzOS 标志',
+
     // 博客
     'blog.heading': '博客',
-    'blog.readMore': '阅读全文',
     'blog.continueReading': '继续阅读 →',
-    'blog.publishedOn': '发布于',
     'blog.updatedOn': '更新于',
-    'blog.author': '作者',
     'blog.authorLabel': '作者：',
     'blog.categoryLabel': '分类：',
     'blog.toc': '目录',
-    'blog.backToBlog': '返回博客',
-    
+
+    // 语言版本提示
+    'notice.translatedBefore': '本文由大语言模型译自',
+    'notice.translatedLink': '中文原文',
+    'notice.translatedAfter': '，可能有误，以原文为准。',
+    'notice.alsoIn': '其他语言：',
+
     // 分页
+    'pagination.label': '分页',
     'pagination.prev': '← 上一页',
     'pagination.next': '下一页 →',
-    'pagination.page': '第 {page} 页',
     'pagination.pageTitle': '{title} - 第{page}页',
-    
-    // 页脚
-    'footer.copyright': '版权所有',
-    
-    // 语言切换
+
+    // 页眉与页脚
     'lang.switch': '切换语言',
+    'theme.toggle': '切换主题',
+    'social.mastodon': '在 Mastodon 上关注',
+    'social.github': '前往 GitHub',
+    'social.stackOverflow': 'Stack Overflow 主页',
+    'footer.source': '源代码',
+
+    // 正文
+    'links.description': 'xzOS 的友情链接页面',
+    'table.label': '表格',
 
     // 错误页面
     'error.pageNotFound': '页面未找到',
+    'error.description': '您访问的页面不存在。',
+    'error.message': '抱歉，我们找不到您要访问的页面。',
+    'error.backHome': '返回首页',
   },
 } as const;
 

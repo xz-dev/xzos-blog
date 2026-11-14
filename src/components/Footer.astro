@@ -1,5 +1,8 @@
 ---
 import PixelIcon from './PixelIcon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 const today = new Date();
 ---
 
@@ -8,11 +11,11 @@ const today = new Date();
 		&copy; {today.getFullYear()} xz-dev.
 		<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="license noopener noreferrer">CC BY 4.0</a>
 		<a href="/rss.xml" type="application/rss+xml">RSS</a>
-		<a href="https://github.com/xz-dev/xzos-blog" target="_blank" rel="noopener noreferrer">Source</a>
+		<a href="https://github.com/xz-dev/xzos-blog" target="_blank" rel="noopener noreferrer">{t('footer.source')}</a>
 	</div>
 	<div class="social-links">
-		<a href="https://fosstodon.org/@xzdev" target="_blank">
-			<span class="sr-only">Follow on Mastodon</span>
+		<a class="control control-icon" href="https://fosstodon.org/@xzdev" target="_blank">
+			<span class="sr-only">{t('social.mastodon')}</span>
 			<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 				><path
 					fill="currentColor"
@@ -21,8 +24,8 @@ const today = new Date();
 			>
 			<PixelIcon name="mastodon" />
 		</a>
-		<a href="https://github.com/xz-dev" target="_blank">
-			<span class="sr-only">Go to GitHub</span>
+		<a class="control control-icon" href="https://github.com/xz-dev" target="_blank">
+			<span class="sr-only">{t('social.github')}</span>
 			<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 				><path
 					fill="currentColor"
@@ -31,8 +34,8 @@ const today = new Date();
 			>
 			<PixelIcon name="github" />
 		</a>
-		<a href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
-			<span class="sr-only">Stack Overflow Profile</span>
+		<a class="control control-icon" href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
+			<span class="sr-only">{t('social.stackOverflow')}</span>
 			<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 				><path
 					fill="currentColor"
@@ -49,7 +52,7 @@ const today = new Date();
 		background: var(--background);
 		color: var(--secondary);
 		text-align: center;
-		border-top: 2px solid var(--accent);
+		border-top: var(--rule) solid var(--accent);
 		margin-top: var(--space-7);
 	}
 
@@ -60,45 +63,12 @@ const today = new Date();
 	}
 
 	.copyright a {
-		color: var(--accent);
-		text-decoration: none;
 		margin-left: var(--space-2);
-		transition: all 0.2s ease;
-		padding: var(--space-1);
-		border: 2px solid transparent;
-	}
-
-	.copyright a:hover {
-		background: var(--accent);
-		color: var(--background);
-		border-color: var(--accent);
 	}
 
 	.social-links {
 		display: flex;
 		justify-content: center;
 		gap: var(--space-2);
-	}
-
-	.social-links a {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		padding: 8px;
-		color: var(--accent);
-		border: 2px solid var(--accent);
-		transition: all 0.2s ease;
-	}
-
-	.social-links a:hover {
-		background: var(--accent);
-		color: var(--background);
-	}
-
-	.social-links a svg {
-		width: 100%;
-		height: 100%;
 	}
 </style>

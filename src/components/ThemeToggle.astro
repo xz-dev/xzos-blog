@@ -1,9 +1,11 @@
 ---
-// Theme Toggle Component
 import PixelIcon from './PixelIcon.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
-<button id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+<button id="theme-toggle" class="control control-icon" aria-label={t('theme.toggle')} title={t('theme.toggle')}>
 	<svg class="sun-icon tty-original-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
 		<circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
 		<line x1="10" y1="2" x2="10" y2="4" stroke="currentColor" stroke-width="2"/>
@@ -23,30 +25,13 @@ import PixelIcon from './PixelIcon.astro';
 </button>
 
 <style>
-	#theme-toggle {
-		position: relative;
-		width: 40px;
-		height: 40px;
-		padding: 5px;
-		background: transparent;
-		border: 2px solid var(--accent);
-		color: var(--accent);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-weight: bold;
-	}
-
-	#theme-toggle:hover {
-		background: var(--accent);
-		color: var(--background);
-	}
-
+	/* Box, hover and focus come from the shared .control rules; the two icons
+	 * overlap and the theme shows one of them. */
 	#theme-toggle svg {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		transition: opacity 0.2s ease;
 	}
 
 	/* Show/hide icons based on theme */

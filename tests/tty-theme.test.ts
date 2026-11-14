@@ -7,8 +7,10 @@ const base = read('../src/styles/terminal.css');
 // Keep the night theme isolated: the day stylesheet remains the baseline.
 const tty = read('../src/styles/tty.css');
 const reference = JSON.parse(read('../docs/theme/tty-dark.json'));
+const tokens = read('../src/styles/tokens.css');
+const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
 const palette = Object.fromEntries(
-	[...tty.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]),
+	[...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]),
 );
 
 function luminance(hex: string) {
@@ -65,7 +67,7 @@ test('night typography is self-hosted, with real WOFF2 files and its license', (
 });
 
 test('day palette is pinned at WCAG AA and keeps the original font stack', () => {
-	const root = base.match(/:root\s*\{([^}]+)\}/)![1];
+	const root = tokens.match(/:root\s*\{([^}]+)\}/)![1];
 	const day = {
 		background: '#fdf6e3', foreground: '#475b62', accent: '#1a659c',
 		secondary: '#566a70', emphasized: '#586e75', 'border-color': '#93a1a1',
@@ -91,12 +93,18 @@ test('day palette is pinned at WCAG AA and keeps the original font stack', () =>
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
 });
 
-test('controls provide square, raised and pressed states plus keyboard focus', () => {
-	assert.match(tty, /border-radius:\s*0/);
-	assert.match(tty, /:active/);
-	assert.match(tty, /:focus-visible/);
-	assert.match(tty, /box-shadow:\s*inset/);
-	assert.match(tty, /#theme-toggle/);
-	assert.match(tty, /\.pagination/);
-	assert.match(tty, /\.lang-link/);
+test('controls share one box, focus ring and states; night only adds a bevel', () => {
+	// One focus ring for both themes, keyboard only.
+	assert.match(base, /:focus-visible\s*\{\s*outline:\s*var\(--focus-width\) solid var\(--accent\);/);
+	const ttyRules = tty.replace(/\/\*[\s\S]*?\*\//g, '');
+	assert.doesNotMatch(ttyRules, /focus-visible|outline/);
+	for (const state of ['.control:hover', '.control.active', '.control[aria-current]']) assert.ok(base.includes(state), state);
+	assert.match(base, /\.control,\s*button\s*\{[^}]*min-height:\s*var\(--control-size\);[^}]*border-radius:\s*0;/);
+	// Night: raised and pressed bevels on the same selectors, no new geometry.
+	assert.match(tty, /:root\[data-theme="tty"\] \.control,\s*:root\[data-theme="tty"\] button\s*\{[^}]*box-shadow:\s*inset/);
+	assert.match(tty, /:root\[data-theme="tty"\] \.control:active/);
+	assert.doesNotMatch(ttyRules, /(?:width|height|padding|margin|font-size|line-height):/);
+	for (const file of ['HeaderLink', 'LanguageSwitcher', 'ThemeToggle', 'TableOfContents']) {
+		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*control/, file);
+	}
 });
