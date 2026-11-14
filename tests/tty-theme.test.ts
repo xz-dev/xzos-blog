@@ -153,7 +153,7 @@ test('the header is a tmux-style status line of plain text, shared by both theme
 		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*menu-item/, file);
 	}
 	assert.doesNotMatch(header, /class="control/);
-	// `0:首页 1:博客 …`: the number is the entry's place in navItems, hidden
+	// `0:首页 1:文章 …`: the number is the entry's place in navItems, hidden
 	// from assistive technology; aria-current stays on the link.
 	assert.deepEqual(navItems.map((item) => item.key), ['nav.home', 'nav.blog', 'nav.about', 'nav.links']);
 	assert.match(header, /navItems\.map\(\(item, index\) =>[\s\S]*<HeaderLink index=\{index\}/);

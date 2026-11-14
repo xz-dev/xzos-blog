@@ -55,7 +55,7 @@ export function getNavSection(pathname: string): string {
 }
 
 /**
- * 导航链接的当前状态：同一地址为 page，同一栏目为 true（如文章页的“博客”）。
+ * 导航链接的当前状态：同一地址为 page，同一栏目为 true（如文章页的“文章”）。
  */
 export function getNavCurrent(pathname: string, href: string): 'page' | 'true' | undefined {
   const trim = (path: string) => path.replace(/\/+$/, '') || '/';

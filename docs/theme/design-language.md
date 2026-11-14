@@ -44,7 +44,7 @@ block redefines colours and the role tokens only.
 The header is a terminal status line, like tmux's, the same in both themes:
 
 ```
-◌ xzOS   0:首页  1:博客*  2:关于  3:友链        lang: zh*  en  zh-CN   ☾
+◌ xzOS   0:首页  1:文章*  2:关于  3:友链        lang: zh*  en  zh-CN   ☾
 ```
 
 It is one flat row of plain text on `--surface` with a 1px `--border-strong`

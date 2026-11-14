@@ -13,7 +13,7 @@ export type Lang = keyof typeof languages;
 export const defaultLang: Lang = 'zh';
 
 /**
- * 页眉菜单，按状态栏顺序排列；每项前显示的编号就是它的下标（0:首页 1:博客 …）。
+ * 页眉菜单，按状态栏顺序排列；每项前显示的编号就是它的下标（0:首页 1:文章 …）。
  * localized 为 true 的路径带语言前缀，友链页只有一份。
  */
 export const navItems = [
@@ -30,7 +30,7 @@ export const ui = {
   zh: {
     // 导航
     'nav.home': '首页',
-    'nav.blog': '博客',
+    'nav.blog': '文章',
     'nav.about': '关于',
     'nav.links': '友链',
 
@@ -39,7 +39,7 @@ export const ui = {
     'site.logoAlt': 'xzOS 标志',
 
     // 博客
-    'blog.heading': '博客',
+    'blog.heading': '文章',
     'blog.continueReading': '继续阅读 →',
     'blog.updatedOn': '更新于',
     'blog.authorLabel': '作者：',
@@ -95,7 +95,7 @@ export const ui = {
   en: {
     // Navigation
     'nav.home': 'Home',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Posts',
     'nav.about': 'About',
     'nav.links': 'Links',
 
@@ -104,7 +104,7 @@ export const ui = {
     'site.logoAlt': 'xzOS logo',
 
     // Blog
-    'blog.heading': 'Blog',
+    'blog.heading': 'Posts',
     'blog.continueReading': 'Read more →',
     'blog.updatedOn': 'Updated on',
     'blog.authorLabel': 'Author: ',
@@ -153,7 +153,7 @@ export const ui = {
   'zh-CN': {
     // 导航
     'nav.home': '首页',
-    'nav.blog': '博客',
+    'nav.blog': '文章',
     'nav.about': '关于',
     'nav.links': '友链',
 
@@ -162,7 +162,7 @@ export const ui = {
     'site.logoAlt': 'xzOS 标志',
 
     // 博客
-    'blog.heading': '博客',
+    'blog.heading': '文章',
     'blog.continueReading': '继续阅读 →',
     'blog.updatedOn': '更新于',
     'blog.authorLabel': '作者：',
