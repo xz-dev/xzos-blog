@@ -32,11 +32,11 @@ export interface RingGrid {
 
 /**
  * Character grids. Rows share the body line height (--line-height, 24px), so
- * the wide grid's 15 rows sit beside the 15 lines of the home page's fetch
+ * the wide grid's 14 rows sit beside the 14 lines of the home page's fetch
  * block; narrow is for phones (30 × 8px = 240px fits 320px).
  */
 export const RING_GRIDS = {
-	wide: { cols: 45, rows: 15 },
+	wide: { cols: 42, rows: 14 },
 	narrow: { cols: 30, rows: 10 },
 } as const satisfies Record<string, RingGrid>;
 

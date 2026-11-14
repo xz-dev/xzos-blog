@@ -90,10 +90,11 @@ test('link hover changes colour and underlines; no hover or focus paints a fill'
 test('home: ring rows sit beside fetch lines on one line grid; the all-posts arrow is off the underline', () => {
 	assert.match(pages.home, /\.boot\s*\{[^}]*align-items:\s*start;/);
 	assert.match(pages.home, /\.ring\s*\{[^}]*height:\s*calc\(var\(--rows\) \* var\(--line-height\)\);\s*line-height:\s*var\(--line-height\);/);
-	// fastfetch: title, rule, one line per key, a blank line and two rows of colours.
+	// fastfetch: title, rule, one line per key, a blank line and one row of the theme's own colours.
 	const keys = pages.home.match(/<div><dt>/g)?.length ?? 0;
-	assert.equal(RING_GRIDS.wide.rows, keys + 5);
-	assert.match(pages.home, /\.ansi\s*\{[^}]*grid-template-columns:\s*repeat\(8, 3ch\);\s*grid-auto-rows:\s*var\(--line-height\);\s*margin-top:\s*var\(--line-height\);/);
+	assert.equal(RING_GRIDS.wide.rows, keys + 4);
+	assert.doesNotMatch(pages.home, /var\(--ansi-/);
+	assert.match(pages.home, /\.palette\s*\{[^}]*grid-template-columns:\s*repeat\(6, 3ch\);\s*grid-auto-rows:\s*var\(--line-height\);\s*margin-top:\s*var\(--line-height\);/);
 	assert.match(pages.home, /<a class="all-posts" href=\{`\$\{blogPrefix\}\/`\}><span class="all-posts-arrow"><PixelArrowText text="→" \/><\/span>\{allPosts\}<\/a>/);
 	assert.match(pages.home, /\.all-posts-arrow\s*\{\s*display:\s*inline-block;\s*margin-inline-end:\s*1ch;/);
 });

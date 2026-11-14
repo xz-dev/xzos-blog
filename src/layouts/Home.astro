@@ -45,9 +45,10 @@ const [user, host] = ['xz', 'xzos'];
 const rule = '-'.repeat(`${user}@${host}`.length);
 // Every value is real: the Astro that built the page, the post count, the font manifest.
 const kernel = Astro.generator.replace(/^Astro v/, 'Astro ');
-// The 16 terminal colours (--ansi-0 … --ansi-15), normal then bright.
-const ansi = Array.from({ length: 16 }, (_, index) => index);
 // `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
+// The palette swatches: the site's own colour tokens, which the theme
+// toggle redefines, from the surface through the borders to the text.
+const palette = ['surface', 'border-color', 'border-strong', 'secondary', 'accent', 'foreground'];
 const allPosts = t('home.allPosts').replace(/^→\s*/, '');
 const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
 const datetime = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime;
@@ -168,11 +169,11 @@ const recent = posts.slice(0, LS);
 			.sep {
 				color: var(--secondary);
 			}
-			/* The 16 terminal colours after one blank line: normal, then bright,
-			 * each block three cells wide and one line high, no frame. */
-			.ansi {
+			/* The theme's palette after one blank line, like fastfetch's colour
+			 * row: one line high, each swatch three cells wide, no frame. */
+			.palette {
 				display: grid;
-				grid-template-columns: repeat(8, 3ch);
+				grid-template-columns: repeat(6, 3ch);
 				grid-auto-rows: var(--line-height);
 				margin-top: var(--line-height);
 				width: max-content;
@@ -249,8 +250,8 @@ const recent = posts.slice(0, LS);
 							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
 						))}</dd></div>
 					</dl>
-					<div class="ansi" aria-hidden="true">
-						{ansi.map((index) => <span style={`background: var(--ansi-${index})`} />)}
+					<div class="palette" aria-hidden="true">
+						{palette.map((token) => <span style={`background: var(--${token})`} />)}
 					</div>
 				</div>
 			</div>
