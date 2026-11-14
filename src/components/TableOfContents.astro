@@ -37,8 +37,8 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 		background: rgba(var(--gray-light), 0.3);
 		border: 1px solid rgba(var(--gray-light), 0.5);
 		border-radius: 8px;
-		padding: 1em;
-		margin-bottom: 2em;
+		padding: var(--space-3);
+		margin-bottom: var(--space-5);
 	}
 
 	.toc summary {
@@ -50,12 +50,12 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 	.toc ul {
 		list-style: none;
 		padding: 0;
-		margin: 0.5em 0 0 0;
+		margin: var(--space-2) 0 0 0;
 	}
 
 	.toc li {
-		margin: 0.3em 0;
-		line-height: 1.4;
+		margin: var(--space-1) 0;
+		line-height: var(--line-height);
 	}
 
 	.toc-level-2 {
@@ -63,7 +63,7 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 	}
 
 	.toc-level-3 {
-		padding-left: 1.2em;
+		padding-left: var(--space-4);
 	}
 
 	.toc a {

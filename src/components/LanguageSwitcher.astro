@@ -29,15 +29,16 @@ const currentLang = getLangFromUrl(Astro.url);
 <style>
   .language-switcher {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--space-2);
     align-items: center;
   }
   
   .lang-link {
-    padding: 0.25rem 0.5rem;
+    padding: var(--space-1) var(--space-2);
     border-radius: 4px;
     text-decoration: none;
-    font-size: 0.875rem;
+    font-size: var(--text-meta);
+    line-height: var(--leading-meta);
     color: rgb(var(--gray));
     transition: color 0.2s, background-color 0.2s;
   }

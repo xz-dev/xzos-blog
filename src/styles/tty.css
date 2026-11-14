@@ -250,7 +250,6 @@
   --edge-dark: #000401;
   --edge-inner: #11754b;
   --tty-font: "Unifont", "Unifont Upper", monospace;
-  --font-size: 1.25rem;
 
   /* Bridge older list/layout tokens without changing their day-mode values. */
   --bg-primary: var(--background);
@@ -266,7 +265,6 @@
 
 :root[data-theme="tty"] body {
   font-family: var(--tty-font);
-  line-height: 1.75;
   font-variant-ligatures: none;
   text-shadow: none;
 }
@@ -306,26 +304,12 @@
   transform: none !important;
 }
 
-:root[data-theme="tty"] main {
-  max-width: 100%;
-  margin-inline: auto;
-}
-
-:root[data-theme="tty"] .prose {
-  width: 48rem;
-  max-width: 100%;
-  padding: 1.5rem 1.25rem;
-  line-height: 1.85;
-  overflow-wrap: anywhere;
-}
+/* Sizes, widths, spacing and alignment come from terminal.css for both
+ * themes; this file sets colour, font family and decoration only. */
 
 /* Editorial opacity must not silently reduce the verified text contrast. */
 :root[data-theme="tty"] .prose small {
   opacity: 1 !important;
-}
-
-:root[data-theme="tty"] main:has(> article) {
-  width: 100%;
 }
 
 :root[data-theme="tty"] h1,
@@ -337,7 +321,6 @@
 :root[data-theme="tty"] strong,
 :root[data-theme="tty"] b {
   color: var(--emphasized);
-  line-height: 1.5;
 }
 
 /* The font has one real weight. Keep emphasis visible without fake bold. */
@@ -347,23 +330,6 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
-}
-
-:root[data-theme="tty"] main > h1 {
-  font-size: 1.75rem;
-}
-
-:root[data-theme="tty"] .prose .title {
-  text-align: left;
-  line-height: 1.5;
-}
-
-:root[data-theme="tty"] .prose h1 {
-  font-size: clamp(1.5rem, 4vw, 2rem);
-}
-
-:root[data-theme="tty"] .post-title {
-  font-size: 1.5rem;
 }
 
 :root[data-theme="tty"] .post-title a {
@@ -407,11 +373,12 @@
   text-underline-offset: 0.2em;
 }
 
+/* Day's border widths stay (transparent) so the box keeps its size; the
+ * left rule is a shadow inside it. */
 :root[data-theme="tty"] blockquote,
 :root[data-theme="tty"] .post-excerpt blockquote {
-  border: 0;
-  border-left: 2px solid var(--border-color);
-  padding: 0.25rem 0 0.25rem 1rem;
+  border-color: transparent;
+  box-shadow: inset 2px 0 0 var(--border-color);
   color: var(--foreground);
   font-style: normal;
 }
@@ -421,7 +388,6 @@
 }
 
 :root[data-theme="tty"] hr {
-  height: 1px;
   background: var(--border-color);
 }
 
@@ -430,23 +396,21 @@
   border: 1px solid var(--border-color);
 }
 
-/* Natural text wrapping, not a flex row that splits language names on phones. */
 :root[data-theme="tty"] .language-notice,
 :root[data-theme="tty"] .translation-notice {
-  display: block;
   background: var(--surface);
-  border: 1px solid var(--border-color);
+  border-left-color: var(--border-color);
   color: var(--foreground);
 }
 
 :root[data-theme="tty"] .language-notice a,
 :root[data-theme="tty"] .translation-notice a {
-  display: inline-block;
-  white-space: nowrap;
   color: var(--accent);
 }
 
-/* These are controls, not cards: hard pixel edges, no gradients or soft shadows. */
+/* These are controls, not cards: hard pixel edges, no gradients or soft shadows.
+ * The bevel recolours each control's day border, so its width (and the box)
+ * stays the day size. */
 :root[data-theme="tty"] button,
 :root[data-theme="tty"] #theme-toggle,
 :root[data-theme="tty"] .internal-links a,
@@ -457,40 +421,26 @@
 :root[data-theme="tty"] .toc summary {
   color: var(--foreground);
   background: var(--control-face);
-  border: 2px solid;
+  border-style: solid;
   border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
   box-shadow: inset 1px 1px 0 var(--edge-inner), inset -1px -1px 0 var(--edge-dark);
   border-radius: 0;
-  font: inherit;
   font-weight: 400;
   text-decoration: none;
 }
 
-:root[data-theme="tty"] .internal-links a,
-:root[data-theme="tty"] .lang-link {
-  padding: 0.35rem 0.6rem;
-}
-
-/* English navigation must wrap rather than overflow a 320px viewport. */
-:root[data-theme="tty"] .internal-links {
-  flex-wrap: wrap;
-}
-
-/* Header.astro gives phone controls the toggle's 40px min-height; drop the
- * vertical padding that would push their text past it. */
-@media (max-width: 720px) {
-  :root[data-theme="tty"] .internal-links a,
-  :root[data-theme="tty"] .lang-link {
-    padding-block: 0;
-  }
-}
-
-:root[data-theme="tty"] .lang-link {
-  font-size: 1rem;
+/* Language links and the TOC summary have no border in day: draw their bevel
+ * inside the box instead of adding a border. */
+:root[data-theme="tty"] .lang-link,
+:root[data-theme="tty"] .toc summary {
+  border-style: none;
+  box-shadow:
+    inset 2px 2px 0 var(--edge-light),
+    inset -2px -2px 0 var(--edge-dark),
+    inset 3px 3px 0 var(--edge-inner);
 }
 
 :root[data-theme="tty"] .toc summary {
-  padding: 0.35rem 0.6rem;
   cursor: pointer;
 }
 
@@ -519,6 +469,15 @@
   background: var(--surface);
   border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
   box-shadow: inset 1px 1px 0 var(--edge-dark), inset -1px -1px 0 var(--edge-inner);
+}
+
+:root[data-theme="tty"] .lang-link:active,
+:root[data-theme="tty"] .lang-link.active,
+:root[data-theme="tty"] .toc summary:active {
+  box-shadow:
+    inset 2px 2px 0 var(--edge-dark),
+    inset -2px -2px 0 var(--edge-light),
+    inset 3px 3px 0 var(--edge-dark);
 }
 
 :root[data-theme="tty"] .internal-links a.active,
@@ -562,8 +521,7 @@
 
 :root[data-theme="tty"] pre {
   background: var(--surface) !important;
-  border: 1px solid var(--border-color);
-  line-height: 1.65;
+  border-color: var(--border-color);
 }
 
 :root[data-theme="tty"] pre code,
@@ -573,25 +531,22 @@
 
 :root[data-theme="tty"] kbd {
   background: var(--control-face);
-  border: 1px solid;
+  border-style: solid;
   border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
   box-shadow: inset 1px 1px 0 var(--edge-inner), inset -1px -1px 0 var(--edge-dark);
 }
 
-/* The wrapper draws the night frame across the column, as the block table did. */
+/* The wrapper draws the night frame across the column as an outline in the
+ * prose padding, so it takes no space. */
 :root[data-theme="tty"] .table-scroll {
-  border: 1px solid var(--border-color);
-  padding: 10px;
-}
-
-:root[data-theme="tty"] .table-scroll > table {
-  border: 0;
+  outline: 1px solid var(--border-color);
+  outline-offset: 9px;
 }
 
 :root[data-theme="tty"] table,
 :root[data-theme="tty"] th,
 :root[data-theme="tty"] td {
-  border: 1px solid var(--border-color);
+  border-color: var(--border-color);
 }
 
 :root[data-theme="tty"] th {

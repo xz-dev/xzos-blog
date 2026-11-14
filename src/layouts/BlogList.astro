@@ -46,33 +46,33 @@ const pageTitle = isFirstPage
 		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				width: 960px;
-				max-width: calc(100% - 2rem);
+				width: var(--page-width);
+				max-width: calc(100% - var(--space-5));
 				margin: auto;
-				padding: 3rem 1rem;
+				padding: var(--space-6) var(--space-3);
 			}
 			h1 {
-				font-size: 2.5rem;
 				font-weight: 700;
-				margin: 0 0 2rem 0;
+				margin: 0 0 var(--space-5) 0;
 			}
 			.post-list {
 				list-style-type: none;
 				padding: 0;
-				margin: 0 0 3rem 0;
+				margin: 0 0 var(--space-6) 0;
 			}
 			.post-item {
-				margin-bottom: 3rem;
-				padding-bottom: 3rem;
+				margin-bottom: var(--space-6);
+				padding-bottom: var(--space-6);
 				border-bottom: 1px solid #e0e0e0;
 			}
 			.post-item:last-child {
 				border-bottom: none;
 			}
 			.post-title {
-				font-size: 1.8rem;
+				font-size: var(--text-card-title);
+				line-height: var(--leading-card-title);
 				font-weight: 600;
-				margin: 0 0 1rem 0;
+				margin: 0 0 var(--space-3) 0;
 			}
 			.post-title a {
 				color: var(--fg-primary);
@@ -85,12 +85,12 @@ const pageTitle = isFirstPage
 			}
 			.post-excerpt {
 				color: rgb(var(--gray-dark));
-				line-height: 1.6;
-				margin: 1rem 0;
+				line-height: var(--leading-prose);
+				margin: var(--space-3) 0;
 			}
 			.post-excerpt :global(blockquote) {
-				margin: 1rem 0;
-				padding-left: 1rem;
+				margin: var(--space-3) 0;
+				padding-left: var(--space-3);
 				border-left: 3px solid rgb(var(--gray));
 				font-style: italic;
 				color: rgb(var(--gray-dark));
@@ -98,27 +98,28 @@ const pageTitle = isFirstPage
 			.post-excerpt :global(h2),
 			.post-excerpt :global(h3),
 			.post-excerpt :global(h4) {
-				font-size: 1.2rem;
-				margin: 1rem 0 0.5rem 0;
+				font-size: var(--text-h3);
+				line-height: var(--leading-h3);
+				margin: var(--space-3) 0 var(--space-2) 0;
 			}
 			.post-excerpt :global(p) {
-				margin: 0.5rem 0;
+				margin: var(--space-2) 0;
 			}
 			.post-excerpt :global(ul),
 			.post-excerpt :global(ol) {
-				margin: 0.5rem 0;
-				padding-left: 2rem;
+				margin: var(--space-2) 0;
+				padding-left: var(--space-5);
 			}
 			.post-excerpt :global(code) {
 				background-color: #f4f4f4;
 				padding: 0.2rem 0.4rem;
 				border-radius: 3px;
-				font-size: 0.9em;
+				font-size: var(--text-code);
 				font-family: monospace;
 			}
 			.post-excerpt :global(pre) {
 				background-color: #f4f4f4;
-				padding: 1rem;
+				padding: var(--space-3);
 				overflow-x: auto;
 			}
 			.post-excerpt :global(pre code) {
@@ -127,10 +128,11 @@ const pageTitle = isFirstPage
 			}
 			.post-meta {
 				display: flex;
-				gap: 1rem;
+				gap: var(--space-3);
 				align-items: center;
 				color: rgb(var(--gray));
-				font-size: 0.9rem;
+				font-size: var(--text-meta);
+				line-height: var(--leading-meta);
 				flex-wrap: wrap;
 			}
 			.read-more {
@@ -144,13 +146,13 @@ const pageTitle = isFirstPage
 			.pagination {
 				display: flex;
 				justify-content: center;
-				gap: 0.5rem;
-				margin: 2rem 0;
+				gap: var(--space-2);
+				margin: var(--space-5) 0;
 				flex-wrap: wrap;
 			}
 			.pagination a,
 			.pagination span {
-				padding: 0.5rem 1rem;
+				padding: var(--space-2) var(--space-3);
 				border: 2px solid var(--accent);
 				text-decoration: none;
 				color: var(--accent);

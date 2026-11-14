@@ -91,17 +91,18 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
 )}
 
 <style>
+  /* Block flow, not a flex row: a flex item squeezes a language name into
+   * one letter per line on phones. */
   .language-notice,
   .translation-notice {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.5rem;
+    display: block;
+    padding: 0.75rem var(--space-3);
+    margin-bottom: var(--space-4);
     background: var(--card-background, rgba(var(--gray-light), 0.3));
     border-radius: 8px;
     border-left: 4px solid var(--accent);
-    font-size: 0.9rem;
+    font-size: var(--text-meta);
+    line-height: var(--leading-meta);
   }
   
   .translation-notice {
@@ -110,8 +111,7 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
   }
   
   .notice-icon {
-    font-size: 1.1rem;
-    flex-shrink: 0;
+    margin-inline-end: var(--space-2);
   }
   
   .language-notice a,
@@ -119,6 +119,7 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
     color: var(--accent);
     font-weight: 600;
     text-decoration: none;
+    white-space: nowrap;
   }
   
   .language-notice a:hover,

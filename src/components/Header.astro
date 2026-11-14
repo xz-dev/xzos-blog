@@ -68,7 +68,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 <style>
 	header {
 		margin: 0;
-		padding: 1em;
+		padding: var(--space-3);
 		background: var(--background);
 		border-bottom: 2px solid var(--accent);
 	}
@@ -77,20 +77,23 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1em;
-		max-width: 1200px;
+		gap: var(--space-3);
+		max-width: var(--header-width);
 		margin: 0 auto;
 	}
 
 	.site-title {
 		display: flex;
 		align-items: center;
-		gap: 1em;
+		gap: var(--space-3);
 	}
 
+	/* terminal.css gives every img a 25px block margin; night's pixel logo is
+	 * an svg without it, so the row would change height with the theme. */
 	.site-logo {
 		width: 48px;
 		height: 48px;
+		margin: 0;
 		border: none;
 		padding: 0;
 	}
@@ -98,12 +101,13 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	.title-text {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25em;
+		gap: var(--space-1);
 	}
 
 	h2 {
 		margin: 0;
-		font-size: 1.25em;
+		font-size: var(--text-h3);
+		line-height: var(--leading-h3);
 		font-weight: 700;
 	}
 
@@ -119,13 +123,14 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 
 	.tagline {
 		margin: 0;
-		font-size: 0.75em;
+		font-size: var(--text-meta);
+		line-height: var(--leading-meta);
 		color: var(--secondary);
 	}
 
 	.internal-links {
 		display: flex;
-		gap: 0.5em;
+		gap: var(--space-2);
 		flex: 1;
 		justify-content: center;
 		align-items: center;
@@ -134,12 +139,12 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	.right-section {
 		display: flex;
 		align-items: center;
-		gap: 1em;
+		gap: var(--space-3);
 	}
 
 	.social-links {
 		display: flex;
-		gap: 0.5em;
+		gap: var(--space-2);
 	}
 
 	.social-links a {
@@ -171,8 +176,8 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	}
 
 	/* Tablet: the links take a full row below the title and right section. A
-	 * `flex: 1` box alone has a 0% basis that ignores `width: 100%`, so once
-	 * tty.css lets the links wrap, it would stack them in a narrow column. */
+	 * `flex: 1` box alone has a 0% basis that ignores `width: 100%`, so if the
+	 * links wrap, it would stack them in a narrow column. */
 	@media (720px < width <= 960px) {
 		.internal-links {
 			order: 3;
@@ -192,11 +197,6 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		nav {
 			justify-content: flex-start;
 			gap: 0.5rem;
-		}
-
-		/* terminal.css gives every img a 25px block margin, doubling the row. */
-		.site-logo {
-			margin: 0;
 		}
 
 		.site-title {
