@@ -1,7 +1,8 @@
 Copyright © 1998-2026 Roman Czyborra, Paul Hardy, Qianqian Fang, Andrew Miller, Johnnie Weaver, David Corbett, Ælla Chiana Moskopp, Rebecca Bettencourt, Ho-Seok Ee, et al.
 
 GNU Unifont 18.0.01. Distributed here under the SIL Open Font License 1.1 option of its upstream dual license.
-The full base font retains all glyph outlines, Unicode mappings and advance widths.
+The base font is split into Unicode-block subsets that together retain all glyph
+outlines, Unicode mappings and advance widths.
 The Unifont Upper companion is subset to U+1F000-1FAFF; retained outlines are unchanged.
 Upstream: https://unifoundry.com/pub/unifont/unifont-18.0.01/font-builds/unifont-18.0.01.otf
 Symbols upstream: https://unifoundry.com/pub/unifont/unifont-18.0.01/font-builds/unifont_upper-18.0.01.otf

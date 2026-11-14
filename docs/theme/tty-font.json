@@ -6,11 +6,201 @@
     "url": "https://unifoundry.com/pub/unifont/unifont-18.0.01/font-builds/unifont-18.0.01.otf",
     "sha256": "88d0a14d4aa9a96419720b39ba5da921a59560d76d4ec7d523acc06ed85cd3c2"
   },
-  "asset": {
-    "url": "/fonts/unifont-18.0.01.woff2",
-    "bytes": 912468,
-    "sha256": "b53501274351fdfdd03906c72b73244ebe530092d0805ac0669a1e5ec69a1926"
-  },
+  "assets": [
+    {
+      "name": "latin",
+      "url": "/fonts/unifont-18.0.01-latin.woff2",
+      "unicodeRange": "U+0-36F, U+2000-206F, U+20A0-20CF, U+2100-214F, U+2190-21FF, U+2500-25FF, U+FFFD",
+      "codepoints": 1489,
+      "bytes": 15720,
+      "sha256": "020657b3d1b69792316963cde126271641f6964af243f9a09678497c1236e63e"
+    },
+    {
+      "name": "cjk-common",
+      "url": "/fonts/unifont-18.0.01-cjk-common.woff2",
+      "unicodeRange": "U+3000-312F, U+31F0-31FF, U+4E00-9F9F, U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF",
+      "codepoints": 4108,
+      "bytes": 103536,
+      "sha256": "5ada4c27dc433a5b681b50a5fe328c40a6fe2e0a746d42c1260254d6da02817c"
+    },
+    {
+      "name": "cjk-01",
+      "url": "/fonts/unifont-18.0.01-cjk-01.woff2",
+      "unicodeRange": "U+4E02-531F",
+      "codepoints": 936,
+      "bytes": 26952,
+      "sha256": "ba5a3cb05261617d3f914d4aae86c885e0f1f4a48d302f6bd3fc9d80aa3e4a7d"
+    },
+    {
+      "name": "cjk-02",
+      "url": "/fonts/unifont-18.0.01-cjk-02.woff2",
+      "unicodeRange": "U+5321-583F",
+      "codepoints": 999,
+      "bytes": 29812,
+      "sha256": "1ab7fb30a7d1f4133b9d9cdb01621d1a7d81403acd81294a6566f3a28345b5f5"
+    },
+    {
+      "name": "cjk-03",
+      "url": "/fonts/unifont-18.0.01-cjk-03.woff2",
+      "unicodeRange": "U+5840-5D5F",
+      "codepoints": 1061,
+      "bytes": 31468,
+      "sha256": "df6c7468f9f0de41f2c692a4ad2a6503d87245c906f6db7f0e989fca3974c2f4"
+    },
+    {
+      "name": "cjk-04",
+      "url": "/fonts/unifont-18.0.01-cjk-04.woff2",
+      "unicodeRange": "U+5D60-627D",
+      "codepoints": 1025,
+      "bytes": 32188,
+      "sha256": "7389745b7980988bdc14b17ca92ebdf7e32a36d5f98e0dee020dcbcdfe34fbb4"
+    },
+    {
+      "name": "cjk-05",
+      "url": "/fonts/unifont-18.0.01-cjk-05.woff2",
+      "unicodeRange": "U+6281-679F",
+      "codepoints": 981,
+      "bytes": 30940,
+      "sha256": "db537c24c210dd4f50cabe7efc19a13e67c4f6cbb4c9cfb26ce56aec28f78f8b"
+    },
+    {
+      "name": "cjk-06",
+      "url": "/fonts/unifont-18.0.01-cjk-06.woff2",
+      "unicodeRange": "U+67A0-6CBA",
+      "codepoints": 1110,
+      "bytes": 33380,
+      "sha256": "3da6bbef8de3ace30ec7a41e1806b36cb208de22f7264da91aa96e9409df3d9a"
+    },
+    {
+      "name": "cjk-07",
+      "url": "/fonts/unifont-18.0.01-cjk-07.woff2",
+      "unicodeRange": "U+6CC0-71DF",
+      "codepoints": 1104,
+      "bytes": 34848,
+      "sha256": "830ea9edea2bf9d3fd7d7ed16214c52bfff6cef500e50cc078432a75367071f9"
+    },
+    {
+      "name": "cjk-08",
+      "url": "/fonts/unifont-18.0.01-cjk-08.woff2",
+      "unicodeRange": "U+71E0-76FF",
+      "codepoints": 1120,
+      "bytes": 34752,
+      "sha256": "7e74de7ae7bbb6c9057d9342424419907e2fcbbaba164330665ed1640c1a41d7"
+    },
+    {
+      "name": "cjk-09",
+      "url": "/fonts/unifont-18.0.01-cjk-09.woff2",
+      "unicodeRange": "U+7700-7C1F",
+      "codepoints": 1107,
+      "bytes": 33576,
+      "sha256": "7fc1803d86f1adacc6cfeb9cb3f17ff257ac0aed4ca48a98329e2f64555a16c5"
+    },
+    {
+      "name": "cjk-10",
+      "url": "/fonts/unifont-18.0.01-cjk-10.woff2",
+      "unicodeRange": "U+7C20-813F",
+      "codepoints": 1093,
+      "bytes": 33936,
+      "sha256": "f63e39637b934b22146c43c7793c2006f2678c607909464cd79088fe95f52836"
+    },
+    {
+      "name": "cjk-11",
+      "url": "/fonts/unifont-18.0.01-cjk-11.woff2",
+      "unicodeRange": "U+8140-865F",
+      "codepoints": 1133,
+      "bytes": 35372,
+      "sha256": "1302679336d4aa5b52584948b4477eca9a210c0408a65480796ee5b4bffac1cf"
+    },
+    {
+      "name": "cjk-12",
+      "url": "/fonts/unifont-18.0.01-cjk-12.woff2",
+      "unicodeRange": "U+8660-8B7F",
+      "codepoints": 1202,
+      "bytes": 36500,
+      "sha256": "c337f8d0d2d8e102e70ce73bbe4392fb71b05d7640c2603c3e7bce94f3865587"
+    },
+    {
+      "name": "cjk-13",
+      "url": "/fonts/unifont-18.0.01-cjk-13.woff2",
+      "unicodeRange": "U+8B80-909F",
+      "codepoints": 1025,
+      "bytes": 32420,
+      "sha256": "f1dcfddfd7dfeaeed6eccb3d7b13df69f1c772b5878680166bc526ec991c67eb"
+    },
+    {
+      "name": "cjk-14",
+      "url": "/fonts/unifont-18.0.01-cjk-14.woff2",
+      "unicodeRange": "U+90A0-95BF",
+      "codepoints": 1212,
+      "bytes": 34260,
+      "sha256": "70ea9e814f73cd61f3404638ce6443abae011e89c06c2b9af06c777f9faec0df"
+    },
+    {
+      "name": "cjk-15",
+      "url": "/fonts/unifont-18.0.01-cjk-15.woff2",
+      "unicodeRange": "U+95C0-9ADF",
+      "codepoints": 1129,
+      "bytes": 36228,
+      "sha256": "44289c9426c2093c7c4887aa3516f139c1a2cf08d98bdd476b19160d6214f185"
+    },
+    {
+      "name": "cjk-16",
+      "url": "/fonts/unifont-18.0.01-cjk-16.woff2",
+      "unicodeRange": "U+9AE0-9FFF",
+      "codepoints": 1255,
+      "bytes": 38448,
+      "sha256": "25662477ad2e4a8d537e0b54e7a29de900a73ad1c7fba5614f2a57426c465354"
+    },
+    {
+      "name": "greek-cyrillic",
+      "url": "/fonts/unifont-18.0.01-greek-cyrillic.woff2",
+      "unicodeRange": "U+370-52F, U+1E00-1FFF",
+      "codepoints": 960,
+      "bytes": 9604,
+      "sha256": "c692eed71a5474c7fbe237e5c04affd9c6e1c7f0e3a35ef935919f38b1d694b4"
+    },
+    {
+      "name": "scripts",
+      "url": "/fonts/unifont-18.0.01-scripts.woff2",
+      "unicodeRange": "U+530-1DFF",
+      "codepoints": 6352,
+      "bytes": 69120,
+      "sha256": "bf229b9c08275dd276b328caa01b901791afcb6ec5b89cd31db9438d76a1b870"
+    },
+    {
+      "name": "symbols",
+      "url": "/fonts/unifont-18.0.01-symbols.woff2",
+      "unicodeRange": "U+2070-209F, U+20D0-20FF, U+2150-218F, U+2200-24FF, U+2600-2E7F",
+      "codepoints": 3104,
+      "bytes": 38880,
+      "sha256": "47d5610add5c48365405e40593f4aec408b80cbdf2f21959df57196d30573fd3"
+    },
+    {
+      "name": "cjk-ext",
+      "url": "/fonts/unifont-18.0.01-cjk-ext.woff2",
+      "unicodeRange": "U+2E80-2FFF, U+3130-31EF, U+3200-4DFF",
+      "codepoints": 7744,
+      "bytes": 190340,
+      "sha256": "f7390e3db30401884cd8625f8fc48b2a294a2fe9550e0897d5f09a18ff00ea9e"
+    },
+    {
+      "name": "hangul",
+      "url": "/fonts/unifont-18.0.01-hangul.woff2",
+      "unicodeRange": "U+AC00-D7FF",
+      "codepoints": 11264,
+      "bytes": 65976,
+      "sha256": "7ca27c9a98fd3fecb258da3993edbc899ac3e04a833c1df89c6864966af1370f"
+    },
+    {
+      "name": "other",
+      "url": "/fonts/unifont-18.0.01-other.woff2",
+      "unicodeRange": "U+A000-ABFF, U+F900-FDFF, U+FE20-FE2F, U+FE50-FEFF, U+FFF0-FFFC, U+1F12F, U+2000B-3237F",
+      "codepoints": 6397,
+      "bytes": 126404,
+      "sha256": "b6913cad16582cac88eff0650bf3fdae8a8bdcab61ecd515025a1e7e49b66746"
+    }
+  ],
+  "totalBytes": 1154660,
   "grid": {
     "height": 16,
     "widths": [
@@ -20,12 +210,19 @@
     "unitsPerEm": 64
   },
   "unicodeCodepoints": 58910,
+  "commonCharacters": {
+    "list": "Table of General Standard Chinese Characters, level 1",
+    "url": "https://raw.githubusercontent.com/shengdoushi/common-standard-chinese-characters-table/d9b599a9c9cc0dd2d58cad829e285bc780cd4451/level-1.txt",
+    "sha256": "79a6c710013cc86617d5db65871f59b2d67dee72415d380a2cc7145a51450fe4",
+    "count": 3500
+  },
   "cjkUnifiedIdeographs": 20992,
   "conversion": {
     "fontTools": "4.67.0",
     "preservesCmap": true,
     "preservesMetrics": true,
     "preservesSampleOutlines": true,
+    "preservesAllOutlines": true,
     "gridCheckedSample": "AZaz09中文汉字繁體嚷霾龘，。→─│"
   },
   "symbols": {

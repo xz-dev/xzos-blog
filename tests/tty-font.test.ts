@@ -25,12 +25,22 @@ test('self-hosted Unifont preserves its grid, Unicode coverage, metrics and lice
 	assert.equal(manifest.conversion.preservesCmap, true);
 	assert.equal(manifest.conversion.preservesMetrics, true);
 	assert.equal(manifest.conversion.preservesSampleOutlines, true);
-	const bytes = readFileSync(new URL('../public' + manifest.asset.url, import.meta.url));
-	assert.equal(bytes.subarray(0, 4).toString(), 'wOF2');
-	assert.equal(bytes.length, manifest.asset.bytes);
-	assert.ok(bytes.length < 1_000_000);
-	assert.equal(createHash('sha256').update(bytes).digest('hex'), manifest.asset.sha256);
-	assert.ok(tty.includes(`url('${manifest.asset.url}') format('woff2')`));
+	// Unicode-block subsets of the one family; together they keep every code point.
+	assert.equal(manifest.assets.reduce((sum: number, asset: { codepoints: number }) => sum + asset.codepoints, 0), manifest.unicodeCodepoints);
+	for (const asset of manifest.assets) {
+		const bytes = readFileSync(new URL('../public' + asset.url, import.meta.url));
+		assert.equal(bytes.subarray(0, 4).toString(), 'wOF2');
+		assert.equal(bytes.length, asset.bytes);
+		assert.equal(createHash('sha256').update(bytes).digest('hex'), asset.sha256);
+		assert.ok(tty.includes(`src: url('${asset.url}') format('woff2');\n  unicode-range: ${asset.unicodeRange};`), asset.url);
+	}
+	assert.ok(manifest.assets[0].bytes < 20_000, 'Latin subset stays small');
+	// The common-character face overlaps the ideograph chunks; the last-defined overlapping face is
+	// checked first, so it must follow every chunk for chunks to load only for rarer characters.
+	const common = manifest.assets.find((asset: { name: string }) => asset.name === 'cjk-common');
+	assert.equal(manifest.commonCharacters.count, 3500);
+	assert.equal(createHash('sha256').update(readFileSync(new URL('../scripts/tgscc-level-1.txt', import.meta.url))).digest('hex'), manifest.commonCharacters.sha256);
+	for (const asset of manifest.assets) if (asset !== common) assert.ok(tty.indexOf(common.url) > tty.indexOf(asset.url), asset.url);
 	const license = read('../public/fonts/unifont-OFL.txt');
 	assert.match(license, /Copyright © 1998-2026 Roman Czyborra/);
 	assert.match(license, /SIL OPEN FONT LICENSE Version 1\.1/);

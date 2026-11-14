@@ -22,7 +22,7 @@ let cachedAssets: {
 
 function loadAssets() {
 	if (!cachedAssets) {
-		const fontDir = path.join(process.cwd(), 'public/fonts');
+		const fontDir = path.join(process.cwd(), 'src/assets/og-fonts');
 		const fontFiles = [
 			path.join(fontDir, 'atkinson-regular.woff'),
 			path.join(fontDir, 'atkinson-bold.woff'),
