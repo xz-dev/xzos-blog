@@ -19,6 +19,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 			<h2><a class="menu-item" href={`${basePath}/`}>{SITE_TITLE}</a></h2>
 			<p class="tagline">{t('site.tagline')}</p>
 		</div>
+		<span class="status-sep brand-sep" aria-hidden="true">│</span>
 		<div class="internal-links">
 			{navItems.map((item, index) => (
 				<HeaderLink index={index} href={item.localized ? `${basePath}${item.path}` : item.path}>{t(item.key)}</HeaderLink>
@@ -160,9 +161,15 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		min-width: 0;
 	}
 
+	/* The site name and the menus are two groups, split like the status
+	 * area's; once the menus wrap to a row of their own the split goes. */
 	@media (max-width: 960px) {
 		nav {
 			flex-wrap: wrap;
+		}
+
+		.brand-sep {
+			display: none;
 		}
 	}
 
