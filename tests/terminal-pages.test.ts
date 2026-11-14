@@ -98,14 +98,13 @@ test('home: ring rows sit beside fetch lines on one line grid; the all-posts arr
 	assert.match(pages.home, /\.all-posts-arrow\s*\{\s*display:\s*inline-block;\s*margin-inline-end:\s*1ch;/);
 });
 
-test('status line: items 2ch apart, a reserved `*` cell, `│` between groups, glyph-size icons', () => {
+test('status line: items 2ch apart edge to edge, no reserved `*` cell, `│` between groups, glyph-size icons', () => {
 	const header = read('../src/components/Header.astro');
 	assert.match(read('../src/styles/tokens.css'), /--cell-gap:\s*2ch;/);
 	assert.match(header, /\.internal-links,\s*\.right-section,\s*\.social-links\s*\{[^}]*gap:\s*var\(--cell-gap\);/);
 	assert.match(read('../src/components/LanguageSwitcher.astro'), /gap:\s*var\(--cell-gap\);/);
 	assert.match(header, /\.internal-links :global\(\.menu-item\),\s*\.right-section :global\(\.menu-item\)\s*\{\s*padding-inline:\s*0;/);
-	assert.match(header, /:global\(\.lang-link\)::after\s*\{\s*content:\s*"\*";\s*content:\s*"\*" \/ "";\s*visibility:\s*hidden;/);
-	assert.match(header, /:global\(\.lang-link\[aria-current\]\)::after\s*\{\s*visibility:\s*visible;/);
+	assert.doesNotMatch(header, /visibility:\s*hidden/);
 	assert.equal(header.match(/<span class="status-sep" aria-hidden="true">│<\/span>/g)?.length, 2);
 	assert.match(header, /\.social-links :global\(\.menu-item-icon svg\)\s*\{\s*width:\s*var\(--pixel-icon-size\);\s*height:\s*var\(--pixel-icon-size\);/);
 });
