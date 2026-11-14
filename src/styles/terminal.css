@@ -2,6 +2,58 @@ html {
   box-sizing: border-box;
 }
 
+/* Scrollbars as terminal parts: a square bar in the structural border
+ * colour on the field it scrolls, no arrows, no rounding, no hover fill
+ * (like every other control). The page's bar is 12px so it stays easy to grab;
+ * boxes inside the page (code, wide tables, the contents column) take 8px.
+ * Chromium and WebKit draw this through the scrollbar pseudo-elements, which
+ * they ignore once scrollbar-color is set, so the standard properties are
+ * only for the other engines (Firefox: its own thin bar). */
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+    background: var(--background);
+  }
+
+  pre::-webkit-scrollbar,
+  .table-scroll::-webkit-scrollbar,
+  .toc::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  pre::-webkit-scrollbar {
+    background: var(--surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: var(--radius);
+  }
+
+  ::-webkit-scrollbar-button,
+  ::-webkit-scrollbar-corner {
+    display: none;
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: var(--border-strong) var(--background);
+  }
+
+  pre {
+    scrollbar-color: var(--border-strong) var(--surface);
+  }
+
+  pre,
+  .table-scroll,
+  .toc {
+    scrollbar-width: thin;
+  }
+}
+
 *,
 *:before,
 *:after {
