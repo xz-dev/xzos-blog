@@ -35,6 +35,11 @@ const hreflangUrls = Object.keys(languages).map((lang) => ({
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- The site draws its own day and night themes: Dark Reader leaves it alone,
+     and native controls and scrollbars follow the theme's color-scheme
+     (tokens.css sets light on day, dark on night). -->
+<meta name="darkreader-lock" />
+<meta name="color-scheme" content="light dark" />
 <!-- Unifont serves both themes. Preload the subsets the first paint needs, so
      text does not paint in the fallback monospace and then reflow: Latin on
      every page, and common CJK (punctuation and the level-1 characters) on the
