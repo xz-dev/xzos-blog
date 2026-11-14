@@ -204,6 +204,21 @@ test('both palettes keep every text colour at 4.5:1 or more on each field it sit
 	}
 });
 
+test('both themes define 16 terminal colours: swatches apart from the page, 1-6 readable as text', () => {
+	for (const [theme, colors] of [['day', day], ['night', palette]] as const) {
+		for (let index = 0; index < 16; index++) {
+			const color = colors[`--ansi-${index}`];
+			assert.ok(color, `${theme} --ansi-${index}`);
+			const ratio = contrast(color, colors['--background']);
+			assert.ok(ratio >= (index >= 1 && index <= 6 ? 4.5 : 1.5), `${theme} --ansi-${index}: ${ratio.toFixed(2)}`);
+		}
+	}
+	// Night is one phosphor ramp, dark to bright.
+	for (let index = 1; index < 16; index++) {
+		assert.ok(luminance(palette[`--ansi-${index}`]) > luminance(palette[`--ansi-${index - 1}`]), `night --ansi-${index}`);
+	}
+});
+
 test('controls and menu items share one flat box and one focus ring in both themes', () => {
 	// One focus ring for both themes, keyboard only.
 	assert.match(base, /:focus-visible\s*\{\s*outline:\s*var\(--focus-width\) solid var\(--accent\);/);
@@ -230,7 +245,7 @@ test('no frame, fill or bevel exists in one theme and not the other', () => {
 		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay',
 		'--tty-glow', '--tty-scanlines', '--tty-vignette',
 	]);
-	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name), name);
+	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name) || /^--ansi-\d+$/.test(name), name);
 	assert.doesNotMatch(tokens.replace(/\/\*[\s\S]*?\*\//g, ''), /bevel|--edge-|--control-(?!size)|--field-(?!overlay)/);
 	// Every box-shadow, background and border in the shared rules reads a
 	// value both themes define the same way, or a palette colour.

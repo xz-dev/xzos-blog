@@ -72,7 +72,7 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
 - **Cursor:** blinks only with `blink` (`data-blink`), which only the home
   page sets, because it has a pause control (WCAG 2.2.2). Other cursors are
   steady.
-- **Current markers** (the `Lang:` row, the pause control) take `--accent`
+- **Current markers** (the `Theme:` and `Locale:` rows, the pause control) take `--accent`
   and a trailing `*`, as in the status line; nothing is inverted.
 - **Title:** the prompt line, or fastfetch's `xz@xzos` on the home page, is
   the visible title, so these pages pass `hideTitle` to `PageFrame`: the one
@@ -146,20 +146,23 @@ and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
 
 ## Home: boot screen
 
-The home page reads like fastfetch at login. From 720px the art and the info
-block sit side by side; below that the art stacks above the info.
+The home page reads like fastfetch at login. Above 800px the art and the info
+block sit side by side on one line grid (`--line-height`, 24px), the ring's
+top row on the title line, so row k of the art sits beside line k of the
+info; below that the art stacks above the info.
 
 - **Title:** `PageFrame` still draws the page's one h1 (`xzOS - For Coding
   Life`), visually hidden (`home` sets `hideTitle` by default); the visible
   title line is the info block's `xz@xzos`.
 - **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
-  (`src/lib/ascii-ring.ts`), on a fixed grid of 44 × 22 cells, 32 × 16 at
-  420px and below. Cells are 8 × 16 (`--leading-art`), so the box never
-  changes size. The dashes are a flat band (half-width 0.17 across the ring,
+  (`src/lib/ascii-ring.ts`), on a fixed grid of 45 × 15 cells, as many rows
+  as the info block has lines, and 30 × 10 at 420px and below. Cells are
+  8 × 24 (one character on a body line), so x is scaled three times y to
+  keep the ring round, and the box never changes size. The dashes are a flat band (half-width 0.17 across the ring,
   0.08 along its axis, dash 42% of each 1/16 arc) with back faces culled, so
   the gaps stay empty; the ramp ` -=+*#%@` has no light marks. The ring
   leans back 14°–26° and swings up to 26° about the vertical axis, so the
-  drawing keeps 19–21 of 22 rows. Bright marks use `--accent`, dim marks
+  drawing keeps all but one or two rows. Bright marks use `--accent`, dim marks
   `--secondary`, the rest `--foreground`. The build renders frame 0; the
   page script animates it at 12 fps while it is on screen and the tab is
   visible. The art is `aria-hidden` with a visually hidden text alternative.
@@ -168,12 +171,18 @@ block sit side by side; below that the art stacks above the info.
   constant accessible name. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It
   stops the logo and the cursor (`data-paused` on the frame).
-- **Info block:** an 8ch label column in `--accent`, values in
-  `--foreground` that wrap under their column, and a palette strip of the
-  seven palette tokens. The current language in `Lang:` is marked like the
-  status line's current entry (`--accent`, trailing `*`), never inverted.
-  The block is shorter than the ring, so it sits centred on the ring
-  instead of leaving a band below it.
+- **Info block:** fastfetch's layout: `xz@xzos` (names in `--accent`, `@`
+  plain), a rule of as many dashes, then `Key: value` lines with no column
+  alignment, keys in `--accent` and `:` and values in `--foreground`. Keys
+  are fastfetch's English names in every locale: OS, Init System, Kernel
+  (the Astro version that built the page), Uptime, Packages (the post
+  count), Shell, Theme, Font (the version in `tty-font.json`), Locale,
+  Links. The theme in use (it follows `data-theme`) and the current locale
+  are marked like the status line's current entry (`--accent`, trailing
+  `*`), never inverted. Links are plain values with a dotted 1px underline,
+  solid on hover and focus. After one blank line come the 16 terminal
+  colours (`--ansi-0` … `--ansi-15`, normal then bright) as two rows of
+  eight 3ch blocks, no frame: muted hues on day, one phosphor ramp at night.
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a

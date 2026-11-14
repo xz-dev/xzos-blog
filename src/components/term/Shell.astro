@@ -71,6 +71,9 @@ const data: ShellData = {
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
 	}
+	.shell-out :global(.shell-error) {
+		color: var(--ansi-1);
+	}
 	.shell-out :global(.shell-arrow) {
 		display: inline-block;
 		margin-inline-end: 1ch;
@@ -166,7 +169,7 @@ const data: ShellData = {
 			return line;
 		};
 		const draw = (line: Line): HTMLElement => {
-			if (line.type === 'text') return node('p', 'shell-text', line.text);
+			if (line.type === 'text') return node('p', line.error ? 'shell-text shell-error' : 'shell-text', line.text);
 			if (line.type === 'link') {
 				const p = node('p', 'shell-text');
 				const arrow = node('span', 'shell-arrow', '→');

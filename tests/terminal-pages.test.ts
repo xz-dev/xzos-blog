@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { ui } from '../src/i18n/ui.ts';
+import { RING_GRIDS } from '../src/lib/ascii-ring.ts';
 import { cellWidth } from '../src/lib/term-width.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -86,9 +87,13 @@ test('link hover changes colour and underlines; no hover or focus paints a fill'
 	}
 });
 
-test('home: the info block is centred on the ring; the all-posts arrow is off the underline', () => {
-	assert.match(pages.home, /\.boot\s*\{[^}]*align-items:\s*center;/);
-	assert.match(pages.home, /\.fetch\s*\{\s*margin-block-end:\s*var\(--menu-item-height\);/);
+test('home: ring rows sit beside fetch lines on one line grid; the all-posts arrow is off the underline', () => {
+	assert.match(pages.home, /\.boot\s*\{[^}]*align-items:\s*start;/);
+	assert.match(pages.home, /\.ring\s*\{[^}]*height:\s*calc\(var\(--rows\) \* var\(--line-height\)\);\s*line-height:\s*var\(--line-height\);/);
+	// fastfetch: title, rule, one line per key, a blank line and two rows of colours.
+	const keys = pages.home.match(/<div><dt>/g)?.length ?? 0;
+	assert.equal(RING_GRIDS.wide.rows, keys + 5);
+	assert.match(pages.home, /\.ansi\s*\{[^}]*grid-template-columns:\s*repeat\(8, 3ch\);\s*grid-auto-rows:\s*var\(--line-height\);\s*margin-top:\s*var\(--line-height\);/);
 	assert.match(pages.home, /<a class="all-posts" href=\{`\$\{blogPrefix\}\/`\}><span class="all-posts-arrow"><PixelArrowText text="→" \/><\/span>\{allPosts\}<\/a>/);
 	assert.match(pages.home, /\.all-posts-arrow\s*\{\s*display:\s*inline-block;\s*margin-inline-end:\s*1ch;/);
 });
@@ -123,10 +128,13 @@ test('current markers are the accent and a trailing *, never an inverted block',
 		// No rule in these pages fills a box with the accent or sets text to the page colour.
 		assert.doesNotMatch(source, /background(?:-color)?:\s*var\(--accent\)|color:\s*var\(--background\)/);
 	}
-	for (const selector of ['.fetch dd a[aria-current]', '.ring-toggle[aria-pressed="true"]']) {
+	for (const selector of ['.fetch a[aria-current]', '.ring-toggle[aria-pressed="true"]']) {
 		const at = pages.home.indexOf(`${selector} {`);
 		assert.ok(at > 0, selector);
 		assert.match(pages.home.slice(at), /^[^{]*\{\s*color:\s*var\(--accent\);\s*\}/, selector);
 		assert.match(pages.home, new RegExp(`${selector.replace(/[.[\]"=*]/g, '\\$&')}::after\\s*\\{\\s*content:\\s*"\\*";\\s*content:\\s*"\\*" / "";`), selector);
 	}
+	// The fetch block's Theme line marks the theme in use, following data-theme.
+	assert.match(pages.home, /:root:not\(\[data-theme="tty"\]\) \.fetch-theme-day,\s*:root\[data-theme="tty"\] \.fetch-theme-night\s*\{\s*color:\s*var\(--accent\);\s*\}/);
+	assert.match(pages.home, /:root:not\(\[data-theme="tty"\]\) \.fetch-theme-day::after,\s*:root\[data-theme="tty"\] \.fetch-theme-night::after\s*\{\s*content:\s*"\*";\s*content:\s*"\*" \/ "";/);
 });

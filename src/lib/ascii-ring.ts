@@ -30,11 +30,21 @@ export interface RingGrid {
 	rows: number;
 }
 
-/** Character grids: wide from 420px up, narrow on phones (32 × 8px = 256px fits 320px). */
+/**
+ * Character grids. Rows share the body line height (--line-height, 24px), so
+ * the wide grid's 15 rows sit beside the 15 lines of the home page's fetch
+ * block; narrow is for phones (30 × 8px = 240px fits 320px).
+ */
 export const RING_GRIDS = {
-	wide: { cols: 44, rows: 22 },
-	narrow: { cols: 32, rows: 16 },
+	wide: { cols: 45, rows: 15 },
+	narrow: { cols: 30, rows: 10 },
 } as const satisfies Record<string, RingGrid>;
+
+/**
+ * A cell's height over its width: Unifont's 8px half-width glyph on a 24px
+ * line. x is scaled by this, so the ring stays round (cols = ASPECT × rows).
+ */
+export const RING_ASPECT = 3;
 
 /** Animation frame rate. */
 export const RING_FPS = 12;
@@ -43,15 +53,15 @@ export const RING_FPS = 12;
  * Ring pose at time t (seconds): the dashes run round the ring while the ring
  * leans back 14° to 26° and swings up to 26° left and right, so it always
  * reads as the logo. The swing is about the vertical axis, where the grid has
- * twice the cells, so the drawing keeps 19 to 21 of the 22 rows.
+ * three times the cells, so the drawing keeps all but one or two rows.
  */
 function pose(t: number) {
 	return { spin: t * 0.6, tiltX: 0.35 + 0.1 * Math.sin(t * 0.5), tiltY: 0.45 * Math.sin(t * 0.33) };
 }
 
 /**
- * One frame as rows of ramp indexes (0 = empty). Cells are 1:2 (Unifont's
- * 8 × 16 half-width glyph at a 16px line), so x is scaled twice as wide as y.
+ * One frame as rows of ramp indexes (0 = empty). Cells are 1:RING_ASPECT, so
+ * x is scaled RING_ASPECT times as wide as y.
  */
 export function ringFrame(t: number, { cols, rows }: RingGrid): Uint8Array[] {
 	const { spin, tiltX, tiltY } = pose(t);
@@ -64,7 +74,7 @@ export function ringFrame(t: number, { cols, rows }: RingGrid): Uint8Array[] {
 	const out = Array.from({ length: rows }, () => new Uint8Array(cols));
 	// Light from the upper left, in front of the ring.
 	const [lx, ly, lz] = [-0.4, -0.55, -0.73];
-	const thetaStep = 1.6 / (scale * RADIUS * 4);
+	const thetaStep = 1.6 / (scale * RADIUS * 2 * RING_ASPECT);
 	for (let theta = 0; theta < TAU; theta += thetaStep) {
 		// Dashes are centred on multiples of 1/16 turn, as in the pixel logo.
 		const arc = (theta / TAU) * DASHES;
@@ -90,7 +100,7 @@ export function ringFrame(t: number, { cols, rows }: RingGrid): Uint8Array[] {
 			// dash's open end they would fill the gap with the band's inside.
 			if (nx * x + ny * y + nz * (z + DISTANCE) >= 0) continue;
 			const inv = 1 / (z + DISTANCE);
-			const col = Math.floor(cols / 2 + 2 * scale * x * inv);
+			const col = Math.floor(cols / 2 + RING_ASPECT * scale * x * inv);
 			const row = Math.floor(rows * 0.52 + scale * y * inv);
 			if (col < 0 || col >= cols || row < 0 || row >= rows || inv <= depth[row][col]) continue;
 			depth[row][col] = inv;

@@ -13,7 +13,7 @@ export interface Cell {
 }
 
 export type Line =
-	| { type: 'text'; text: string }
+	| { type: 'text'; text: string; /** Drawn in the terminal red (--ansi-1). */ error?: true }
 	| { type: 'rows'; rows: { left: Cell; right: Cell }[] }
 	| { type: 'link'; text: string; href: string };
 
@@ -57,6 +57,7 @@ export const COMMANDS = ['cat', 'cd', 'clear', 'date', 'help', 'lang', 'ls', 'th
 
 const text = (value: string): Line => ({ type: 'text', text: value });
 const out = (...values: string[]): Result => ({ lines: values.map(text) });
+const fail = (value: string): Result => ({ lines: [{ type: 'text', text: value, error: true }] });
 const go = (href: string): Result => ({ lines: [], action: { type: 'navigate', href } });
 
 /** `~/blog/`, `blog` and `./blog` name the same place; `~` and `/` are home. */
@@ -154,7 +155,7 @@ export function run(input: string, data: ShellData, env: Env): Result {
 		case 'clear':
 			return { lines: [], action: { type: 'clear' } };
 		default:
-			return out(`xzsh: command not found: ${name}`);
+			return fail(`xzsh: command not found: ${name}`);
 	}
 }
 

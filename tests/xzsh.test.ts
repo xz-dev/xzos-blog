@@ -35,7 +35,7 @@ test('help lists every command with its description, then the keys', () => {
 });
 
 test('an unknown command is reported like a shell', () => {
-	assert.deepEqual(texts('rm -rf /'), ['xzsh: command not found: rm']);
+	assert.deepEqual(run('rm -rf /', data, env).lines, [{ type: 'text', text: 'xzsh: command not found: rm', error: true }]);
 	assert.deepEqual(run('   ', data, env), { lines: [] });
 });
 
