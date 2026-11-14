@@ -31,7 +31,7 @@ test('home, about and link-exchange are drawn with the shared terminal primitive
 	// Friends, then communities, each its own `ls` block of stacked rows; the cursor prompt is last.
 	assert.match(
 		pages.links,
-		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} stack \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} stack \/>\s*<Prompt cursor \/>/,
+		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} stack label=\{t\('links\.friends'\)\} \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} stack label=\{t\('links\.communities'\)\} \/>\s*<Prompt cursor \/>/,
 	);
 	assert.match(pages.links, /const communities = \[\{ name: 'Gentoo 中文社群', url: 'https:\/\/gentoozh\.org\/zh-tw\/' \}\];/);
 	assert.equal(pages.links.match(/gentoozh\.org/g)?.length, 1);

@@ -45,9 +45,9 @@ const rows = (links: { name: string; url: string }[]) =>
 		<Header />
 		<PageFrame title={t('nav.links')} hideTitle>
 			<Prompt command={t('term.friends')} />
-			<OutputList rows={rows(friends)} stack />
+			<OutputList rows={rows(friends)} stack label={t('links.friends')} />
 			<Prompt command={t('term.communities')} />
-			<OutputList rows={rows(communities)} stack />
+			<OutputList rows={rows(communities)} stack label={t('links.communities')} />
 			<Prompt cursor />
 		</PageFrame>
 		<Footer />

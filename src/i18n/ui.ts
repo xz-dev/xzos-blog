@@ -100,6 +100,8 @@ export const ui = {
 
     // 正文
     'links.description': 'xzOS 的友情链接页面',
+    'links.friends': '朋友',
+    'links.communities': '社群',
     'table.label': '表格',
 
     // 错误页面：只有源站一份。静态构建只产出一个 /404.html，
@@ -182,6 +184,8 @@ export const ui = {
 
     // Content
     'links.description': 'Links to friends of xzOS',
+    'links.friends': 'Friends',
+    'links.communities': 'Communities',
     'table.label': 'Table',
   },
   'zh-CN': {
@@ -257,6 +261,8 @@ export const ui = {
 
     // 正文
     'links.description': 'xzOS 的友情链接页面',
+    'links.friends': '朋友',
+    'links.communities': '社群',
     'table.label': '表格',
   },
 } as const;
