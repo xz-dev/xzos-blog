@@ -124,7 +124,7 @@ test('Header and Footer cover all social marks, preserve original SVGs and retai
 	const header = read('../src/components/Header.astro');
 	assert.doesNotMatch(header, /dotted_circle\.png|<img/);
 	assert.ok(header.includes("<PixelIcon name=\"logo\" class=\"site-logo\" label={t('site.logoAlt')} bothThemes />"));
-	assert.match(header, /\.site-title :global\(\.site-logo\)\s*\{[^}]*width:\s*var\(--logo-size\);[^}]*color:\s*var\(--accent\);/);
+	assert.match(header, /\.site-title :global\(\.site-logo\)\s*\{[^}]*width:\s*var\(--pixel-icon-size\);[^}]*height:\s*var\(--pixel-icon-size\);[^}]*color:\s*var\(--accent\);/);
 });
 
 test('the theme button is a plain status-line item with the same pixel sun and moon in both themes', () => {
@@ -247,10 +247,11 @@ test('all visible night marks use integer-size grid scaling, currentColor and ze
 	const base = ruleFor(':root[data-theme="tty"] .tty-pixel-icon');
 	assert.match(base, /width:\s*var\(--pixel-icon-size\)\s*!important/);
 	assert.match(base, /height:\s*var\(--pixel-icon-size\)\s*!important/);
-	// One 16px grid unit (Unifont's); the header logo is two units (Header.astro).
+	// One 16px grid unit (Unifont's), the text size; the header logo is a glyph
+	// of the status line at the same unit (Header.astro), not a larger mark.
 	const tokens = read('../src/styles/tokens.css');
 	assert.match(tokens, /--pixel-icon-size:\s*1rem;/);
-	assert.match(tokens, /--logo-size:\s*2rem;/);
+	assert.doesNotMatch(tokens, /--logo-size/);
 	assert.match(base, /fill:\s*currentColor/);
 	for (const property of ['animation', 'transition', 'filter', 'box-shadow', 'text-shadow']) assert.match(base, new RegExp(`${property}:\\s*none\\s*!important`));
 });

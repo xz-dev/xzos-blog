@@ -65,7 +65,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 <style>
 	/* A terminal status line, like tmux's: one flat row of plain text on the
 	 * surface colour with a structural bottom edge, the same in both themes.
-	 * Menus read `0:首页 1:博客*`, the language field `lang: zh* en zh-CN`;
+	 * Menus read `0:首页 1:文章*`, the language field `lang: zh* en zh-CN`;
 	 * nothing is boxed, filled or bevelled. Every entry is a .menu-item
 	 * (terminal.css). The block padding leaves room for the focus ring. */
 	header {
@@ -90,11 +90,13 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		gap: var(--space-1);
 	}
 
-	/* The logo is the same pixel drawing in both themes, two grid units
-	 * square, coloured by the accent token. */
+	/* The logo is a glyph of the status line: the same pixel drawing in both
+	 * themes at one grid unit (16px, the text size, so every pixel is one
+	 * CSS pixel), centred on the row like the labels and coloured by the
+	 * accent token. */
 	.site-title :global(.site-logo) {
-		width: var(--logo-size);
-		height: var(--logo-size);
+		width: var(--pixel-icon-size);
+		height: var(--pixel-icon-size);
 		color: var(--accent);
 	}
 

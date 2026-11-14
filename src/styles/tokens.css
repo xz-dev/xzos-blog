@@ -69,9 +69,8 @@
   --control-size: 2.5rem;         /* pagination entries' height: 40px */
   --menu-item-height: 2rem;       /* status-line items, square icon items' width: 32px */
   --icon-size: 1.25rem;           /* day social icons: 20px */
-  --logo-size: 2rem;              /* header logo, two pixel-icon grid units: 32px */
   --thumb-size: 4rem;             /* archive thumbnail square: 64px */
-  --pixel-icon-size: 1rem;        /* pixel icons: Unifont's 16px grid */
+  --pixel-icon-size: 1rem;        /* pixel icons and the header logo: Unifont's 16px grid */
   --rule: 2px;                    /* quote, footer and hr rules */
   --hairline: 1px;                /* borders, underlines and the header's edge */
   --radius: 0;                    /* the one corner radius: every box is square, both themes */

@@ -6,7 +6,7 @@
 
 - 唯一图形源：`src/lib/pixel-icons.ts` 的 `PIXEL_ICONS`，每个图标明确写成 **16 × 16** 个 `.` / `#`。`.` 透明，`#` 为当前文字色的实心方格。
 - `pixelIconRects()` 只合并同一行内相邻的实心格，输出整数坐标、整数宽高的 `<rect>`；没有曲线、斜线、圆角、滤镜、描边、栅格图或自动追踪步骤。
-- `src/components/PixelIcon.astro` 输出 `fill="currentColor"`、`shape-rendering="crispEdges"` 的内联 SVG。常规图标为 16 CSS px（`--pixel-icon-size`）；页眉 logo 用 `--logo-size`（32 px，2 倍）。浏览器缩放仍可由用户控制；不承诺非整数缩放或非整数设备像素比下没有浏览器重采样。
+- `src/components/PixelIcon.astro` 输出 `fill="currentColor"`、`shape-rendering="crispEdges"` 的内联 SVG。常规图标与页眉 logo 都是 16 CSS px（`--pixel-icon-size`，与正文字号相同，1 倍）。浏览器缩放仍可由用户控制；不承诺非整数缩放或非整数设备像素比下没有浏览器重采样。
 - Logo 保留原 `/dotted_circle.png` 的**断续圆环、空心中央**语义。原图约 18 段蓝色短条，在手工 16 格版本中简化为 16 段分离短线；没有替换成实心圆、方框或无关徽记。
 - 所有像素图标继承周围文字颜色，页眉 logo 取 `--accent`；无模糊、光晕、曲面、动画或过渡。
 - `PixelIcon` 默认只在夜间显示（`.tty-pixel-icon`），替换日间原图；传 `bothThemes` 时改用 `.pixel-icon`（`terminal.css`），日夜两个主题显示同一幅像素图。页眉 logo 与主题按钮属于后者。
