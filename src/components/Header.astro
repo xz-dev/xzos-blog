@@ -102,6 +102,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 
 	h2 {
 		margin: 0;
+		white-space: nowrap;
 		font-size: var(--font-size);
 		line-height: var(--line-height);
 	}
@@ -124,8 +125,18 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		gap: var(--space-1);
 	}
 
+	/* Text slots: an item's label never breaks (white-space: nowrap on
+	 * .menu-item), the title and tagline stay on one line, and a row that
+	 * runs out of room wraps whole items onto the next line instead of
+	 * overflowing. The tagline is dropped on phones. */
 	.internal-links {
 		flex: 1;
+		flex-wrap: wrap;
+		min-width: 0;
+	}
+
+	.right-section :global(.language-switcher) {
+		flex-wrap: wrap;
 	}
 
 	.right-section {
@@ -171,13 +182,9 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 			gap: var(--space-1);
 		}
 
-		.right-section :global(.language-switcher) {
-			flex-wrap: wrap;
-		}
-
 		.right-section :global(#theme-toggle) {
 			flex: none;
-			margin-left: auto;
+			margin-inline-start: auto;
 		}
 
 		.social-links {

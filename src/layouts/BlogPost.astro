@@ -6,6 +6,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import LanguageVersionNotice from '../components/LanguageVersionNotice.astro';
+import PageFrame from '../components/PageFrame.astro';
 import PostMeta from '../components/PostMeta.astro';
 import Remark42Comments from '../components/Remark42Comments.astro';
 import TableOfContents from '../components/TableOfContents.astro';
@@ -27,13 +28,7 @@ const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || 
 	<head>
 		<BaseHead title={title} description={description} image={ogImage} />
 		<style>
-			.post-frame {
-				width: var(--prose-width);
-				max-width: calc(100% - var(--space-5));
-				margin: auto;
-				padding: var(--space-3);
-			}
-			.post-frame :global(.post-meta) {
+			:global(.page-frame-article .post-meta) {
 				margin-bottom: var(--space-2);
 			}
 			.hero-image {
@@ -44,18 +39,15 @@ const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || 
 
 	<body>
 		<Header />
-		<main class="post-frame">
-			{heroImage && <Image class="hero-image" width={1020} height={510} src={heroImage} alt="" />}
-			<article class="prose">
-				<PostMeta lang={lang} pubDate={pubDate} pubDateSource={pubDateSource} updatedDate={updatedDate} updatedDateSource={updatedDateSource} />
-				<h1 class="page-title">{title}</h1>
-				<LanguageVersionNotice slug={postSlug} lang={lang} />
-				<TableOfContents headings={headings} lang={lang} />
-				<slot />
-				<hr />
-				<Remark42Comments lang={lang} />
-			</article>
-		</main>
+		<PageFrame title={title} pattern="article">
+			{heroImage && <Image slot="hero" class="hero-image" width={1020} height={510} src={heroImage} alt="" />}
+			<PostMeta slot="meta" lang={lang} pubDate={pubDate} pubDateSource={pubDateSource} updatedDate={updatedDate} updatedDateSource={updatedDateSource} />
+			<LanguageVersionNotice slug={postSlug} lang={lang} />
+			<TableOfContents headings={headings} lang={lang} />
+			<slot />
+			<hr />
+			<Remark42Comments lang={lang} />
+		</PageFrame>
 		<Footer />
 	</body>
 </html>

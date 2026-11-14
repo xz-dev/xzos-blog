@@ -52,8 +52,8 @@
  * scoped `#theme-toggle svg` rule reaching its root element. */
 :root[data-theme="tty"] #theme-toggle .tty-pixel-icon {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
   transform: translate(-50%, -50%);
 }
 

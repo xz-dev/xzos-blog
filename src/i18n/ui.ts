@@ -49,7 +49,7 @@ export const ui = {
 
     // 页眉与页脚
     'lang.switch': '切换语言',
-    'theme.toggle': '切换主题',
+    'theme.toggle': '夜间模式',
     'social.mastodon': '在 Mastodon 上关注',
     'social.github': '前往 GitHub',
     'social.stackOverflow': 'Stack Overflow 主页',
@@ -99,7 +99,7 @@ export const ui = {
 
     // Header and footer
     'lang.switch': 'Switch language',
-    'theme.toggle': 'Toggle theme',
+    'theme.toggle': 'Night mode',
     'social.mastodon': 'Follow on Mastodon',
     'social.github': 'Go to GitHub',
     'social.stackOverflow': 'Stack Overflow Profile',
@@ -142,7 +142,7 @@ export const ui = {
 
     // 页眉与页脚
     'lang.switch': '切换语言',
-    'theme.toggle': '切换主题',
+    'theme.toggle': '夜间模式',
     'social.mastodon': '在 Mastodon 上关注',
     'social.github': '前往 GitHub',
     'social.stackOverflow': 'Stack Overflow 主页',

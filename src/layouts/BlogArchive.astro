@@ -51,7 +51,7 @@ const posts = (await getCollection(collectionName as any)).sort(
 	</head>
 	<body>
 		<Header />
-		<PageFrame title={t('blog.heading')}>
+		<PageFrame title={t('blog.heading')} pattern="list">
 			<ul class="post-list post-list-compact">
 				{
 					posts.map((post: any) => (

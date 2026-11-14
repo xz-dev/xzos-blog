@@ -5,7 +5,7 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
-<button id="theme-toggle" class="menu-item menu-item-icon" aria-label={t('theme.toggle')} title={t('theme.toggle')}>
+<button id="theme-toggle" class="menu-item menu-item-icon" aria-label={t('theme.toggle')} title={t('theme.toggle')} aria-pressed="false">
 	<svg class="sun-icon tty-original-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
 		<circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
 		<line x1="10" y1="2" x2="10" y2="4" stroke="currentColor" stroke-width="2"/>
@@ -29,8 +29,8 @@ const t = useTranslations(getLangFromUrl(Astro.url));
 	 * overlap and the theme shows one of them. */
 	#theme-toggle svg {
 		position: absolute;
-		top: 50%;
-		left: 50%;
+		inset-block-start: 50%;
+		inset-inline-start: 50%;
 		transform: translate(-50%, -50%);
 	}
 
@@ -57,8 +57,14 @@ const t = useTranslations(getLangFromUrl(Astro.url));
 	const button = document.getElementById('theme-toggle');
 
 	if (button) {
+		// The pressed state is night mode. It lives on the button (aria-pressed)
+		// and follows data-theme, which the head script, this button and a
+		// system colour-scheme change can all set.
+		const root = document.documentElement;
+		const sync = () => button.setAttribute('aria-pressed', String(root.getAttribute('data-theme') === 'tty'));
+		sync();
+		new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
 		button.addEventListener('click', () => {
-			const root = document.documentElement;
 			const currentTheme = root.getAttribute('data-theme') || 'solarized';
 			const newTheme = currentTheme === 'solarized' ? 'tty' : 'solarized';
 

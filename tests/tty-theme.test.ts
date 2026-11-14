@@ -50,34 +50,41 @@ test('the active dark field stays on the green-dominant phosphor axis with AAA t
 	}
 });
 
-test('night styles are scoped; glow, scanlines and vignette are static and opt out for more contrast', () => {
+test('night differs from day through tokens; glow, scanlines and vignette are static and opt out for more contrast', () => {
 	const rules = [...tty.matchAll(/([^{}]+)\{[^{}]*\}/g)];
-	assert.ok(rules.length > 10);
 	for (const rule of rules) {
 		const selector = rule[1].replace(/\/\*[\s\S]*?\*\//g, '').trim();
-		if (selector === '@font-face') continue;
-		assert.ok(selector.startsWith(':root[data-theme="tty"]'), selector);
+		for (const part of selector.split(',')) assert.ok(/^:root\[data-theme(?:="tty")?(?:-switching)?\]/.test(part.trim()), part);
 	}
+	// What night still sets by rule: motion off and Shiki's per-span colours. Everything else is a token.
+	assert.doesNotMatch(tty.replace(/\/\*[\s\S]*?\*\//g, ''), /text-shadow|box-shadow|border-color|background|border-radius|::selection|mark|font-family/);
 	// The halo is the foreground itself at 45%, not a second copy of its value.
 	assert.match(nightTokens, /--tty-glow:\s*0 0 2px currentColor, 0 0 8px color-mix\(in srgb, var\(--foreground\) 45%, transparent\);/);
-	assert.match(tty, /:root\[data-theme="tty"\] body\s*\{[^}]*text-shadow:\s*var\(--tty-glow\);/);
-	assert.match(tty, /:root\[data-theme="tty"\] pre\s*\{\s*text-shadow:\s*none;/);
-	const overlay = tty.match(/:root\[data-theme="tty"\] body::after\s*\{([^}]*)\}/)![1];
+	assert.match(nightTokens, /--text-glow:\s*var\(--tty-glow\);/);
+	assert.match(dayTokens, /--text-glow:\s*none;/);
+	assert.match(base, /\nbody\s*\{[^}]*text-shadow:\s*var\(--text-glow\);/);
+	assert.match(base, /\npre\s*\{[^}]*text-shadow:\s*none;/);
+	const overlay = base.match(/\nbody::after\s*\{([^}]*)\}/)![1];
 	assert.match(overlay, /position:\s*fixed/);
 	assert.match(overlay, /pointer-events:\s*none/);
 	// Behind the content: the overlay darkens the field, never the text.
 	assert.match(overlay, /z-index:\s*-1;/);
-	assert.match(overlay, /background:\s*var\(--tty-scanlines\), var\(--tty-vignette\);/);
+	assert.match(overlay, /background:\s*var\(--field-overlay\);/);
+	assert.match(dayTokens, /--field-overlay:\s*none;/);
+	assert.match(nightTokens, /--field-overlay:\s*var\(--tty-scanlines\), var\(--tty-vignette\);/);
 	assert.match(nightTokens, /--tty-scanlines:\s*repeating-linear-gradient\(to bottom, rgba\(0, 0, 0, 0\.12\) 0, rgba\(0, 0, 0, 0\.12\) 1px, transparent 1px, transparent 3px\);/);
 	assert.match(nightTokens, /--tty-vignette:\s*radial-gradient\(ellipse at center/);
-	const more = tty.match(/@media \(prefers-contrast: more\)\s*\{([\s\S]*?)\n\}/)![1];
-	assert.match(more, /body\s*\{\s*text-shadow:\s*none;/);
-	assert.match(more, /body::after\s*\{\s*content:\s*none;/);
-	// Static only: no motion, flicker, curvature or blur, and no glow in day.
-	assert.doesNotMatch(tty, /@keyframes|animation:(?!\s*none)|perspective|backdrop-filter|filter:\s*blur|transform:\s*(?:scale|rotate|skew|matrix)/i);
-	assert.doesNotMatch(base, /repeating-linear-gradient|drop-shadow\(|text-shadow|box-shadow:(?!\s*(?:none|inset))/i);
+	const more = tokens.match(/@media \(prefers-contrast: more\)\s*\{([\s\S]*?)\n\}/)![1];
+	assert.match(more, /:root,\s*:root\[data-theme="tty"\]\s*\{[^}]*--text-glow:\s*none;[^}]*--field-overlay:\s*none;/);
+	// Static only: no motion, flicker, curvature or blur.
+	assert.doesNotMatch(tty + base, /@keyframes|animation:(?!\s*none)|perspective|backdrop-filter|filter:\s*blur|transform:\s*(?:scale|rotate|skew|matrix)/i);
+	assert.doesNotMatch(base, /drop-shadow\(|text-shadow:(?!\s*(?:none|var\(--text-glow\)))|box-shadow:(?!\s*(?:none|var\(--control-))/i);
 	assert.match(tty, /transition:\s*none\s*!important/);
-	assert.match(tty, /border-radius:\s*0\s*!important/);
+	// One radius, a token: no literal radius anywhere else.
+	assert.match(dayTokens, /--radius:\s*0;/);
+	const styles = ['terminal.css', 'tty.css', 'tty-pixel-icons.css'].map((f) => read(`../src/styles/${f}`)).join('');
+	const components = ['Header', 'Footer', 'PostThumbnail', 'TableOfContents', 'ThemeToggle', 'PageFrame', 'PostMeta'].map((f) => read(`../src/components/${f}.astro`)).join('');
+	for (const value of [...(styles + components).matchAll(/border-radius:\s*([^;]+);/g)].map((m) => m[1])) assert.equal(value, 'var(--radius)');
 });
 
 test('typography is self-hosted for both themes, with real WOFF2 files and its license', () => {
@@ -107,7 +114,6 @@ test('day palette keeps the peach hues', () => {
 	assert.equal(mix(day['--accent'], day['--background'], 0.8), day['--border-strong']);
 	// Code and inline code sit on the surface.
 	assert.match(base, /pre\s*\{[^}]*background:\s*var\(--surface\)/);
-	assert.doesNotMatch(base, /text-shadow/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
 });
 
@@ -139,7 +145,7 @@ test('the header is a flat OS-style menu bar, shared by both themes', () => {
 	}
 	assert.doesNotMatch(header, /class="control/);
 	// Night bevels skip menu items, so both themes share one flat style.
-	assert.match(tty, /:root\[data-theme="tty"\] button:not\(\.menu-item\)\s*\{/);
+	assert.match(base, /\.control,\s*button:not\(\.menu-item\)\s*\{/);
 	// Contrast: text on the bar and on the hover tint, the inverted item, icons, and the bar's edge.
 	for (const [theme, colors] of Object.entries({ day, night: palette })) {
 		const hover = menuHover(colors);
@@ -178,20 +184,24 @@ test('both palettes keep every text colour at 4.5:1 or more on each field it sit
 	}
 });
 
-test('controls share one box, focus ring and states; night only adds a bevel', () => {
+test('controls share one box, focus ring and states; night only redefines their tokens', () => {
 	// One focus ring for both themes, keyboard only.
 	assert.match(base, /:focus-visible\s*\{\s*outline:\s*var\(--focus-width\) solid var\(--accent\);/);
 	const ttyRules = tty.replace(/\/\*[\s\S]*?\*\//g, '');
-	assert.doesNotMatch(ttyRules, /focus-visible|outline/);
-	for (const state of ['.control:hover', '.control.active', '.control[aria-current]']) assert.ok(base.includes(state), state);
-	assert.match(base, /\.control,\s*button\s*\{[^}]*min-height:\s*var\(--control-size\);[^}]*border-radius:\s*0;/);
-	// Night: raised and pressed bevels on the same selectors, no new geometry.
-	assert.match(tty, /:root\[data-theme="tty"\] \.control,\s*:root\[data-theme="tty"\] button:not\(\.menu-item\)\s*\{[^}]*box-shadow:\s*inset/);
-	assert.match(tty, /:root\[data-theme="tty"\] \.control:active/);
+	assert.doesNotMatch(ttyRules, /focus-visible|outline|\.control|button/);
+	for (const state of ['.control:hover', '.control:active', '.control[aria-current]']) assert.ok(base.includes(state), state);
+	const box = base.match(/\n\.control,\s*button:not\(\.menu-item\)\s*\{([^}]*)\}/)![1];
+	assert.match(box, /min-height:\s*var\(--control-size\);/);
+	assert.match(box, /border-radius:\s*var\(--radius\);/);
+	assert.match(box, /box-shadow:\s*var\(--control-bevel\);/);
+	assert.match(base, /\.control\[aria-current\]\s*\{[^}]*box-shadow:\s*var\(--control-pressed-bevel\);/);
+	// Day controls are flat; night draws a raised and a pressed bevel, no new geometry.
+	assert.match(dayTokens, /--control-bevel:\s*none;/);
+	assert.match(nightTokens, /--control-bevel:\s*inset/);
+	assert.match(nightTokens, /--control-pressed-bevel:\s*inset/);
 	assert.doesNotMatch(ttyRules, /(?:width|height|padding|margin|font-size|line-height):/);
-	for (const file of ['TableOfContents']) {
-		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*control/, file);
-	}
+	assert.match(read('../src/components/TableOfContents.astro'), /class(?::list)?=[^>]*control/);
+	assert.doesNotMatch(base, /\.control-icon/);
 });
 
 test('structural borders reach 3:1 in both themes; the soft border is decorative only', () => {
@@ -204,7 +214,7 @@ test('structural borders reach 3:1 in both themes; the soft border is decorative
 	// Tables, code and quotes outline structure; hr, list rules and image frames decorate.
 	const rules = [...base.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)];
 	const borderOf = (selector: string) => rules.filter((r) => r[1].split(',').map((x) => x.trim()).includes(selector)).map((r) => r[2]).join('');
-	for (const selector of ['pre', 'kbd', 'td', 'blockquote']) assert.match(borderOf(selector), /border(?:-left)?:[^;]*var\(--border-strong\)/, selector);
+	for (const selector of ['pre', 'kbd', 'td', 'blockquote']) assert.match(borderOf(selector), /border(?:-inline-start)?:[^;]*var\(--border-strong\)/, selector);
 	for (const selector of ['hr', 'img', '.post-item']) assert.doesNotMatch(borderOf(selector), /--border-strong/, selector);
 });
 
@@ -218,7 +228,7 @@ test('night text and syntax keep 4.5:1 at the darkest overlay point', () => {
 	const factor = (1 - scanAlpha) * (1 - vignetteAlpha);
 	const darken = (hex: string, f: number) => '#' + hex.match(/[\da-f]{2}/gi)!
 		.map((v) => Math.round(parseInt(v, 16) * f).toString(16).padStart(2, '0')).join('');
-	const overlay = tty.match(/:root\[data-theme="tty"\] body::after\s*\{([^}]*)\}/)![1];
+	const overlay = base.match(/\nbody::after\s*\{([^}]*)\}/)![1];
 	const zIndex = Number(overlay.match(/z-index:\s*(-?\d+)/)![1]);
 	const inFront = zIndex >= 0;
 	const fields = { background: palette['--background'], surface: palette['--surface'] };

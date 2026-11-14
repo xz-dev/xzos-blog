@@ -32,7 +32,8 @@ test('the active night palette replaces the photographed colours and keeps the p
   assert.notEqual(palette['--background'], photo.palette['--background']);
   assert.equal(active.reference.sourceSha256, photo.source.sha256);
   assert.match(active.intent, /not a measured CRT state/);
-  assert.match(tty, /:root\[data-theme="tty"\] \.prose small\s*\{\s*opacity:\s*1\s*!important;/);
+  // Editorial opacity is cancelled in both themes, so it never lowers verified contrast.
+  assert.match(read('../src/styles/terminal.css'), /\.prose small\s*\{\s*opacity:\s*1\s*!important;/);
 });
 
 test('derived shades mix the foreground over the background at the recorded weights', () => {

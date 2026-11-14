@@ -43,8 +43,12 @@ test('code is a multi-hue fluorescent exception, not green-only syntax', () => {
 });
 
 test('night marked text uses clear reverse video, like text selection', () => {
-  assert.match(tty, /:root\[data-theme="tty"\] mark\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
-  assert.match(tty, /:root\[data-theme="tty"\] ::selection\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
+  const base = read('../src/styles/terminal.css');
+  const night = read('../src/styles/tokens.css').match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
+  assert.match(base, /\nmark\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
+  assert.match(base, /\n::selection\s*\{[^}]*background:\s*var\(--selection-bg\);[^}]*color:\s*var\(--selection-fg\);/);
+  assert.match(night, /--selection-bg:\s*var\(--accent\);/);
+  assert.match(night, /--selection-fg:\s*var\(--background\);/);
 });
 
 test('day syntax keeps every colour at WCAG AA on the day code surface', async () => {

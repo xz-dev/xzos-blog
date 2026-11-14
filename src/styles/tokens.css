@@ -1,8 +1,9 @@
 /* Design tokens for both themes: palettes, type scale, spacing, widths and
  * control sizes. Day is :root; night (data-theme="tty") overrides colours and
  * effects only, so switching theme never moves or resizes anything.
- * terminal.css styles elements and shared classes from these tokens; tty.css
- * adds the night glow, overlay and control bevels. One font serves both. */
+ * terminal.css styles elements and shared classes from these tokens, glow,
+ * overlay and control bevels included; tty.css keeps only the night rules a
+ * token cannot express. One font serves both themes. */
 
 /* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
  * links reach WCAG AA (>= 4.5:1) on the page, the surface (code, inline code,
@@ -12,6 +13,7 @@
  * and the surface;
  * --border-color (30%) is for decorative separators only. */
 :root {
+  color-scheme: light;
   --background: #fff8f2;
   --surface: #ffeadb;
   --foreground: #42302a;
@@ -23,6 +25,28 @@
   /* Menu item hover: the accent tinted into the bar. Declared once; it resolves
    * against whichever palette is active. */
   --menu-hover: color-mix(in srgb, var(--accent) 15%, var(--surface));
+
+  /* Role tokens. terminal.css draws every state from these, and the night
+   * block redefines them, so no element rule depends on the theme. Day
+   * controls are flat: no fill, no edge, the accent on hover and when
+   * current or pressed. */
+  --control-bg: transparent;
+  --control-edge: transparent;    /* border-color: one value or four (bevel) */
+  --control-bevel: none;          /* box-shadow at rest and on hover */
+  --control-hover-bg: var(--accent);
+  --control-hover-fg: var(--background);
+  --control-hover-edge: var(--accent);
+  --control-current-bg: var(--accent);   /* pressed, and the current page */
+  --control-current-fg: var(--background);
+  --control-current-edge: var(--accent);
+  --control-pressed-bevel: none;
+  --field-bg: transparent;        /* inputs, textareas, selects */
+  --field-edge: var(--foreground);
+  --code-color: var(--foreground);
+  --selection-bg: Highlight;
+  --selection-fg: HighlightText;
+  --text-glow: none;              /* text-shadow on body text */
+  --field-overlay: none;          /* fixed layer painted behind the content */
 
   /* Size, spacing, width and font system shared by both themes. tty.css
    * changes colour and decoration only, so switching theme never moves or
@@ -65,6 +89,7 @@
   --pixel-icon-size: 1rem;        /* night pixel icons: Unifont's 16px grid */
   --rule: 2px;                    /* header, quote and control rules */
   --hairline: 1px;                /* borders, underlines and bevel edges */
+  --radius: 0;                    /* the one corner radius: every box is square, both themes */
   --focus-width: 2px;             /* keyboard focus ring */
   --focus-offset: 2px;
   --underline-offset: 0.2em;
@@ -88,8 +113,36 @@
   --edge-dark: #000000;
   --edge-inner: #6a811c;
   --code-foreground: #e8fff0;
+  --code-color: var(--code-foreground);
+  --selection-bg: var(--accent);  /* reverse video, like mark */
+  --selection-fg: var(--background);
+  /* Controls: a raised hard bevel, pressed when current or held down. */
+  --control-bg: var(--control-face);
+  --control-edge: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
+  --control-bevel: inset var(--hairline) var(--hairline) 0 var(--edge-inner), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-dark);
+  --control-hover-bg: var(--control-hover);
+  --control-hover-fg: var(--emphasized);
+  --control-hover-edge: var(--control-edge);
+  --control-current-bg: var(--surface);
+  --control-current-fg: var(--emphasized);
+  --control-current-edge: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
+  --control-pressed-bevel: inset var(--hairline) var(--hairline) 0 var(--edge-dark), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-inner);
+  --field-bg: var(--surface);
+  --field-edge: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
+  /* Static phosphor glow and a scanline and vignette layer behind the content. */
+  --text-glow: var(--tty-glow);
+  --field-overlay: var(--tty-scanlines), var(--tty-vignette);
   --tty-glow: 0 0 2px currentColor, 0 0 8px color-mix(in srgb, var(--foreground) 45%, transparent);
-  /* Painted behind the content (tty.css), so they darken only the field. */
+  /* Painted behind the content (terminal.css body::after), so they darken only the field. */
   --tty-scanlines: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px);
   --tty-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* Users who ask for more contrast get plain sharp text and no overlay. */
+@media (prefers-contrast: more) {
+  :root,
+  :root[data-theme="tty"] {
+    --text-glow: none;
+    --field-overlay: none;
+  }
 }

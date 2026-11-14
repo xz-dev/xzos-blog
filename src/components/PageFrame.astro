@@ -1,15 +1,31 @@
 ---
 /**
- * 列表页与静态页的共用框架：同一宽度、同一个 h1、同样的标题位置
+ * 所有页面的共用框架：每种页面类型一个宽度、同一个 h1、同样的标题位置。
+ * list（文章列表）与 page（静态页）用 --page-width，article（文章）用
+ * --prose-width；页面自身不再设定宽度。
  */
 interface Props {
 	title: string;
+	pattern?: 'list' | 'page' | 'article';
 }
 
-const { title } = Astro.props;
+const { title, pattern = 'page' } = Astro.props;
 ---
 
-<main class="page-frame">
-	<h1 class="page-title">{title}</h1>
-	<slot />
+<main class:list={['page-frame', `page-frame-${pattern}`]}>
+	{pattern === 'article' ? (
+		<>
+			<slot name="hero" />
+			<article class="prose">
+				<slot name="meta" />
+				<h1 class="page-title">{title}</h1>
+				<slot />
+			</article>
+		</>
+	) : (
+		<>
+			<h1 class="page-title">{title}</h1>
+			<slot />
+		</>
+	)}
 </main>

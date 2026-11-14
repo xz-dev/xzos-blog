@@ -1,52 +1,12 @@
 /*
- * Night mode: yellow-green phosphor on a dark olive field.
- * Active palette and derivation: docs/theme/tty-dark.json.
- * Static phosphor glow on text and a static scanline and vignette overlay;
- * nothing moves or flickers, and the layout is never distorted.
- * Flat documents; shallow, hard-edged relief only where it explains a control.
- * Keep every visual rule scoped to TTY so day mode is untouched. The font is
- * shared: fonts.css and --font-ui serve both themes.
+ * Night (data-theme="tty"): yellow-green phosphor on a dark olive field.
+ * Palette, glow, overlay, bevels and selection are tokens in tokens.css; the
+ * rules left here cannot be tokens:
+ * - motion: night is static by contract, so it switches animation and
+ *   transition off on every element, which no single token can reach;
+ * - Shiki: syntax colours are per-element variables (--shiki-dark) that
+ *   Shiki writes inline, so only an element rule can select them.
  */
-
-/* Static phosphor glow: text-shadow inherits, so the body sets it once. Code
- * blocks keep sharp syntax colours. */
-:root[data-theme="tty"] body {
-  text-shadow: var(--tty-glow);
-}
-
-:root[data-theme="tty"] pre {
-  text-shadow: none;
-}
-
-/* Static scanlines (a 1px dark line every 3px) and a soft vignette on a fixed
- * layer that takes no pointer events. It sits behind the content (z-index -1;
- * body makes no stacking context), so it darkens only the field and never the
- * text, code or embedded comments. No animation, flicker or curvature. */
-:root[data-theme="tty"] body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: var(--tty-scanlines), var(--tty-vignette);
-}
-
-/* Users who ask for more contrast get plain sharp text and no overlay. */
-@media (prefers-contrast: more) {
-  :root[data-theme="tty"] body {
-    text-shadow: none;
-  }
-
-  :root[data-theme="tty"] body::after {
-    content: none;
-  }
-}
-
-:root[data-theme="tty"] *,
-:root[data-theme="tty"] *::before,
-:root[data-theme="tty"] *::after {
-  border-radius: 0 !important;
-}
 
 /* No motion, including the document root and generated content. The temporary
  * switch guard also prevents the outgoing night theme from fading into day.
@@ -68,66 +28,16 @@
   scroll-behavior: auto !important;
 }
 
-/* Sizes, widths, spacing, alignment and the font come from terminal.css for
- * both themes; this file sets colour and decoration only. */
-
-/* Editorial opacity must not silently reduce the verified text contrast. */
-:root[data-theme="tty"] .prose small {
-  opacity: 1 !important;
-}
-
-/* Controls keep the shared box from terminal.css; night recolours its border
- * into a hard bevel (raised, pressed when hovered-down or current). Header
- * menu items stay flat in both themes, so the bevel skips them. */
-:root[data-theme="tty"] .control,
-:root[data-theme="tty"] button:not(.menu-item) {
-  color: var(--foreground);
-  background: var(--control-face);
-  border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
-  box-shadow: inset var(--hairline) var(--hairline) 0 var(--edge-inner), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-dark);
-}
-
-:root[data-theme="tty"] .control:hover,
-:root[data-theme="tty"] button:not(.menu-item):hover {
-  background: var(--control-hover);
-  border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
-  color: var(--emphasized);
-}
-
-:root[data-theme="tty"] .control:active,
-:root[data-theme="tty"] button:not(.menu-item):active,
-:root[data-theme="tty"] .control.active,
-:root[data-theme="tty"] .control[aria-current] {
-  color: var(--emphasized);
-  background: var(--surface);
-  border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
-  box-shadow: inset var(--hairline) var(--hairline) 0 var(--edge-dark), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-inner);
-}
-
-:root[data-theme="tty"] input,
-:root[data-theme="tty"] textarea,
-:root[data-theme="tty"] select {
-  background-color: var(--surface);
-  border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
-}
-
 /* Inline code is not highlighted, so it has no --shiki-dark colour. */
 :root[data-theme="tty"] code {
   color: var(--shiki-dark, var(--code-foreground));
 }
 
-/* Dark text on the inverted current menu item: a phosphor halo would blur it. */
-:root[data-theme="tty"] .menu-item[aria-current] {
-  text-shadow: none;
-}
-
-:root[data-theme="tty"] mark {
-  background: var(--accent);
-  color: var(--background);
-}
-
-:root[data-theme="tty"] ::selection {
-  background: var(--accent);
-  color: var(--background);
-  text-shadow: none;
+/* Shiki's dual-theme switch: each span carries its night colour inline. */
+:root[data-theme="tty"] .astro-code,
+:root[data-theme="tty"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

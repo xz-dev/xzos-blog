@@ -27,6 +27,8 @@ for (const initialTheme of ['tty', 'solarized']) {
 		const attributes = new Map([['data-theme', initialTheme]]);
 		const events: string[] = [];
 		const saved = new Map<string, string>();
+		const pressed = new Map<string, string>();
+		let observe: () => void = () => assert.fail('data-theme is not observed');
 		let click: () => void = () => assert.fail('Toggle handler was not installed');
 		const root = {
 			getAttribute: (name: string) => attributes.get(name) ?? null,
@@ -46,11 +48,19 @@ for (const initialTheme of ['tty', 'solarized']) {
 		runInNewContext(toggle, {
 			document: {
 				documentElement: root,
-				getElementById: () => ({ addEventListener: (_: string, handler: () => void) => { click = handler; } }),
+				getElementById: () => ({
+					addEventListener: (_: string, handler: () => void) => { click = handler; },
+					setAttribute: (name: string, value: string) => pressed.set(name, value),
+				}),
 			},
+			MutationObserver: class { constructor(callback: () => void) { observe = callback; } observe() {} },
 			localStorage: { setItem: (key: string, value: string) => saved.set(key, value) },
 		});
+		// The pressed state is night mode, on the button itself, and follows data-theme.
+		assert.equal(pressed.get('aria-pressed'), String(initialTheme === 'tty'));
 		click();
+		observe();
+		assert.equal(pressed.get('aria-pressed'), String(initialTheme !== 'tty'));
 		const nextTheme = initialTheme === 'tty' ? 'solarized' : 'tty';
 		assert.deepEqual(events, [
 			`set:${switchAttribute}:`,

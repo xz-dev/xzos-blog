@@ -23,22 +23,25 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   text-rendering: optimizeLegibility;
+  /* Night's static phosphor glow; none in day. It inherits, so it is set once. */
+  text-shadow: var(--text-glow);
   -webkit-overflow-scrolling: touch;
   -webkit-text-size-adjust: 100%;
   margin: 0;
   padding: 0;
 }
 
-/* Also fix for solarized theme */
-:root[data-theme="solarized"] svg path,
-:root[data-theme="solarized"] svg line,
-:root[data-theme="solarized"] svg circle {
-  stroke: var(--accent) !important;
-}
-
-:root[data-theme="solarized"] svg path[fill="currentColor"] {
-  fill: var(--accent) !important;
-  stroke: none !important;
+/* A fixed layer behind the content (z-index -1; body makes no stacking
+ * context) that takes no pointer events: night's static scanlines and
+ * vignette darken only the field, never text, code or embedded comments.
+ * Day paints nothing. No animation, flicker or curvature. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--field-overlay);
 }
 
 h1 {
@@ -74,12 +77,20 @@ table {
   margin: var(--space-4) 0;
 }
 
-/* Page frame: every list and static page shares one width and one title. */
+/* Page frame (PageFrame.astro): one width per page kind and one title. Lists
+ * and static pages use --page-width; articles use --prose-width and a
+ * tighter top, since the meta line sits above their title. No page sets its
+ * own width. */
 .page-frame {
   width: var(--page-width);
   max-width: calc(100% - var(--space-5));
   margin: auto;
   padding: var(--space-6) var(--space-3);
+}
+
+.page-frame-article {
+  width: var(--prose-width);
+  padding: var(--space-3);
 }
 
 .page-title {
@@ -124,20 +135,23 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Controls: header navigation, language links, the theme toggle, social
- * links, pagination, the contents summary and buttons share one box, one
- * hover and one current state. tty.css only recolours them and adds bevels. */
+/* Controls: pagination, the contents summary and buttons share one box, one
+ * hover and one current state. Colours, edges and bevels are role tokens, so
+ * night redefines tokens rather than rules. Menu items (below) are the
+ * header's own primitive and are excluded. */
 .control,
-button {
+button:not(.menu-item) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   min-height: var(--control-size);
   padding: 0 var(--space-3);
-  border: var(--rule) solid transparent;
-  border-radius: 0;
-  background: transparent;
+  border: var(--rule) solid;
+  border-color: var(--control-edge);
+  border-radius: var(--radius);
+  background: var(--control-bg);
+  box-shadow: var(--control-bevel);
   color: var(--foreground);
   font: inherit;
   font-weight: 500;
@@ -152,33 +166,20 @@ span.control {
   cursor: default;
 }
 
-/* Icon-only controls (theme toggle, social links) are square and framed. */
-.control-icon {
-  position: relative;
-  width: var(--control-size);
-  height: var(--control-size);
-  padding: var(--space-2);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.control-icon svg {
-  width: var(--icon-size);
-  height: var(--icon-size);
-}
-
 .control:hover,
-button:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--background);
+button:not(.menu-item):hover {
+  background: var(--control-hover-bg);
+  border-color: var(--control-hover-edge);
+  color: var(--control-hover-fg);
 }
 
-.control.active,
+.control:active,
+button:not(.menu-item):active,
 .control[aria-current] {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--background);
+  background: var(--control-current-bg);
+  border-color: var(--control-current-edge);
+  box-shadow: var(--control-pressed-bevel);
+  color: var(--control-current-fg);
   font-weight: 700;
 }
 
@@ -195,7 +196,7 @@ button:hover {
   min-height: var(--menu-item-height);
   padding: 0 var(--space-2);
   border: 0;
-  border-radius: 0;
+  border-radius: var(--radius);
   background: transparent;
   color: var(--foreground);
   font: inherit;
@@ -213,6 +214,8 @@ button:hover {
 .menu-item[aria-current] {
   background: var(--accent);
   color: var(--background);
+  /* Dark text on the accent: a glow would blur it. */
+  text-shadow: none;
 }
 
 /* Icon-only menu items (theme toggle, social links) are square. */
@@ -236,10 +239,11 @@ button:hover {
 input,
 textarea,
 select {
-  background: transparent;
+  background: var(--field-bg);
   color: var(--foreground);
-  border: var(--hairline) solid var(--foreground);
-  border-radius: 0;
+  border: var(--hairline) solid;
+  border-color: var(--field-edge);
+  border-radius: var(--radius);
   padding: var(--space-2);
   font: inherit;
   appearance: none;
@@ -262,7 +266,7 @@ img {
   display: block;
   max-width: 100%;
   border: var(--hairline) solid var(--border-color);
-  border-radius: 0;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -287,7 +291,7 @@ figure figcaption {
 
 ul,
 ol {
-  margin-left: var(--space-5);
+  margin-inline-start: var(--space-5);
   padding: 0;
 }
 
@@ -312,7 +316,7 @@ code,
 kbd {
   font-family: inherit;
   background: var(--surface);
-  color: var(--foreground);
+  color: var(--code-color);
   padding: 0 var(--space-1);
   /* Inline code takes its context's size (a heading's code stays heading-size);
    * in body text that is --text-code, which equals the body size. */
@@ -341,7 +345,9 @@ pre {
   font-size: var(--text-code) !important;
   line-height: var(--leading-code);
   overflow: auto;
-  border-radius: 0;
+  /* Code stays sharp: no glow on syntax colours. */
+  text-shadow: none;
+  border-radius: var(--radius);
   border: var(--hairline) solid var(--border-strong);
 }
 
@@ -353,14 +359,6 @@ pre code {
   border: none;
 }
 
-:root[data-theme="tty"] .astro-code,
-:root[data-theme="tty"] .astro-code span {
-  color: var(--shiki-dark) !important;
-  font-style: var(--shiki-dark-font-style) !important;
-  font-weight: var(--shiki-dark-font-weight) !important;
-  text-decoration: var(--shiki-dark-text-decoration) !important;
-}
-
 sup {
   line-height: 0;
 }
@@ -370,11 +368,23 @@ mark {
   color: var(--background);
 }
 
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-fg);
+  text-shadow: none;
+}
+
+/* Editorial opacity in posts must not silently reduce the verified text
+ * contrast. */
+.prose small {
+  opacity: 1 !important;
+}
+
 /* One quote style in both themes: a thin rule, no fill, no bar. */
 blockquote {
   margin: var(--space-4) 0;
   padding: 0 0 0 var(--space-3);
-  border-left: var(--rule) solid var(--border-strong);
+  border-inline-start: var(--rule) solid var(--border-strong);
   font-style: normal;
 }
 
@@ -431,7 +441,7 @@ td {
 th {
   background: var(--surface);
   color: var(--emphasized);
-  text-align: left;
+  text-align: start;
 }
 
 hr {
