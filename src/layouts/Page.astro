@@ -10,7 +10,8 @@ import Header from '../components/Header.astro';
 import PageFrame from '../components/PageFrame.astro';
 import Prompt from '../components/term/Prompt.astro';
 import { getHtmlLang, getPagesCollection } from '../i18n/collections';
-import type { Lang } from '../i18n/ui';
+import { locales } from '../i18n/seo';
+import { defaultLang, navItems, type Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import { SITE_TITLE } from '../consts';
 import { getEntry, render } from 'astro:content';
@@ -31,12 +32,24 @@ if (!page) {
 }
 
 const { Content } = await render(page);
+
+// The <title> uses the menu label (关于 / About); every locale's frontmatter
+// title is the English "Introduction". A locale's verbatim copy (is_copy)
+// is not an alternate and points its canonical at the root page.
+const navItem = navItems.find((item) => item.path === `/${slug}/`);
+const headTitle = `${navItem ? t(navItem.key) : page.data.title} - ${SITE_TITLE}`;
+const copies: Lang[] = [];
+for (const locale of locales) {
+	if (locale === defaultLang) continue;
+	const version = await getEntry(getPagesCollection(locale) as any, slug);
+	if ((version as any)?.data.is_copy) copies.push(locale);
+}
 ---
 
 <!doctype html>
 <html lang={htmlLang}>
 	<head>
-		<BaseHead title={`${page.data.title} - ${SITE_TITLE}`} description={page.data.description} />
+		<BaseHead title={headTitle} description={page.data.description} versions={{ copies }} />
 	</head>
 	<body>
 		<Header />

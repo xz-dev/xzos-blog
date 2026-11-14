@@ -23,13 +23,13 @@ export const defaultLang: Lang = 'zh';
 
 /**
  * 页眉菜单，按状态栏顺序排列；每项前显示的编号就是它的下标（0:首页 1:文章 …）。
- * localized 为 true 的路径带语言前缀，友链页只有一份。
+ * localized 为 true 的路径带语言前缀，友链页只有一份。路径都带尾部斜杠，与构建产物一致，免去 308。
  */
 export const navItems = [
   { key: 'nav.home', path: '/', localized: true },
-  { key: 'nav.blog', path: '/blog', localized: true },
-  { key: 'nav.about', path: '/about', localized: true },
-  { key: 'nav.links', path: '/link-exchange', localized: false },
+  { key: 'nav.blog', path: '/blog/', localized: true },
+  { key: 'nav.about', path: '/about/', localized: true },
+  { key: 'nav.links', path: '/link-exchange/', localized: false },
 ] as const;
 
 /**
@@ -114,8 +114,12 @@ export const ui = {
     'links.communities': '社群',
     'table.label': '表格',
 
-    // 错误页面：只有源站一份。静态构建只产出一个 /404.html，
-    // 所有语言前缀下的缺失地址都由它应答，因此 error.* 不做翻译。
+    // 页面标题与描述（<title> 与 meta description）
+    'meta.homeTitle': 'xzOS - xzdev 的个人博客',
+    'meta.homeDescription': 'xzdev 的个人博客，分享 IT 技术与日常随笔。',
+    'meta.blogDescription': 'xzOS 的全部文章，按发布时间从新到旧排列。',
+
+    // 错误页面：每种语言各有一份 404.html，Cloudflare Pages 按路径就近应答
     'error.pageNotFound': '页面未找到',
     'error.description': '您访问的页面不存在。',
     'error.message': '抱歉，我们找不到您要访问的页面。',
@@ -198,6 +202,17 @@ export const ui = {
     'links.friends': 'Friends',
     'links.communities': 'Communities',
     'table.label': 'Table',
+
+    // Page titles and descriptions (<title> and meta description)
+    'meta.homeTitle': "xzOS - xzdev's personal blog",
+    'meta.homeDescription': "xzdev's personal blog: notes on IT and everyday life.",
+    'meta.blogDescription': 'Every post on xzOS, newest first.',
+
+    // Error page
+    'error.pageNotFound': 'Page not found',
+    'error.description': 'The page you requested does not exist.',
+    'error.message': "Sorry, we can't find the page you're looking for.",
+    'error.backHome': 'Back to home',
   },
   'zh-CN': {
     // 导航
@@ -276,6 +291,17 @@ export const ui = {
     'links.friends': '朋友',
     'links.communities': '社群',
     'table.label': '表格',
+
+    // 页面标题与描述（<title> 与 meta description）
+    'meta.homeTitle': 'xzOS - xzdev 的个人博客',
+    'meta.homeDescription': 'xzdev 的个人博客，分享 IT 技术与日常随笔。',
+    'meta.blogDescription': 'xzOS 的全部文章，按发布时间从新到旧排列。',
+
+    // 错误页面
+    'error.pageNotFound': '页面未找到',
+    'error.description': '您访问的页面不存在。',
+    'error.message': '抱歉，我们找不到您要访问的页面。',
+    'error.backHome': '返回首页',
   },
 } as const;
 

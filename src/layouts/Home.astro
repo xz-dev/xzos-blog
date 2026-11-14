@@ -17,7 +17,7 @@ import { langCodes, languages, type Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/utils';
 import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
 import { formatPostDate } from '../lib/post-date';
-import { SITE_DESCRIPTION, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS, THEME_NAMES } from '../consts';
+import { SITE_SINCE, SITE_TITLE, SOCIAL_LINKS, THEME_NAMES } from '../consts';
 import font from '../../docs/theme/tty-font.json';
 import { formatUptime } from '../lib/uptime';
 import { LS } from '../lib/xzsh';
@@ -58,7 +58,7 @@ const recent = posts.slice(0, LS);
 <!doctype html>
 <html lang={getHtmlLang(lang)}>
 	<head>
-		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
+		<BaseHead title={t('meta.homeTitle')} description={t('meta.homeDescription')} />
 		<style>
 			/* Two columns above 800px: the art, then the info block, both on the
 			 * body's line grid. The ring is a fixed character grid (--cols ×

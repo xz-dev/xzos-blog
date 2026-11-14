@@ -1,30 +1,6 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import PageFrame from '../components/PageFrame.astro';
-import { getHomePath, getHtmlLang } from '../i18n/collections';
+import NotFound from '../layouts/NotFound.astro';
 import { defaultLang } from '../i18n/ui';
-import { useTranslations } from '../i18n/utils';
-import { SITE_TITLE } from '../consts';
-
-// The static build emits one /404.html for every missing address under every
-// language prefix; at build time this page's own URL is /404, so it cannot
-// tell which prefix was requested. It is the default language only.
-const t = useTranslations(defaultLang);
 ---
 
-<!doctype html>
-<html lang={getHtmlLang(defaultLang)}>
-	<head>
-		<BaseHead title={`${t('error.pageNotFound')} - ${SITE_TITLE}`} description={t('error.description')} />
-	</head>
-	<body>
-		<Header />
-		<PageFrame title={`404 ${t('error.pageNotFound')}`}>
-			<p>{t('error.message')}</p>
-			<p><a href={getHomePath(defaultLang)}>{t('error.backHome')}</a></p>
-		</PageFrame>
-		<Footer />
-	</body>
-</html>
+<NotFound lang={defaultLang} />

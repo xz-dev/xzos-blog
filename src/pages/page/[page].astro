@@ -16,6 +16,7 @@ export async function getStaticPaths() {
 	const postsPerPage = 10;
 	const totalPages = Math.ceil(posts.length / postsPerPage);
 
+	// Page 1 is the post list: public/_redirects sends /page/1/ to /blog/.
 	return Array.from({ length: totalPages }, (_, i) => {
 		const pageNum = i + 1;
 		const start = i * postsPerPage;
@@ -35,7 +36,7 @@ export async function getStaticPaths() {
 				totalPages,
 			},
 		};
-	});
+	}).slice(1);
 }
 
 const { posts, currentPage, totalPages } = Astro.props;

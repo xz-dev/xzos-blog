@@ -23,7 +23,7 @@ const otherLangs = (Object.keys(languages) as Lang[]).filter((other) => other !=
 const versions = [];
 for (const other of otherLangs) {
   if (await getEntry(getBlogCollection(other) as any, slug)) {
-    versions.push({ lang: other, path: `${getBlogPrefix(other)}/${slug}`, label: languages[other] });
+    versions.push({ lang: other, path: `${getBlogPrefix(other)}/${slug}/`, label: languages[other] });
   }
 }
 ---
@@ -33,7 +33,7 @@ for (const other of otherLangs) {
     {isTranslation && (
       <p>
         <PixelIcon name="translation" class="notice-mark" />
-        {t('notice.translatedBefore')}<a href={`${getBlogPrefix(defaultLang)}/${slug}`} hreflang="zh">{t('notice.translatedLink')}</a>{t('notice.translatedAfter')}
+        {t('notice.translatedBefore')}<a href={`${getBlogPrefix(defaultLang)}/${slug}/`} hreflang="zh">{t('notice.translatedLink')}</a>{t('notice.translatedAfter')}
       </p>
     )}
     {versions.length > 0 && (
