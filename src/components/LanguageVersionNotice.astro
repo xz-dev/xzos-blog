@@ -100,7 +100,7 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
     margin-bottom: 1.5rem;
     background: var(--card-background, rgba(var(--gray-light), 0.3));
     border-radius: 8px;
-    border-left: 4px solid rgb(var(--accent));
+    border-left: 4px solid var(--accent);
     font-size: 0.9rem;
   }
   
@@ -116,7 +116,7 @@ const originalVersionPath = lang === 'zh' ? null : `/blog/${slug}`;
   
   .language-notice a,
   .translation-notice a {
-    color: rgb(var(--accent));
+    color: var(--accent);
     font-weight: 600;
     text-decoration: none;
   }

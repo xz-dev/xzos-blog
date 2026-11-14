@@ -32,7 +32,7 @@ Existing date-only records stay date-only: do not fabricate a time or offset. A 
 
 ## Themes
 
-- **Day / Solarized:** existing colors, typography and layout remain in `src/styles/terminal.css`.
+- **Day / Solarized:** colors, typography and layout live in `src/styles/terminal.css`; text colors are darkened Solarized tones that keep WCAG AA (4.5:1) on the page and code backgrounds.
 - **Night / TTY:** `src/styles/tty.css` owns the green-phosphor palette and self-hosted **GNU Unifont**, including Latin, Chinese and other supported scripts. Titles, prose, navigation, form controls, code and generated text share this pixel family. Attribution and OFL license are in `public/fonts/unifont-OFL.txt`; only characters missing from the font use system glyph fallback.
 - Night mode deliberately keeps the artistic distance of a monochrome terminal, not an actual reading barrier. Keep text sharp, links recognizable and controls direct; do not add simulated curvature, blur, scanlines or glitches. Night UI states are immediate: disable CSS animations, transitions and smooth scrolling on the root, descendants and their before/after pseudo-elements. No decorative hover movement. Keep pressed/selected/focus feedback as instant state changes.
 - Both directions of the theme switch are immediate. `ThemeToggle.astro` briefly sets `data-theme-switching`, commits the destination styles and removes the guard synchronously; normal day-mode hover transitions remain unchanged. Do not leave the guard enabled or use an animation/timer to switch themes.

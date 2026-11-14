@@ -1,9 +1,11 @@
 // @ts-check
 
+import { satteri } from '@astrojs/markdown-satteri';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import translate from './src/integrations/translate';
+import { tableScroll } from './src/lib/table-scroll';
 
 // https://astro.build/config
 export default defineConfig({
@@ -31,6 +33,8 @@ export default defineConfig({
   },
 
   markdown: {
+    // Default processor plus a wrapper that lets wide tables scroll.
+    processor: satteri({ hastPlugins: [tableScroll] }),
     shikiConfig: {
       themes: {
         light: 'github-light',

@@ -170,9 +170,13 @@ test('pagination and read-more replace only arrows, retaining all original langu
 	}
 	const list = read('../src/layouts/BlogList.astro');
 	for (const key of ['pagination.prev', 'pagination.next', 'blog.continueReading']) {
-		assert.ok(list.includes(`aria-label={t('${key}')}`));
 		assert.ok(list.includes(`<PixelArrowText text={t('${key}')} />`));
 	}
+	for (const key of ['pagination.prev', 'pagination.next']) {
+		assert.ok(list.includes(`aria-label={t('${key}')}`));
+	}
+	// Every read-more link on a page needs its own name: the full label plus the post title.
+	assert.ok(list.includes("aria-label={`${t('blog.continueReading')} ${post.data.title}`}"));
 	const helper = read('../src/components/PixelArrowText.astro');
 	assert.match(helper, /splitPixelArrowText\(text\)/);
 	assert.match(helper, /<span class="tty-original-icon tty-text-label">\{text\}<\/span>/);

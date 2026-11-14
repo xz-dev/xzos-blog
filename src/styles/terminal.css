@@ -1,17 +1,30 @@
 /* Fira Code: https://github.com/tonsky/FiraCode */
 @import url('https://cdn.staticdelivr.com/gfonts/css2?family=Fira+Code:wght@300..700&display=swap');
 
-/* Default Theme (Solarized Light) */
+/* Default (day) theme: Solarized Light backgrounds.
+ * Text tokens are darkened Solarized base01/blue so text, links and secondary
+ * text reach WCAG AA (>= 4.5:1) on the page and code-block backgrounds. */
 :root {
   --background: #fdf6e3;
-  --foreground: #657b83;
-  --accent: #268bd2;
-  --secondary: #93a1a1;
+  --foreground: #475b62;
+  --accent: #1a659c;
+  --secondary: #566a70;
   --emphasized: #586e75;
   --radius: 0;
   --font-size: 1rem;
   --line-height: 1.54em;
   --border-color: #93a1a1;
+
+  /* Older layout tokens (tty.css bridges them for night). Without them the
+   * rgb(var(--gray)) colors and the TOC panel are invalid in day.
+   * --bg-secondary stays undefined here on purpose: its only users are the
+   * home post-title links and the About blockquotes, which have no
+   * background in day; night draws its surface there. */
+  --fg-primary: var(--foreground);
+  --gray: 86, 106, 112;
+  --gray-dark: 71, 91, 98;
+  --gray-light: 147, 161, 161;
+  --black: 71, 91, 98;
 }
 
 html {
@@ -82,6 +95,11 @@ h6 {
   letter-spacing: 0;
 }
 
+/* body's em line-height inherits as a fixed length; headings need their own. */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+}
+
 h1, h2, h3, h4, h5, h6,
 p, ul, ol,
 img, figure, video,
@@ -94,7 +112,12 @@ a {
   transition: all 0.2s ease;
 }
 
-/* Long reference URLs must not force horizontal scrolling on mobile. */
+/* Long paths, option names and URLs in prose (plain text, inline code, links,
+ * titles) break rather than widen the page on phones; night sets the same. */
+.prose {
+  overflow-wrap: anywhere;
+}
+
 .prose a {
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -393,6 +416,37 @@ blockquote p:last-child {
 table {
   table-layout: auto;
   border-collapse: collapse;
+}
+
+/* Markdown tables arrive wrapped (src/lib/table-scroll.ts). A table that fits
+ * keeps its content width; a wider one scrolls inside the wrapper. */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 25px 0;
+}
+
+.table-scroll > table {
+  margin: 0;
+}
+
+.table-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* CJK text breaks between any two characters; keep phrases whole so a narrow
+ * column scrolls instead of stacking one character per line. */
+th,
+td {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+/* Options such as `--parse-date` would otherwise break at their hyphens. */
+th code,
+td code {
+  white-space: nowrap;
 }
 
 table,

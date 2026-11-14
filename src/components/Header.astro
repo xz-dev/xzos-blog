@@ -168,15 +168,82 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		nav {
 			flex-wrap: wrap;
 		}
+	}
 
+	/* Tablet: the links take a full row below the title and right section. A
+	 * `flex: 1` box alone has a 0% basis that ignores `width: 100%`, so once
+	 * tty.css lets the links wrap, it would stack them in a narrow column. */
+	@media (720px < width <= 960px) {
 		.internal-links {
 			order: 3;
-			width: 100%;
+			flex-basis: 100%;
 			justify-content: flex-start;
 		}
 	}
 
+	/* Phone: rows follow the source order, so focus moves the way the eye does:
+	 * logo and title, then the navigation, then the language links with the
+	 * theme toggle at the end. The last two share a row when they fit. */
 	@media (max-width: 720px) {
+		header {
+			padding: 0.75rem 1rem;
+		}
+
+		nav {
+			justify-content: flex-start;
+			gap: 0.5rem;
+		}
+
+		/* terminal.css gives every img a 25px block margin, doubling the row. */
+		.site-logo {
+			margin: 0;
+		}
+
+		.site-title {
+			flex-basis: 100%;
+		}
+
+		.internal-links {
+			flex: 0 1 auto;
+			flex-wrap: wrap;
+			justify-content: flex-start;
+		}
+
+		.right-section {
+			flex: 1 1 auto;
+		}
+
+		.right-section :global(.language-switcher) {
+			flex-wrap: wrap;
+		}
+
+		.right-section :global(#theme-toggle) {
+			flex: none;
+			margin-left: auto;
+		}
+
+		.internal-links,
+		.right-section,
+		.right-section :global(.language-switcher) {
+			gap: 0.5rem;
+		}
+
+		/* Every control in a row is at least as tall as the toggle; min-height
+		 * lets enlarged text grow the control instead of spilling out. */
+		.internal-links :global(a),
+		.right-section :global(.lang-link) {
+			display: inline-flex;
+			align-items: center;
+			min-height: 40px;
+			padding-block: 0;
+			white-space: nowrap;
+		}
+
+		/* Narrower than the desktop 1em so the four English links fit one 360px row. */
+		.internal-links :global(a) {
+			padding-inline: 0.75em;
+		}
+
 		.social-links {
 			display: none;
 		}

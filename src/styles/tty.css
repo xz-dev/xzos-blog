@@ -172,6 +172,11 @@
   color: var(--secondary);
 }
 
+/* Day colors "Read more" with the accent; night keeps it in the meta color. */
+:root[data-theme="tty"] .read-more {
+  color: inherit;
+}
+
 :root[data-theme="tty"] :is(.prose, .post-excerpt) a {
   text-decoration: underline;
   text-underline-offset: 0.2em;
@@ -256,6 +261,15 @@
 /* English navigation must wrap rather than overflow a 320px viewport. */
 :root[data-theme="tty"] .internal-links {
   flex-wrap: wrap;
+}
+
+/* Header.astro gives phone controls the toggle's 40px min-height; drop the
+ * vertical padding that would push their text past it. */
+@media (max-width: 720px) {
+  :root[data-theme="tty"] .internal-links a,
+  :root[data-theme="tty"] .lang-link {
+    padding-block: 0;
+  }
 }
 
 :root[data-theme="tty"] .lang-link {
@@ -351,10 +365,14 @@
   box-shadow: inset 1px 1px 0 var(--edge-inner), inset -1px -1px 0 var(--edge-dark);
 }
 
-:root[data-theme="tty"] table {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
+/* The wrapper draws the night frame across the column, as the block table did. */
+:root[data-theme="tty"] .table-scroll {
+  border: 1px solid var(--border-color);
+  padding: 10px;
+}
+
+:root[data-theme="tty"] .table-scroll > table {
+  border: 0;
 }
 
 :root[data-theme="tty"] table,

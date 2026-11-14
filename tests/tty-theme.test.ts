@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const base = read('../src/styles/terminal.css');
-// Keep the night theme isolated: the Solarized stylesheet remains the baseline.
+// Keep the night theme isolated: the day stylesheet remains the baseline.
 const tty = read('../src/styles/tty.css');
 const reference = JSON.parse(read('../docs/theme/tty-dark.json'));
 const palette = Object.fromEntries(
@@ -64,12 +64,25 @@ test('night typography is self-hosted, with real WOFF2 files and its license', (
 	assert.match(read('../public/fonts/unifont-OFL.txt'), /SIL OPEN FONT LICENSE/i);
 });
 
-test('Solarized day colors and the original font stack stay unchanged', () => {
+test('day palette is pinned at WCAG AA and keeps the original font stack', () => {
 	const root = base.match(/:root\s*\{([^}]+)\}/)![1];
-	for (const [name, value] of Object.entries({
-		background: '#fdf6e3', foreground: '#657b83', accent: '#268bd2',
-		secondary: '#93a1a1', emphasized: '#586e75', 'border-color': '#93a1a1',
-	})) assert.ok(root.includes(`--${name}: ${value};`));
+	const day = {
+		background: '#fdf6e3', foreground: '#475b62', accent: '#1a659c',
+		secondary: '#566a70', emphasized: '#586e75', 'border-color': '#93a1a1',
+	};
+	for (const [name, value] of Object.entries(day)) assert.ok(root.includes(`--${name}: ${value};`));
+	// The code-block surface: color-mix(in srgb, var(--accent) 10%, var(--background)).
+	const mix = (a: string, b: string, weight: number) =>
+		'#' + [0, 1, 2].map((i) => {
+			const channel = (hex: string) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+			return Math.round(channel(a) * weight + channel(b) * (1 - weight)).toString(16).padStart(2, '0');
+		}).join('');
+	const codeSurface = mix(day.accent, day.background, 0.1);
+	for (const surface of [day.background, codeSurface]) {
+		for (const name of ['foreground', 'accent', 'secondary'] as const) {
+			assert.ok(contrast(day[name], surface) >= 4.5, `${name} on ${surface}: 4.5:1 text floor`);
+		}
+	}
 	assert.match(base, /font-family:\s*"Fira Code",\s*"JetBrains Mono"/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
 });
