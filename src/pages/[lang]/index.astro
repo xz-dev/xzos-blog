@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import BlogList from '../../layouts/BlogList.astro';
-import { getExcerptHtml } from '../../lib/excerpt';
+import Home from '../../layouts/Home.astro';
 import { getBlogCollection, nonDefaultLocales } from '../../i18n/collections';
 import type { Lang } from '../../i18n/ui';
 
@@ -11,27 +10,15 @@ export async function getStaticPaths() {
 		const allPosts = (await getCollection(getBlogCollection(lang) as any)).sort(
 			(a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 		);
-
-		const postsPerPage = 10;
-		const totalPages = Math.ceil(allPosts.length / postsPerPage);
-		const paginatedPosts = allPosts.slice(0, postsPerPage).map((post: any) => ({
-			post,
-			excerpt: getExcerptHtml(post.body || ''),
-		}));
-
 		paths.push({
 			params: { lang },
-			props: { posts: paginatedPosts, totalPages, lang },
+			props: { lang, posts: allPosts.slice(0, 5), postCount: allPosts.length },
 		});
 	}
 	return paths;
 }
 
-const { posts, totalPages, lang } = Astro.props as {
-	posts: { post: any; excerpt: { html: string; hasMore: boolean } }[];
-	totalPages: number;
-	lang: Lang;
-};
+const { lang, posts, postCount } = Astro.props as { lang: Lang; posts: any[]; postCount: number };
 ---
 
-<BlogList lang={lang} currentPage={1} totalPages={totalPages} posts={posts} />
+<Home lang={lang} posts={posts} postCount={postCount} />

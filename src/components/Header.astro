@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SOCIAL_LINKS } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
@@ -28,7 +28,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 			<LanguageSwitcher />
 			<ThemeToggle />
 			<div class="social-links">
-				<a class="menu-item menu-item-icon" href="https://fosstodon.org/@xzdev" target="_blank">
+				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.mastodon} target="_blank">
 					<span class="sr-only">{t('social.mastodon')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
@@ -38,7 +38,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 					>
 					<PixelIcon name="mastodon" />
 				</a>
-				<a class="menu-item menu-item-icon" href="https://github.com/xz-dev" target="_blank">
+				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.github} target="_blank">
 					<span class="sr-only">{t('social.github')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path
@@ -48,7 +48,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 					>
 					<PixelIcon name="github" />
 				</a>
-				<a class="menu-item menu-item-icon" href="https://stackoverflow.com/users/15715806/inkflaw" target="_blank">
+				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.stackOverflow} target="_blank">
 					<span class="sr-only">{t('social.stackOverflow')}</span>
 					<svg class="tty-original-icon" viewBox="0 0 16 16" aria-hidden="true" width="24" height="24"
 						><path

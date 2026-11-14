@@ -52,6 +52,21 @@ export const ui = {
     'notice.translatedAfter': '，可能有误，以原文为准。',
     'notice.alsoIn': '其他语言：',
 
+    // 首页（开机画面）：fastfetch 字段名沿用终端里的英文
+    'home.logoAlt': 'xzOS 标志：16 段短线围成的圆环，以字符画绘制并缓慢旋转',
+    'home.pause': '暂停',
+    'home.pauseLabel': '暂停动画',
+    'home.os': 'OS',
+    'home.init': 'Init',
+    'home.host': 'Host',
+    'home.uptime': 'Uptime',
+    'home.since': '{date} 至今',
+    'home.posts': 'Posts',
+    'home.lang': 'Lang',
+    'home.links': 'Links',
+    'home.recent': '最近文章',
+    'home.allPosts': '→ 全部文章',
+
     // 分页
     'pagination.label': '分页',
     'pagination.prev': '← 上一页',
@@ -103,6 +118,21 @@ export const ui = {
     'notice.translatedAfter': '; it may contain errors.',
     'notice.alsoIn': 'Also in: ',
 
+    // Home page (boot screen); fastfetch field names stay as in the terminal
+    'home.logoAlt': 'The xzOS logo, a ring of 16 dashes, slowly turning in ASCII art',
+    'home.pause': 'pause',
+    'home.pauseLabel': 'Pause animation',
+    'home.os': 'OS',
+    'home.init': 'Init',
+    'home.host': 'Host',
+    'home.uptime': 'Uptime',
+    'home.since': 'since {date}',
+    'home.posts': 'Posts',
+    'home.lang': 'Lang',
+    'home.links': 'Links',
+    'home.recent': 'Recent posts',
+    'home.allPosts': '→ All posts',
+
     // Pagination
     'pagination.label': 'Pagination',
     'pagination.prev': '← Previous',
@@ -146,6 +176,21 @@ export const ui = {
     'notice.translatedLink': '中文原文',
     'notice.translatedAfter': '，可能有误，以原文为准。',
     'notice.alsoIn': '其他语言：',
+
+    // 首页（开机画面）：fastfetch 字段名沿用终端里的英文
+    'home.logoAlt': 'xzOS 标志：16 段短线围成的圆环，以字符画绘制并缓慢旋转',
+    'home.pause': '暂停',
+    'home.pauseLabel': '暂停动画',
+    'home.os': 'OS',
+    'home.init': 'Init',
+    'home.host': 'Host',
+    'home.uptime': 'Uptime',
+    'home.since': '{date} 至今',
+    'home.posts': 'Posts',
+    'home.lang': 'Lang',
+    'home.links': 'Links',
+    'home.recent': '最近文章',
+    'home.allPosts': '→ 全部文章',
 
     // 分页
     'pagination.label': '分页',

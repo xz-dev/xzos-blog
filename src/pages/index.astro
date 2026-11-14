@@ -1,23 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
-import BlogList from '../layouts/BlogList.astro';
-import { getExcerptHtml } from '../lib/excerpt';
+import Home from '../layouts/Home.astro';
 import { getBlogCollection } from '../i18n/collections';
 import type { Lang } from '../i18n/ui';
 
 const lang: Lang = 'zh';
-const collectionName = getBlogCollection(lang);
-
-const allPosts = (await getCollection(collectionName as any)).sort(
+const allPosts = (await getCollection(getBlogCollection(lang) as any)).sort(
 	(a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-
-const postsPerPage = 10;
-const totalPages = Math.ceil(allPosts.length / postsPerPage);
-const paginatedPosts = allPosts.slice(0, postsPerPage).map((post: any) => ({
-	post,
-	excerpt: getExcerptHtml(post.body || ''),
-}));
 ---
 
-<BlogList lang={lang} currentPage={1} totalPages={totalPages} posts={paginatedPosts} />
+<Home lang={lang} posts={allPosts.slice(0, 5)} postCount={allPosts.length} />

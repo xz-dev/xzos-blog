@@ -503,6 +503,31 @@ a :is(strong, b, em, i) {
   color: inherit;
 }
 
+/* Block cursor: a full Unifont cell (U+2588) after a prompt. It blinks
+ * unless the user asks for reduced motion or a [data-paused] ancestor stops
+ * it; tty.css lets it through night's motion reset. */
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cursor {
+    animation: var(--cursor-blink);
+  }
+}
+
+[data-paused] .cursor {
+  animation: none;
+}
+
+/* The hidden attribute wins over any display a class sets (.menu-item is
+ * inline-flex). */
+[hidden] {
+  display: none !important;
+}
+
 /* Screen reader only */
 .sr-only {
   position: absolute !important;

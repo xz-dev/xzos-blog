@@ -52,6 +52,7 @@
   --leading-meta: 1.25rem;        /* 20px */
   --text-code: 1rem;              /* inline and block code: 16px */
   --leading-code: 1.5rem;         /* 24px */
+  --leading-art: 1rem;            /* ASCII art rows: Unifont's 8 x 16 cell with no gap, 16px */
 
   --space-1: 0.25rem;             /* 4px */
   --space-2: 0.5rem;              /* 8px */
@@ -77,6 +78,11 @@
   --focus-width: 2px;             /* keyboard focus ring */
   --focus-offset: 2px;
   --underline-offset: 0.2em;
+
+  /* Motion: the site's only animations, both on the home page (a terminal
+   * cursor; the logo's frame rate lives in its script). Reduced motion and
+   * the page's pause control stop them. */
+  --cursor-blink: cursor-blink 1s steps(1, end) infinite;
 }
 
 :root[data-theme="tty"] {

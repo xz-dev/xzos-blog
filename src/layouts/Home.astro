@@ -1,0 +1,329 @@
+---
+/**
+ * 首页：开机画面。左边是转动的字符画标志，右边是 fastfetch 式的信息块，
+ * 下面是最近五篇文章，最后一行是闪烁光标的提示符。
+ * 用于 /, /en/, /zh-CN/；分页列表 /page/N 仍由 BlogList.astro 绘制。
+ */
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PageFrame from '../components/PageFrame.astro';
+import PixelArrowText from '../components/PixelArrowText.astro';
+import { getBlogPrefix, getHomePath, getHtmlLang } from '../i18n/collections';
+import { languages, type Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/utils';
+import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
+import { formatPostDate } from '../lib/post-date';
+import { SITE_DESCRIPTION, SITE_HOST, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS } from '../consts';
+
+interface Props {
+	lang: Lang;
+	/** The newest posts of this locale, newest first. */
+	posts: any[];
+	/** Every post of this locale. */
+	postCount: number;
+}
+
+const { lang, posts, postCount } = Astro.props;
+const t = useTranslations(lang);
+const blogPrefix = getBlogPrefix(lang);
+const pageTitle = `${SITE_TITLE} - ${t('site.tagline')}`;
+const locales = Object.keys(languages) as Lang[];
+const links = [
+	{ name: 'GitHub', href: SOCIAL_LINKS.github },
+	{ name: 'Mastodon', href: SOCIAL_LINKS.mastodon },
+	{ name: 'Stack Overflow', href: SOCIAL_LINKS.stackOverflow },
+];
+// The palette strip: one cell per colour token, darkest role first.
+const swatches = ['background', 'surface', 'border-color', 'border-strong', 'secondary', 'foreground', 'accent'];
+const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
+---
+
+<!doctype html>
+<html lang={getHtmlLang(lang)}>
+	<head>
+		<BaseHead title={pageTitle} description={SITE_DESCRIPTION} />
+		<style>
+			/* Two columns from 720px: the art, then the info block. The art box
+			 * is a fixed character grid (--cols × --rows), so frames never move
+			 * anything. */
+			.boot {
+				display: grid;
+				grid-template-columns: max-content minmax(0, 1fr);
+				column-gap: var(--space-6);
+				row-gap: var(--space-4);
+				align-items: start;
+			}
+			.ring {
+				width: calc(var(--cols) * 1ch);
+				height: calc(var(--rows) * var(--leading-art));
+				line-height: var(--leading-art);
+				white-space: pre;
+				overflow: hidden;
+				color: var(--foreground);
+			}
+			.ring :global(.b) {
+				color: var(--accent);
+			}
+			.ring :global(.d) {
+				color: var(--secondary);
+			}
+			.ring-narrow {
+				display: none;
+			}
+			/* Plain text like a menu item; pressed (paused) is marked like the
+			 * status line's current entry: accent and a trailing `*`. */
+			.ring-toggle {
+				margin-inline-start: calc(-1 * var(--space-1));
+			}
+			.ring-toggle[aria-pressed="true"] {
+				color: var(--accent);
+			}
+			.ring-toggle[aria-pressed="true"]::after {
+				content: "*";
+				content: "*" / "";
+			}
+
+			/* fastfetch: a fixed label column, values wrap under their column. */
+			.fetch p,
+			.fetch dl {
+				margin: 0;
+			}
+			.fetch-user {
+				color: var(--accent);
+			}
+			.fetch-user span,
+			.fetch-rule {
+				color: var(--foreground);
+			}
+			.fetch dl {
+				display: grid;
+				grid-template-columns: 8ch minmax(0, 1fr);
+			}
+			.fetch dt {
+				color: var(--accent);
+			}
+			.fetch dd {
+				color: var(--foreground);
+				display: flex;
+				flex-wrap: wrap;
+				column-gap: 1ch;
+			}
+			.fetch dd > * {
+				white-space: nowrap;
+			}
+			.fetch dd a {
+				color: var(--foreground);
+			}
+			.fetch dd a[aria-current] {
+				background: var(--accent);
+				color: var(--background);
+				text-decoration: none;
+				text-shadow: none;
+			}
+			.sep {
+				color: var(--secondary);
+			}
+			.swatches {
+				display: flex;
+				margin-top: var(--space-3);
+				border: var(--hairline) solid var(--border-strong);
+				width: max-content;
+			}
+			.swatches span {
+				width: 3ch;
+				height: var(--line-height);
+			}
+
+			/* ls -t output: dates in their own column, titles wrap under theirs. */
+			.recent {
+				margin-top: var(--space-6);
+			}
+			.prompt {
+				margin: 0;
+				color: var(--secondary);
+			}
+			.prompt span {
+				color: var(--foreground);
+			}
+			.recent ul {
+				list-style: none;
+				margin: 0 0 var(--space-2) 0;
+			}
+			.recent li {
+				display: grid;
+				grid-template-columns: 10ch minmax(0, 1fr);
+				column-gap: 2ch;
+			}
+			.recent time {
+				color: var(--secondary);
+				white-space: nowrap;
+			}
+			.recent li a {
+				color: var(--foreground);
+				text-decoration: none;
+				overflow-wrap: anywhere;
+			}
+			.recent li a:hover {
+				text-decoration: underline;
+			}
+			.all-posts {
+				display: inline-block;
+				margin-bottom: var(--space-4);
+			}
+
+			@media (max-width: 720px) {
+				.boot {
+					grid-template-columns: minmax(0, 1fr);
+				}
+			}
+			@media (max-width: 420px) {
+				.ring-wide {
+					display: none;
+				}
+				.ring-narrow {
+					display: block;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<PageFrame title={pageTitle} pattern="home">
+			<div class="boot" data-ring-root>
+				<div class="art">
+					<p class="sr-only">{t('home.logoAlt')}</p>
+					{Object.entries(RING_GRIDS).map(([name, grid]) => (
+						<div
+							class={`ring ring-${name}`}
+							aria-hidden="true"
+							data-cols={grid.cols}
+							data-rows={grid.rows}
+							style={`--cols: ${grid.cols}; --rows: ${grid.rows}`}
+							set:html={ringHtml(0, grid)}
+						/>
+					))}
+					<button type="button" class="menu-item ring-toggle" aria-pressed="false" aria-label={t('home.pauseLabel')} hidden>
+						<span aria-hidden="true">[</span>{t('home.pause')}<span aria-hidden="true">]</span>
+					</button>
+				</div>
+
+				<div class="fetch">
+					<p class="fetch-user">xz<span>@</span>xzos</p>
+					<p class="fetch-rule" aria-hidden="true">-------</p>
+					<dl>
+						<dt>{t('home.os')}:</dt>
+						<dd>{SITE_TITLE}</dd>
+						<dt>{t('home.init')}:</dt>
+						<dd>OpenRC</dd>
+						<dt>{t('home.host')}:</dt>
+						<dd>{SITE_HOST}</dd>
+						<dt>{t('home.uptime')}:</dt>
+						<dd><span>{t('home.since', { date: SITE_SINCE })}</span></dd>
+						<dt>{t('home.posts')}:</dt>
+						<dd>{postCount}</dd>
+						<dt>{t('home.lang')}:</dt>
+						<dd>
+							{locales.map((locale, index) => (
+								<span>
+									{index > 0 && <span class="sep" aria-hidden="true">· </span>}
+									<a href={getHomePath(locale)} hreflang={locale} aria-current={locale === lang ? 'page' : undefined}>{languages[locale]}</a>
+								</span>
+							))}
+						</dd>
+						<dt>{t('home.links')}:</dt>
+						<dd>
+							{links.map((link, index) => (
+								<span>
+									{index > 0 && <span class="sep" aria-hidden="true">· </span>}
+									<a href={link.href} target="_blank" rel="noopener">{link.name}</a>
+								</span>
+							))}
+						</dd>
+					</dl>
+					<div class="swatches" aria-hidden="true">
+						{swatches.map((token) => <span style={`background: var(--${token})`} />)}
+					</div>
+				</div>
+			</div>
+
+			<section class="recent" aria-labelledby="recent-heading">
+				<h2 id="recent-heading" class="sr-only">{t('home.recent')}</h2>
+				<p class="prompt" aria-hidden="true">$ <span>ls -t ~/blog | head -{posts.length}</span></p>
+				<ul>
+					{posts.map((post) => (
+						<li>
+							<time datetime={formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime}>{day(post)}</time>
+							<a href={`${blogPrefix}/${post.id}/`}>{post.data.title}</a>
+						</li>
+					))}
+				</ul>
+				<a class="all-posts" href={`${blogPrefix}/`}><PixelArrowText text={t('home.allPosts')} /></a>
+				<p class="prompt" aria-hidden="true">$ <span class="cursor">█</span></p>
+			</section>
+		</PageFrame>
+		<Footer />
+
+		<script>
+			// Animates the ring at RING_FPS while it is on screen, the tab is
+			// visible, motion is allowed and the reader has not paused it. Frame 0
+			// is the server-rendered one; reduced motion keeps it and hides the
+			// pause control.
+			import { RING_FPS, ringHtml } from '../lib/ascii-ring';
+
+			const root = document.querySelector<HTMLElement>('[data-ring-root]');
+			const button = root?.querySelector<HTMLButtonElement>('.ring-toggle');
+			if (root && button) {
+				const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+				const shown = new Set<HTMLElement>();
+				let paused = false;
+				let time = 0;
+				let last = 0;
+				let frame = 0;
+
+				const draw = (now: number) => {
+					frame = requestAnimationFrame(draw);
+					// 5ms of slack so a 60Hz display lands on every fifth frame, not the sixth.
+					if (last && now - last < 1000 / RING_FPS - 5) return;
+					// A long gap (a stalled tab) advances one frame, not a jump.
+					if (last) time += Math.min(now - last, 250) / 1000;
+					last = now;
+					for (const art of shown) {
+						art.innerHTML = ringHtml(time, { cols: Number(art.dataset.cols), rows: Number(art.dataset.rows) });
+					}
+				};
+				const update = () => {
+					button.hidden = reduce.matches;
+					const run = !paused && !reduce.matches && !document.hidden && shown.size > 0;
+					if (run && !frame) {
+						last = 0;
+						frame = requestAnimationFrame(draw);
+					} else if (!run && frame) {
+						cancelAnimationFrame(frame);
+						frame = 0;
+					}
+				};
+
+				const observer = new IntersectionObserver((entries) => {
+					for (const entry of entries) {
+						const art = entry.target as HTMLElement;
+						if (entry.isIntersecting) shown.add(art);
+						else shown.delete(art);
+					}
+					update();
+				});
+				root.querySelectorAll<HTMLElement>('.ring').forEach((art) => observer.observe(art));
+				button.addEventListener('click', () => {
+					paused = !paused;
+					button.setAttribute('aria-pressed', String(paused));
+					// Pausing stops the cursor too (WCAG 2.2.2): [data-paused] in terminal.css.
+					root.closest('main')?.toggleAttribute('data-paused', paused);
+					update();
+				});
+				document.addEventListener('visibilitychange', update);
+				reduce.addEventListener('change', update);
+				update();
+			}
+		</script>
+	</body>
+</html>

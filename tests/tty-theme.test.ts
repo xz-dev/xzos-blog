@@ -76,8 +76,13 @@ test('night differs from day through tokens; glow, scanlines and vignette are st
 	assert.match(nightTokens, /--tty-vignette:\s*radial-gradient\(ellipse at center/);
 	const more = tokens.match(/@media \(prefers-contrast: more\)\s*\{([\s\S]*?)\n\}/)![1];
 	assert.match(more, /:root,\s*:root\[data-theme="tty"\]\s*\{[^}]*--text-glow:\s*none;[^}]*--field-overlay:\s*none;/);
-	// Static only: no motion, flicker, curvature or blur.
-	assert.doesNotMatch(tty + base, /@keyframes|animation:(?!\s*none)|perspective|backdrop-filter|filter:\s*blur|transform:\s*(?:scale|rotate|skew|matrix)/i);
+	// Static only: no motion, flicker, curvature or blur. The one exception (README, Night / TTY) is
+	// the home page's block cursor: an opacity blink, declared only under no-preference for motion.
+	assert.match(tokens, /--cursor-blink:\s*cursor-blink [\d.]+s steps\(1, end\) infinite;/);
+	const withoutCursor = (css: string) => css
+		.replace(/@keyframes cursor-blink\s*\{\s*50%\s*\{\s*opacity:\s*0;\s*\}\s*\}/, '')
+		.replace(/@media \(prefers-reduced-motion: no-preference\)\s*\{\s*[^{}]*\.cursor[^{}]*\{\s*animation:\s*var\(--cursor-blink\)(?:\s*!important)?;\s*\}\s*\}/g, '');
+	assert.doesNotMatch(withoutCursor(tty) + withoutCursor(base), /@keyframes|animation:(?!\s*none)|--cursor-blink|perspective|backdrop-filter|filter:\s*blur|transform:\s*(?:scale|rotate|skew|matrix)/i);
 	assert.doesNotMatch(base, /drop-shadow\(|text-shadow:(?!\s*(?:none|var\(--text-glow\)))|box-shadow:(?!\s*none)/i);
 	assert.match(tty, /transition:\s*none\s*!important/);
 	// One radius, a token: no literal radius anywhere else.

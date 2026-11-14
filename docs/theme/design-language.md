@@ -37,6 +37,7 @@ block redefines colours and the role tokens only.
 | Control | `.control` | pagination |
 | Pixel mark (both themes) | `PixelIcon bothThemes` (`.pixel-icon`) | header logo, theme toggle |
 | Meta line | `PostMeta` (`.post-meta`) | post lists, posts |
+| Block cursor | `.cursor` (U+2588 after a `$` prompt) | home page |
 
 ## Status line
 
@@ -80,15 +81,15 @@ tables scroll in their own container.
 
 ## Routes and patterns
 
-Every HTML page renders through `PageFrame`. `list` and `page` use
+Every HTML page renders through `PageFrame`. `list`, `page` and `home` use
 `--page-width` (960px). `article` uses `--prose-width` (720px) and puts the
 meta line above the title. The `/en/` and `/zh-CN/` variants use the same
 pattern as the `zh` route.
 
 | Route | Pattern | Source |
 |---|---|---|
-| `/`, `/en/`, `/zh-CN/` | list | `layouts/BlogList.astro` |
-| `/page/N/`, `/en/page/N/`, `/zh-CN/page/N/` | list | `layouts/BlogList.astro` |
+| `/`, `/en/`, `/zh-CN/` | home | `layouts/Home.astro` |
+| `/page/N/`, `/en/page/N/`, `/zh-CN/page/N/` | list | `layouts/BlogList.astro` (pending: kept reachable as is until the home redesign settles pagination and redirects) |
 | `/blog/`, `/en/blog/`, `/zh-CN/blog/` | list | `layouts/BlogArchive.astro` |
 | `/blog/<slug>/`, `/en/blog/<slug>/`, `/zh-CN/blog/<slug>/` | article | `layouts/BlogPost.astro` |
 | `/about/`, `/en/about/`, `/zh-CN/about/` | page | `layouts/Page.astro` |
@@ -99,11 +100,42 @@ Endpoints that are not HTML pages have no pattern: `/rss.xml`
 (`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)
 and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
 
+## Home: boot screen
+
+The home page reads like fastfetch at login. From 720px the art and the info
+block sit side by side; below that the art stacks above the info.
+
+- **Title:** `PageFrame` still draws the page's one h1 (`xzOS - For Coding
+  Life`), visually hidden; the visible title line is the info block's
+  `xz@xzos`. This is the only pattern whose h1 is not drawn on screen.
+- **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
+  (`src/lib/ascii-ring.ts`), on a fixed grid of 44 × 22 cells, 32 × 16 at
+  420px and below. Cells are 8 × 16 (`--leading-art`), so the box never
+  changes size. Bright marks use `--accent`, dim marks `--secondary`, the
+  rest `--foreground`. The build renders frame 0; the page script animates it
+  at 12 fps while it is on screen and the tab is visible. The art is
+  `aria-hidden` with a visually hidden text alternative.
+- **Pause:** `[pause]` is a plain menu item with `aria-pressed` and a
+  constant accessible name. Pressed (paused) is marked like the status
+  line's current entry: `--accent` and a trailing `*`, never inverted. It
+  stops the logo and the cursor (`data-paused` on the frame).
+- **Info block:** an 8ch label column in `--accent`, values in
+  `--foreground` that wrap under their column, and a palette strip of the
+  seven palette tokens.
+- **Recent posts:** a `$ ls -t ~/blog | head -5` prompt over a list of
+  `YYYY-MM-DD  Title` rows (a 10ch date column that never wraps; titles wrap
+  under the title column), a link to the locale's archive, then `$` and the
+  block cursor.
+- **Motion:** the logo and the cursor are the site's only motion, in both
+  themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
+  control and stops the blink.
+
 ## Night-only rules that remain
 
 `src/styles/tty.css` turns motion off on every element, which a token cannot
-reach. It also applies Shiki's per-span `--shiki-dark` colours, which Shiki
-writes inline. `src/styles/tty-pixel-icons.css` swaps the social, notice,
+reach, and lets the home page's cursor blink through (the logo is drawn by
+script, which the reset does not touch). It also applies Shiki's per-span
+`--shiki-dark` colours, which Shiki writes inline. `src/styles/tty-pixel-icons.css` swaps the social, notice,
 contents and pagination icons for hand-drawn 16×16 pixel icons, because night
 uses a different set of drawn assets. The logo and the theme toggle use the
 pixel drawings in both themes. `ThemeToggle.astro` shows the sun or moon from

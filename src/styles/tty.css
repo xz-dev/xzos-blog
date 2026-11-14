@@ -3,7 +3,8 @@
  * Palette, glow, overlay, code colour and selection are tokens in tokens.css;
  * the rules left here cannot be tokens:
  * - motion: night is static by contract, so it switches animation and
- *   transition off on every element, which no single token can reach;
+ *   transition off on every element, which no single token can reach; the
+ *   home page's cursor is the one exception;
  * - Shiki: syntax colours are per-element variables (--shiki-dark) that
  *   Shiki writes inline, so only an element rule can select them.
  */
@@ -26,6 +27,15 @@
   animation: none !important;
   transition: none !important;
   scroll-behavior: auto !important;
+}
+
+/* The one exception (README, Night / TTY): the home page's block cursor
+ * blinks in night too. Reduced motion, the page's pause control
+ * ([data-paused]) and the switch guard still stop it. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme="tty"]:not([data-theme-switching]) .cursor:not([data-paused] *) {
+    animation: var(--cursor-blink) !important;
+  }
 }
 
 /* Shiki's dual-theme switch: each span carries its night colour inline. */

@@ -3,10 +3,12 @@
  * 所有页面的共用框架：每种页面类型一个宽度、同一个 h1、同样的标题位置。
  * list（文章列表）与 page（静态页）用 --page-width，article（文章）用
  * --prose-width；页面自身不再设定宽度。
+ * home（首页开机画面）同样用 --page-width；它的 h1 仍由框架绘制，但只对
+ * 读屏器可见（sr-only），画面上的标题行是 fastfetch 的 xz@xzos。
  */
 interface Props {
 	title: string;
-	pattern?: 'list' | 'page' | 'article';
+	pattern?: 'list' | 'page' | 'article' | 'home';
 }
 
 const { title, pattern = 'page' } = Astro.props;
@@ -24,7 +26,7 @@ const { title, pattern = 'page' } = Astro.props;
 		</>
 	) : (
 		<>
-			<h1 class="page-title">{title}</h1>
+			<h1 class:list={['page-title', pattern === 'home' && 'sr-only']}>{title}</h1>
 			<slot />
 		</>
 	)}
