@@ -146,7 +146,7 @@ block sit side by side; below that the art stacks above the info.
   (`src/lib/ascii-ring.ts`), on a fixed grid of 44 × 22 cells, 32 × 16 at
   420px and below. Cells are 8 × 16 (`--leading-art`), so the box never
   changes size. The dashes are a flat band (half-width 0.17 across the ring,
-  0.11 along its axis, dash 50% of each 1/16 arc) with back faces culled, so
+  0.08 along its axis, dash 42% of each 1/16 arc) with back faces culled, so
   the gaps stay empty; the ramp ` -=+*#%@` has no light marks. The ring
   leans back 14°–26° and swings up to 26° about the vertical axis, so the
   drawing keeps 19–21 of 22 rows. Bright marks use `--accent`, dim marks

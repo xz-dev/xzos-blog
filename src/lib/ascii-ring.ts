@@ -18,10 +18,10 @@ export const RING_BRIGHT = 6;
 export const RING_DIM = 1;
 
 const DASHES = 16;
-const DASH_SHARE = 0.5;   // part of each 1/16 arc that is dash; the rest is gap
+const DASH_SHARE = 0.42;  // part of each 1/16 arc that is dash; the rest is gap
 const RADIUS = 1;         // ring radius
 const RADIAL = 0.17;      // half-width of the band across the ring
-const AXIAL = 0.11;       // half-thickness of the band along the ring's axis
+const AXIAL = 0.08;       // half-thickness of the band along the ring's axis
 const DISTANCE = 5;       // camera to ring centre
 const TAU = Math.PI * 2;
 
