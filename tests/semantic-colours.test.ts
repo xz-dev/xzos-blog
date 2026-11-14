@@ -89,8 +89,8 @@ test('terminal output draws each role from its token', () => {
 	assert.match(list, /<a class="term-link"[^>]*target="_blank"/);
 	assert.match(list, /<time class="term-date"/);
 	const meta = read('../src/components/PostMeta.astro');
-	assert.match(meta, /\.post-meta :global\(time\)\s*\{\s*color:\s*var\(--term-date\);/);
-	assert.match(meta, /\.post-category\s*\{\s*color:\s*var\(--term-tag\);/);
+	// The post meta line stays dim: semantic colours are for terminal output only.
+	assert.doesNotMatch(meta, /--term-date|--term-tag/);
 	const home = read('../src/layouts/Home.astro');
 	assert.match(home, /\.fetch a\.term-link\s*\{\s*color:\s*var\(--term-link\);/);
 	assert.match(home, /<a class="term-link" href=\{link\.href\} target="_blank"/);

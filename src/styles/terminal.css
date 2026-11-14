@@ -93,6 +93,10 @@ body::after {
   background: var(--field-overlay);
 }
 
+h1, h2, h3 {
+  color: var(--emphasized);
+}
+
 h1 {
   font-size: var(--text-page-title);
   line-height: var(--leading-page-title);
@@ -267,7 +271,11 @@ a:hover {
   color: var(--emphasized);
 }
 
-.post-title a,
+.post-title a {
+  color: var(--emphasized);
+  text-decoration: none;
+}
+
 .toc a {
   color: var(--foreground);
   text-decoration: none;

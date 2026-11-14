@@ -37,11 +37,6 @@ const t = useTranslations(lang);
 		font-size: var(--text-meta);
 		line-height: var(--leading-meta);
 	}
-	/* Dates and the category in their semantic colours; labels stay dim. */
-	.post-meta :global(time) {
-		color: var(--term-date);
-	}
-	.post-category {
-		color: var(--term-tag);
-	}
+	/* The whole meta line stays dim so the title above it leads; semantic
+	 * colours belong to terminal output, not to every list entry. */
 </style>

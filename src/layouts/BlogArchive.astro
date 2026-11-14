@@ -35,36 +35,27 @@ const posts = (await getCollection(collectionName as any)).sort(
 	<head>
 		<BaseHead title={`${t('blog.heading')} - ${SITE_TITLE}`} description={t('meta.blogDescription')} />
 		<style>
-			/* Every entry reserves the thumbnail column, so all titles share one
-			 * left edge with or without a picture. The date breaks between day
-			 * and clock (FormattedDate), so the text fits beside it at 320px. */
+			/* Most entries have no picture, so no column is reserved for one:
+			 * the text takes the full row at every width and every title starts
+			 * at the page's left edge. An entry with a picture puts it on the
+			 * right. The date breaks between day and clock (FormattedDate), so
+			 * the text fits beside a picture at 320px. */
 			.post-item {
 				display: grid;
-				grid-template-columns: var(--thumb-size) minmax(0, 1fr);
+				grid-template-columns: minmax(0, 1fr);
 				column-gap: var(--space-3);
 				align-items: start;
 			}
-			.post-text {
-				grid-column: 2;
+			.post-item:has(.post-thumbnail) {
+				grid-template-columns: minmax(0, 1fr) var(--thumb-size);
 			}
-			/* Phones: the reserved column would cost a quarter of the width and
-			 * leave most entries indented beside nothing. The text takes the
-			 * full row; an entry with a picture puts it on the right. */
-			@media (max-width: 720px) {
-				.post-item {
-					grid-template-columns: minmax(0, 1fr);
-				}
-				.post-item:has(.post-thumbnail) {
-					grid-template-columns: minmax(0, 1fr) var(--thumb-size);
-				}
-				.post-text {
-					grid-column: 1;
-					grid-row: 1;
-				}
-				.post-item :global(.post-thumbnail) {
-					grid-column: 2;
-					grid-row: 1;
-				}
+			.post-text {
+				grid-column: 1;
+				grid-row: 1;
+			}
+			.post-item :global(.post-thumbnail) {
+				grid-column: 2;
+				grid-row: 1;
 			}
 		</style>
 	</head>
