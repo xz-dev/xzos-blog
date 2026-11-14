@@ -10,7 +10,7 @@ export const SITE_HOST = 'xzos.net';
 /** The day xzOS went up; the home page reports it as the uptime. */
 export const SITE_SINCE = '2017-07-19T00:00:00+08:00';
 /** The two palettes' names on the fetch block's Theme line: proper names, the same in every locale. */
-export const THEME_NAMES = { day: 'Peach', night: 'Phosphor' } as const;
+export const THEME_NAMES = { day: 'Solarized Light', night: 'Solarized Dark' } as const;
 
 /** Social profiles, linked from the header, the footer and the home page. */
 export const SOCIAL_LINKS = {

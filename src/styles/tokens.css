@@ -15,14 +15,14 @@
  * --border-color (30%) is for decorative separators only. */
 :root {
   color-scheme: light;
-  --background: #fff8f2;
-  --surface: #ffeadb;
-  --foreground: #42302a;
-  --accent: #b4410f;
-  --secondary: #76605a;
-  --emphasized: #42302a;
-  --border-color: #e9c1ae;        /* decorative separators: hr, list rules, image frames */
-  --border-strong: #c3663c;       /* structural: tables, code, quotes, header edge */
+  --background: #fdf6e3;
+  --surface: #eee8d5;
+  --foreground: #073642;
+  --accent: #b04010;
+  --secondary: #566a71;
+  --emphasized: #073642;
+  --border-color: #eee8d5;        /* decorative separators: hr, list rules, image frames */
+  --border-strong: #93a1a1;       /* structural: tables, code, quotes, header edge */
 
   /* Role tokens that differ between the themes in colour or effect only;
    * the night block redefines them, so no element rule depends on the theme. */
@@ -33,7 +33,7 @@
   --field-overlay: none;          /* fixed layer painted behind the content */
 
   /* Error text (xzsh's "command not found"): a muted red, 4.5:1 on the page. */
-  --error: #a8321f;
+  --error: #dc322f;
 
   /* Size, spacing, width and font system shared by both themes. The night
    * block changes colour and effects only, so switching theme never moves or
@@ -97,23 +97,23 @@
   color-scheme: dark;
   /* Chosen anchors; --border-color mixes --foreground over --background at the
    * weight in docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
-  --background: #141a03;
-  --surface: #1d2606;
-  --foreground: #d4ff3a;
-  --emphasized: #d4ff3a;
-  --accent: #f0ff9a;
-  --secondary: #a8cc2a;
-  --border-color: #6a811c;
-  --border-strong: var(--border-color);
-  --code-foreground: #e8fff0;
+  --background: #002b36;
+  --surface: #073642;
+  --foreground: #93a1a1;
+  --emphasized: #eee8d5;
+  --accent: #ee7d47;
+  --secondary: #839496;
+  --border-color: #073642;
+  --border-strong: #586e75;
+  --code-foreground: #93a1a1;
   --code-color: var(--code-foreground);
-  --selection-bg: var(--accent);  /* reverse video, like mark */
-  --selection-fg: var(--background);
+  --selection-bg: #073642;  /* reverse video, like mark */
+  --selection-fg: #93a1a1;
   /* Error text: a dim phosphor level, still 4.5:1 on the field. */
-  --error: #728b1d;
+  --error: #dc322f;
   /* Static phosphor glow and a scanline and vignette layer behind the content. */
-  --text-glow: var(--tty-glow);
-  --field-overlay: var(--tty-scanlines), var(--tty-vignette);
+  --text-glow: none;
+  --field-overlay: none;
   --tty-glow: 0 0 2px currentColor, 0 0 8px color-mix(in srgb, var(--foreground) 45%, transparent);
   /* Painted behind the content (terminal.css body::after), so they darken only the field. */
   --tty-scanlines: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px);
