@@ -1,5 +1,5 @@
 /*
- * Night (data-theme="tty"): yellow-green phosphor on a dark olive field.
+ * Night (data-theme="tty"): Solarized Dark with an orange accent.
  * Palette, glow, overlay, code colour and selection are tokens in tokens.css;
  * the rules left here cannot be tokens:
  * - motion: night is static by contract, so it switches animation and

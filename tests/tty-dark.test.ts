@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const photo = JSON.parse(read('../docs/theme/tektronix-4052-b.json'));
 const tty = read('../src/styles/tty.css');
 const tokens = read('../src/styles/tokens.css');
 const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
@@ -11,19 +10,14 @@ const colors = Object.fromEntries([...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da
 const luminance = (hex: string) => hex.match(/[\da-f]{2}/gi)!.map((c) => parseInt(c, 16) / 255).reduce((sum, c, i) => sum + (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][i], 0);
 const contrast = (a: string, b: string) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
 
-test('the active night background is dark, not the earlier illuminated photo field', () => {
-  assert.notEqual(colors['--background'], photo.palette['--background']);
-  assert.ok(luminance(colors['--background']) <= 0.01, 'dark-green field must have relative luminance <= 0.01');
-  assert.equal(colors['--foreground'], '#d4ff3a', 'yellow-green phosphor emission');
-  for (const role of ['--foreground', '--secondary', '--accent']) {
-    assert.ok(contrast(colors[role], colors['--background']) >= 7, `${role}: 7:1 normal text floor`);
+test('the dark field and raised surface preserve Solarized hue and separation', () => {
+  assert.equal(colors['--background'], '#002b36');
+  assert.equal(colors['--surface'], '#073642');
+  assert.ok(luminance(colors['--background']) < luminance(colors['--surface']));
+  assert.ok(luminance(colors['--surface']) < 0.04);
+  for (const field of ['--background', '--surface']) {
+    for (const role of ['--foreground', '--secondary', '--accent']) {
+      assert.ok(contrast(colors[role], colors[field]) >= 4.5, `${role} on ${field}`);
+    }
   }
-});
-
-test('the code and header surface keeps usable contrast without a bright green panel', () => {
-  for (const surface of ['--surface']) {
-    assert.ok(luminance(colors[surface]) < 0.03, `${surface}: avoid large bright panels`);
-    for (const role of ['--foreground', '--secondary']) assert.ok(contrast(colors[role], colors[surface]) >= 7, `${role} on ${surface}`);
-  }
-  assert.ok(contrast(colors['--border-color'], colors['--background']) >= 3);
 });

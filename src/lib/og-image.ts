@@ -9,12 +9,12 @@ import { defaultLang, langCodes, ui } from '../i18n/ui.ts';
 export const OG_IMAGE_WIDTH = 1200;
 export const OG_IMAGE_HEIGHT = 630;
 export const OG_PALETTE = {
-	background: '#fff8f2',
-	surface: '#ffeadb',
-	foreground: '#42302a',
-	secondary: '#76605a',
-	accent: '#b4410f',
-	borderStrong: '#c3663c',
+	background: '#fdf6e3',
+	surface: '#eee8d5',
+	foreground: '#073642',
+	secondary: '#566a71',
+	accent: '#b04010',
+	borderStrong: '#778888',
 } as const;
 
 export interface OgImageContent {

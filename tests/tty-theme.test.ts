@@ -8,7 +8,6 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf
 const base = read('../src/styles/terminal.css');
 // Keep the night theme isolated: the day stylesheet remains the baseline.
 const tty = read('../src/styles/tty.css');
-const reference = JSON.parse(read('../docs/theme/tty-dark.json'));
 const tokens = read('../src/styles/tokens.css');
 const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
 const hexTokens = (block: string) => Object.fromEntries(
@@ -34,24 +33,14 @@ function contrast(a: string, b: string) {
 	return (values[0] + 0.05) / (values[1] + 0.05);
 }
 
-test('the active dark field stays on the green-dominant phosphor axis with AAA text contrast', () => {
-	for (const [name, value] of Object.entries(palette)) {
-		const [r, g, b] = value.match(/[\da-f]{2}/gi)!.map((v) => parseInt(v, 16));
-		assert.ok(g >= r && g >= b, `${name} must stay on the green phosphor axis`);
-	}
-	for (const name of ['--foreground', '--emphasized', '--accent', '--secondary']) {
-		assert.ok(contrast(palette[name], palette['--background']) >= 7, `${name}: 7:1 text floor`);
-	}
-	assert.ok(luminance(palette['--background']) < 0.01);
-	assert.ok(Math.abs(contrast(palette['--foreground'], palette['--background']) - reference.contrast.foregroundOnBackground) < 1e-10);
-	assert.equal(reference.contrast.normalTextWcagAAA, true);
-	assert.ok(contrast(palette['--secondary'], palette['--surface']) >= 7);
-	for (const [role, color] of Object.entries(reference.syntax)) {
-		if (role !== 'background') assert.ok(contrast(String(color), palette['--surface']) >= 7, role);
-	}
+test('night keeps the Solarized dark field and orange accent', () => {
+  assert.equal(palette['--background'], '#002b36');
+  assert.equal(palette['--surface'], '#073642');
+  assert.equal(palette['--accent'], '#ee7d47');
+  assert.ok(luminance(palette['--background']) < 0.03);
 });
 
-test('night differs from day through tokens; glow, scanlines and vignette are static and opt out for more contrast', () => {
+test('night only recolours through tokens and keeps text and fields free of effects', () => {
 	const rules = [...tty.matchAll(/([^{}]+)\{[^{}]*\}/g)];
 	for (const rule of rules) {
 		const selector = rule[1].replace(/\/\*[\s\S]*?\*\//g, '').trim();
@@ -59,22 +48,13 @@ test('night differs from day through tokens; glow, scanlines and vignette are st
 	}
 	// What night still sets by rule: motion off and Shiki's per-span colours. Everything else is a token.
 	assert.doesNotMatch(tty.replace(/\/\*[\s\S]*?\*\//g, ''), /text-shadow|box-shadow|border-color|background|border-radius|::selection|mark|font-family/);
-	// The halo is the foreground itself at 45%, not a second copy of its value.
-	assert.match(nightTokens, /--tty-glow:\s*0 0 2px currentColor, 0 0 8px color-mix\(in srgb, var\(--foreground\) 45%, transparent\);/);
-	assert.match(nightTokens, /--text-glow:\s*var\(--tty-glow\);/);
-	assert.match(dayTokens, /--text-glow:\s*none;/);
-	assert.match(base, /\nbody\s*\{[^}]*text-shadow:\s*var\(--text-glow\);/);
-	assert.match(base, /\npre\s*\{[^}]*text-shadow:\s*none;/);
-	const overlay = base.match(/\nbody::after\s*\{([^}]*)\}/)![1];
-	assert.match(overlay, /position:\s*fixed/);
-	assert.match(overlay, /pointer-events:\s*none/);
-	// Behind the content: the overlay darkens the field, never the text.
-	assert.match(overlay, /z-index:\s*-1;/);
-	assert.match(overlay, /background:\s*var\(--field-overlay\);/);
-	assert.match(dayTokens, /--field-overlay:\s*none;/);
-	assert.match(nightTokens, /--field-overlay:\s*var\(--tty-scanlines\), var\(--tty-vignette\);/);
-	assert.match(nightTokens, /--tty-scanlines:\s*repeating-linear-gradient\(to bottom, rgba\(0, 0, 0, 0\.12\) 0, rgba\(0, 0, 0, 0\.12\) 1px, transparent 1px, transparent 3px\);/);
-	assert.match(nightTokens, /--tty-vignette:\s*radial-gradient\(ellipse at center/);
+  for (const block of [dayTokens, nightTokens]) {
+    assert.match(block, /--text-glow:\s*none;/);
+    assert.match(block, /--field-overlay:\s*none;/);
+    assert.doesNotMatch(block, /--tty-(?:glow|scanlines|vignette):/);
+  }
+  assert.match(base, /\nbody\s*\{[^}]*text-shadow:\s*var\(--text-glow\);/);
+  assert.match(base, /\npre\s*\{[^}]*text-shadow:\s*none;/);
 	const more = tokens.match(/@media \(prefers-contrast: more\)\s*\{([\s\S]*?)\n\}/)![1];
 	assert.match(more, /:root,\s*:root\[data-theme="tty"\]\s*\{[^}]*--text-glow:\s*none;[^}]*--field-overlay:\s*none;/);
 	// Static only: no motion, flicker, curvature or blur. The one exception (README, Night / TTY) is
@@ -106,18 +86,10 @@ test('typography is self-hosted for both themes, with real WOFF2 files and its l
 	assert.ok(!existsSync(new URL('../scripts/build-day-font.py', import.meta.url)));
 });
 
-test('day palette keeps the peach hues', () => {
-	assert.equal(day['--background'], '#fff8f2');
-	assert.equal(day['--surface'], '#ffeadb');
-	assert.equal(day['--accent'], '#b4410f');
-	// Borders are the accent mixed into the page: 30% decorative, 80% structural.
-	const mix = (a: string, b: string, weight: number) =>
-		'#' + [0, 1, 2].map((i) => {
-			const channel = (hex: string) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
-			return Math.round(channel(a) * weight + channel(b) * (1 - weight)).toString(16).padStart(2, '0');
-		}).join('');
-	assert.equal(mix(day['--accent'], day['--background'], 0.3), day['--border-color']);
-	assert.equal(mix(day['--accent'], day['--background'], 0.8), day['--border-strong']);
+test('day palette keeps Solarized paper and the orange accent', () => {
+  assert.equal(day['--background'], '#fdf6e3');
+  assert.equal(day['--surface'], '#eee8d5');
+  assert.equal(day['--accent'], '#b04010');
 	// Code and inline code sit on the surface.
 	assert.match(base, /pre\s*\{[^}]*background:\s*var\(--surface\)/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
@@ -193,10 +165,8 @@ test('both palettes keep every text colour at 4.5:1 or more on each field it sit
 		day: { background: day['--background'], surface: day['--surface'] },
 		night: { background: night['--background'], surface: night['--surface'] },
 	};
-	const text = {
-		day: { foreground: day['--foreground'], secondary: day['--secondary'], accent: day['--accent'] },
-		night: { foreground: night['--foreground'], secondary: night['--secondary'], accent: night['--accent'] },
-	};
+  const roles = ['--foreground', '--emphasized', '--secondary', '--accent', '--term-prompt', '--term-path', '--term-link', '--term-date', '--term-tag', '--error'];
+  const text = Object.fromEntries(Object.entries({ day, night }).map(([name, colors]) => [name, Object.fromEntries(roles.map(role => [role, colors[role]]))]));
 	for (const theme of ['day', 'night'] as const) {
 		for (const [role, color] of Object.entries(text[theme])) {
 			for (const [field, bg] of Object.entries(fields[theme])) {
@@ -244,7 +214,6 @@ test('no frame, fill or bevel exists in one theme and not the other', () => {
 		'--border-color', '--border-strong', '--code-foreground', '--code-color',
 		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay', '--error',
 		'--term-prompt', '--term-path', '--term-link', '--term-date', '--term-tag',
-		'--tty-glow', '--tty-scanlines', '--tty-vignette',
 	]);
 	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name), name);
 	assert.doesNotMatch(tokens.replace(/\/\*[\s\S]*?\*\//g, ''), /bevel|--edge-|--control-(?!size)|--field-(?!overlay)/);
@@ -273,33 +242,7 @@ test('structural borders reach 3:1 in both themes; the soft border is decorative
 	for (const selector of ['hr', 'img', '.post-item']) assert.doesNotMatch(borderOf(selector), /--border-strong/, selector);
 });
 
-// The night scanlines and vignette are black at the alphas in tokens.css. A
-// layer in front of the text multiplies text and field alike; a layer behind
-// darkens the field only. Measure every text token and syntax colour at the
-// darkest point (vignette edge on a scanline row) against the flat field.
-test('night text and syntax keep 4.5:1 at the darkest overlay point', () => {
-	const scanAlpha = Number(nightTokens.match(/--tty-scanlines:[^;]*rgba\(0, 0, 0, ([\d.]+)\)/)![1]);
-	const vignetteAlpha = Number(nightTokens.match(/--tty-vignette:[^;]*rgba\(0, 0, 0, ([\d.]+)\) 100%/)![1]);
-	const factor = (1 - scanAlpha) * (1 - vignetteAlpha);
-	const darken = (hex: string, f: number) => '#' + hex.match(/[\da-f]{2}/gi)!
-		.map((v) => Math.round(parseInt(v, 16) * f).toString(16).padStart(2, '0')).join('');
-	const overlay = base.match(/\nbody::after\s*\{([^}]*)\}/)![1];
-	const zIndex = Number(overlay.match(/z-index:\s*(-?\d+)/)![1]);
-	const inFront = zIndex >= 0;
-	const fields = { background: palette['--background'], surface: palette['--surface'] };
-	const text: Record<string, string> = {
-		'--foreground': palette['--foreground'], '--secondary': palette['--secondary'], '--accent': palette['--accent'],
-	};
-	for (const [role, color] of Object.entries(reference.syntax)) if (role !== 'background') text[`syntax ${role}`] = String(color);
-	let worst = Infinity;
-	for (const [name, color] of Object.entries(text)) {
-		for (const [field, bg] of Object.entries(fields)) {
-			for (const f of [1, factor]) {
-				const ratio = contrast(inFront ? darken(color, f) : color, darken(bg, f));
-				worst = Math.min(worst, ratio);
-				assert.ok(ratio >= 4.5, `${name} on ${field} at overlay factor ${f.toFixed(3)}: ${ratio.toFixed(2)}`);
-			}
-		}
-	}
-	assert.ok(worst >= 4.5);
+test('decorative night separators remain visible on the surface', () => {
+  assert.ok(contrast(palette['--border-color'], palette['--surface']) >= 2);
+  assert.match(base, /\.prose small\s*\{\s*opacity:\s*1\s*!important;/);
 });

@@ -231,7 +231,9 @@ test('the same-origin static night favicon uses the same hand-drawn logo grid as
 	const response = await GET({} as never);
 	assert.equal(response.status, 200);
 	assert.match(response.headers.get('Content-Type')!, /^image\/svg\+xml/);
-	assert.equal(await response.text(), renderPixelIconSvg('logo', '#d4ff3a'));
+	const tokens = read('../src/styles/tokens.css');
+	const foreground = tokens.match(/:root\[data-theme="tty"\]\s*\{[^}]*--foreground:\s*(#[\da-f]{6});/i)![1];
+	assert.equal(await response.text(), renderPixelIconSvg('logo', foreground));
 	const head = read('../src/components/BaseHead.astro');
 	assert.match(head, /<link id="site-favicon" rel="icon" type="image\/png" href="\/dotted_circle.png" sizes="192x192"/);
 	assert.match(head, /<link rel="apple-touch-icon" href="\/dotted_circle.png"/);

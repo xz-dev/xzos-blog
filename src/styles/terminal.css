@@ -75,7 +75,7 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   text-rendering: optimizeLegibility;
-  /* Night's static phosphor glow; none in day. It inherits, so it is set once. */
+  /* Shared effect token; both Solarized themes keep text sharp. */
   text-shadow: var(--text-glow);
   -webkit-overflow-scrolling: touch;
   -webkit-text-size-adjust: 100%;
@@ -83,10 +83,7 @@ body {
   padding: 0;
 }
 
-/* A fixed layer behind the content (z-index -1; body makes no stacking
- * context) that takes no pointer events: night's static scanlines and
- * vignette darken only the field, never text, code or embedded comments.
- * Day paints nothing. No animation, flicker or curvature. */
+/* Shared overlay hook; Solarized leaves it empty in both themes. */
 body::after {
   content: "";
   position: fixed;
@@ -228,8 +225,7 @@ table {
   color: var(--accent);
 }
 
-/* Night's glow stays on the frame, titles and headings; running text in a
- * post (paragraphs, lists, tables, quotes, links) is drawn sharp. */
+/* Running text stays sharp even if an effect token is later enabled. */
 .article-body {
   text-shadow: none;
 }

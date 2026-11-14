@@ -1,63 +1,47 @@
-// Day code highlighting: GitHub Light's rules and hue families on the peach
-// code surface. GitHub Light's comment, keyword, tag and variable colours fall
-// below WCAG AA (4.14, 3.93, 3.98 and 3.00:1) on --surface #ffeadb, so those
-// four are darkened in their own hue until every colour here reaches 4.5:1
-// (tests/tty-highlighting.test.ts measures each one).
-export const daySyntax = {
-	background: '#ffeadb',
-	foreground: '#24292e',
-	comment: '#636b74',
-	keyword: '#c13442',
-	string: '#032f62',
-	constant: '#005cc5',
-	entity: '#6f42c1',
-	tag: '#1f7a35',
-	variable: '#b14c07',
-	invalid: '#b31d28',
-	bracket: '#586069',
-} as const;
+import light from '@shikijs/themes/solarized-light';
+import dark from '@shikijs/themes/solarized-dark';
 
-const c = daySyntax;
-
-export const daySyntaxTheme = {
-	name: 'peach-day',
-	type: 'light',
-	colors: {
-		'editor.background': c.background,
-		'editor.foreground': c.foreground,
-	},
-	tokenColors: [
-		{ scope: ['comment', 'punctuation.definition.comment', 'string.comment'], settings: { foreground: c.comment } },
-		{ scope: ['constant', 'entity.name.constant', 'variable.other.constant', 'variable.other.enummember', 'variable.language'], settings: { foreground: c.constant } },
-		{ scope: ['entity', 'entity.name'], settings: { foreground: c.entity } },
-		{ scope: 'variable.parameter.function', settings: { foreground: c.foreground } },
-		{ scope: 'entity.name.tag', settings: { foreground: c.tag } },
-		{ scope: ['keyword', 'storage', 'storage.type'], settings: { foreground: c.keyword } },
-		{ scope: ['storage.modifier.package', 'storage.modifier.import', 'storage.type.java'], settings: { foreground: c.foreground } },
-		{ scope: ['string', 'punctuation.definition.string', 'string punctuation.section.embedded source'], settings: { foreground: c.string } },
-		{ scope: ['support', 'meta.property-name', 'support.constant', 'support.variable', 'meta.module-reference', 'string variable'], settings: { foreground: c.constant } },
-		{ scope: 'variable', settings: { foreground: c.variable } },
-		{ scope: 'variable.other', settings: { foreground: c.foreground } },
-		{ scope: ['invalid.broken', 'invalid.deprecated', 'invalid.illegal', 'invalid.unimplemented'], settings: { fontStyle: 'italic', foreground: c.invalid } },
-		{ scope: 'message.error', settings: { foreground: c.invalid } },
-		{ scope: ['source.regexp', 'string.regexp'], settings: { foreground: c.string } },
-		{ scope: 'string.regexp constant.character.escape', settings: { fontStyle: 'bold', foreground: c.tag } },
-		{ scope: 'punctuation.definition.list.begin.markdown', settings: { foreground: c.variable } },
-		{ scope: ['markup.heading', 'markup.heading entity.name'], settings: { fontStyle: 'bold', foreground: c.constant } },
-		{ scope: 'markup.quote', settings: { foreground: c.tag } },
-		{ scope: 'markup.italic', settings: { fontStyle: 'italic', foreground: c.foreground } },
-		{ scope: 'markup.bold', settings: { fontStyle: 'bold', foreground: c.foreground } },
-		{ scope: 'markup.underline', settings: { fontStyle: 'underline' } },
-		{ scope: 'markup.strikethrough', settings: { fontStyle: 'strikethrough' } },
-		{ scope: 'markup.inline.raw', settings: { foreground: c.constant } },
-		{ scope: ['markup.deleted', 'meta.diff.header.from-file', 'punctuation.definition.deleted'], settings: { foreground: c.invalid } },
-		{ scope: ['markup.inserted', 'meta.diff.header.to-file', 'punctuation.definition.inserted'], settings: { foreground: c.tag } },
-		{ scope: ['markup.changed', 'punctuation.definition.changed'], settings: { foreground: c.variable } },
-		{ scope: 'meta.diff.range', settings: { fontStyle: 'bold', foreground: c.entity } },
-		{ scope: ['meta.diff.header', 'meta.output'], settings: { foreground: c.constant } },
-		{ scope: 'meta.separator', settings: { fontStyle: 'bold', foreground: c.constant } },
-		{ scope: ['brackethighlighter.tag', 'brackethighlighter.curly', 'brackethighlighter.round', 'brackethighlighter.square', 'brackethighlighter.angle', 'brackethighlighter.quote'], settings: { foreground: c.bracket } },
-		{ scope: 'brackethighlighter.unmatched', settings: { foreground: c.invalid } },
-		{ scope: ['constant.other.reference.link', 'string.other.link'], settings: { fontStyle: 'underline', foreground: c.string } },
-	],
+// Preserve Solarized scopes and passing colours; adjust only failing foregrounds
+// along their HSL lightness axis for the site's code surfaces.
+const lightOverrides: Record<string, string> = {
+  '#268BD2': '#1e6da5',
+  '#2AA198': '#1e746e',
+  '#586E75': '#576c73',
+  '#657B83': '#586c73',
+  '#6C71C4': '#5a5fbd',
+  '#859900': '#616f00',
+  '#93A1A1': '#5e6b6b',
+  '#B58900': '#846400',
+  '#CB4B16': '#b64314',
+  '#D33682': '#bf2a72',
+  '#DC322F': '#ca2522'
 };
+
+const darkOverrides: Record<string, string> = {
+  '#268BD2': '#469fde',
+  '#2AA198': '#2ca99f',
+  '#586E75': '#859ca3',
+  '#6C71C4': '#8f93d2',
+  '#839496': '#8b9b9d',
+  '#859900': '#8ca200',
+  '#B58900': '#c09100',
+  '#CB4B16': '#eb7848',
+  '#D33682': '#e174a9',
+  '#DC322F': '#e87673'
+};
+
+function accessibleTheme(theme: typeof light, background: string, overrides: Record<string, string>) {
+  const foreground = (color: string) => overrides[color] ?? color;
+  return {
+    ...theme,
+    name: `${theme.name}-aa`,
+    colors: { ...theme.colors, 'editor.background': background, 'editor.foreground': foreground(theme.colors!['editor.foreground']) },
+    tokenColors: theme.tokenColors!.map(rule => ({
+      ...rule,
+      settings: { ...rule.settings, ...(rule.settings.foreground ? { foreground: foreground(rule.settings.foreground) } : {}) },
+    })),
+  };
+}
+
+export const daySyntaxTheme = accessibleTheme(light, '#eee8d5', lightOverrides);
+export const nightSyntaxTheme = accessibleTheme(dark, '#073642', darkOverrides);

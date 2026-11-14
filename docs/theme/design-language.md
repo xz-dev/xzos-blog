@@ -1,8 +1,8 @@
 # Design language
 
 One layout and one font in both themes; night only recolours. Day
-(`data-theme="solarized"`) is peach paper and night (`data-theme="tty"`) is
-phosphor on olive. Switching theme never moves or resizes anything, and no
+(`data-theme="solarized"`) is Solarized Light and night (`data-theme="tty"`) is
+Solarized Dark, both with an orange accent. Switching theme never moves or resizes anything, and no
 frame, fill or bevel exists in one theme but not the other.
 
 ## Tokens
@@ -30,13 +30,41 @@ block redefines colours and the role tokens only.
 - **Spacing:** `--space-1` to `--space-7` (4, 8, 16, 24, 32, 48, 64 px).
 - **Radius:** `--radius: 0`. Every box is square.
 - **Roles:** `--code-color`, `--selection-*`, `--text-glow` and
-  `--field-overlay`. Night redefines the palette and these roles only: a glow
-  and a scanline-and-vignette layer behind the content, and reverse-video
-  selection. Controls, menu items and form fields are drawn the same in both
-  themes. `prefers-contrast: more` removes the glow and the layer. The glow
-  stays on the frame, the title and headings, and the home page; running
-  text in a post (`.article-body`: paragraphs, lists, tables, quotes, links)
-  sets `text-shadow: none`, and its headings take `--text-glow` back.
+  `--field-overlay`. Both themes use reverse-video selection, no glow and no
+  overlay. Controls, menu items and form fields share their geometry.
+
+### Palette
+
+Solarized supplies the paper and dark fields. The orange accent and semantic
+hues are adjusted for readable text. Every text role reaches 4.5:1 on both
+fields; structural borders reach 3:1. Decorative borders do not convey state.
+
+| Token | Light | Dark |
+|---|---|---|
+| `--background` | `#fdf6e3` | `#002b36` |
+| `--surface` | `#eee8d5` | `#073642` |
+| `--foreground` | `#073642` | `#93a1a1` |
+| `--emphasized` | `#073642` | `#eee8d5` |
+| `--secondary` | `#566a71` | `#8b9b9d` |
+| `--accent` | `#b04010` | `#ee7d47` |
+| `--border-strong` | `#778888` | `#647e86` |
+| `--border-color` | `#eee8d5` | `#586e75` |
+
+Structural borders are the nearest passing 8-bit colours found by moving
+Solarized base1 (light) and base01 (dark) along HSL lightness, preserving hue
+and saturation before rounding. The minimum contrast across both fields is
+3.027:1 for light and 3.015:1 for dark. Dark secondary text similarly moves
+base0 to `#8b9b9d` (4.502:1 on the surface). The dark decorative border is
+2.416:1 against its surface. Selection and `mark` use the accent as their
+background and the page background as their foreground.
+
+Shiki uses the Solarized Light/Dark scopes in `src/lib/syntax-day.ts`.
+Only failing foregrounds change along HSL lightness; all scope order and
+other settings stay intact. Each declared syntax foreground reaches 4.5:1
+on its code surface. Inline code uses the page foreground. The 16 home
+swatches retain Solarized's standard terminal order; they are decorative.
+`docs/theme/tty-dark.json` retains only the night favicon's foreground; a
+test checks it against the CSS token. OG cards use the fixed day palette.
 
 ### Semantic colours
 
@@ -307,11 +335,9 @@ info; below that the art stacks above the info.
   are marked like the status line's current entry (`--accent`, trailing
   `*`), never inverted. Links are values with a dotted 1px underline, solid
   on hover and focus: `Locale:` in `--foreground`, the external `Links:` in
-  `--term-link`. After one blank line comes one row of six 3ch
-  swatches, no frame: the theme's own tokens (`--surface`,
-  `--border-color`, `--border-strong`, `--secondary`, `--accent`,
-  `--foreground`), so the row recolours with the theme. The shell's errors
-  use `--error` (see Semantic colours).
+  `--term-link`. After one blank line come 16 decorative
+  swatches in Solarized's standard ANSI terminal order, shared by both
+  themes. The shell's errors use `--error` (see Semantic colours).
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a

@@ -149,3 +149,11 @@ test('the committed Unifont has the pinned upstream bytes', () => {
 		'88d0a14d4aa9a96419720b39ba5da921a59560d76d4ec7d523acc06ed85cd3c2',
 	);
 });
+
+test('social cards use the same fixed day palette as CSS', () => {
+  const css = fs.readFileSync('src/styles/tokens.css', 'utf8').match(/:root\s*\{([^}]+)\}/)![1];
+  for (const [role, value] of Object.entries(OG_PALETTE)) {
+    const token = role === 'borderStrong' ? 'border-strong' : role;
+    assert.equal(value, css.match(new RegExp(`--${token}:\\s*(#[\\da-f]{6});`, 'i'))![1], role);
+  }
+});

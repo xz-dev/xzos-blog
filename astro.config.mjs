@@ -7,7 +7,7 @@ import { defineConfig } from 'astro/config';
 import localized404 from './src/integrations/localized-404';
 import { getCopyPaths } from './src/lib/copy-pages';
 import translate from './src/integrations/translate';
-import { daySyntaxTheme } from './src/lib/syntax-day';
+import { daySyntaxTheme, nightSyntaxTheme } from './src/lib/syntax-day';
 import { tableScroll } from './src/lib/table-scroll';
 
 // Read on first use, in astro:build:done, so the files the translate step
@@ -50,8 +50,8 @@ export default defineConfig({
     processor: satteri({ hastPlugins: [tableScroll] }),
     shikiConfig: {
       themes: {
-        light: 'solarized-light',
-        dark: 'solarized-dark',
+        light: daySyntaxTheme,
+        dark: nightSyntaxTheme,
       },
     },
   },
