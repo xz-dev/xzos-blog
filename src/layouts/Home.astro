@@ -15,6 +15,7 @@ import { useTranslations } from '../i18n/utils';
 import { RING_GRIDS, ringHtml } from '../lib/ascii-ring';
 import { formatPostDate } from '../lib/post-date';
 import { SITE_DESCRIPTION, SITE_HOST, SITE_SINCE, SITE_TITLE, SOCIAL_LINKS } from '../consts';
+import { formatUptime } from '../lib/uptime';
 
 interface Props {
 	lang: Lang;
@@ -219,7 +220,7 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 						<dt>{t('home.host')}:</dt>
 						<dd>{SITE_HOST}</dd>
 						<dt>{t('home.uptime')}:</dt>
-						<dd><span>{t('home.since', { date: SITE_SINCE })}</span></dd>
+						<dd><span data-uptime={SITE_SINCE}>{formatUptime(SITE_SINCE, Date.now())}</span></dd>
 						<dt>{t('home.posts')}:</dt>
 						<dd>{postCount}</dd>
 						<dt>{t('home.lang')}:</dt>
@@ -270,6 +271,17 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 			// is the server-rendered one; reduced motion keeps it and hides the
 			// pause control.
 			import { RING_FPS, ringHtml } from '../lib/ascii-ring';
+			import { formatUptime } from '../lib/uptime';
+
+			// The build-time uptime goes stale; recount it now and every minute.
+			const uptime = document.querySelector<HTMLElement>('[data-uptime]');
+			if (uptime) {
+				const tick = () => {
+					uptime.textContent = formatUptime(uptime.dataset.uptime!, Date.now());
+				};
+				tick();
+				setInterval(tick, 60_000);
+			}
 
 			const root = document.querySelector<HTMLElement>('[data-ring-root]');
 			const button = root?.querySelector<HTMLButtonElement>('.ring-toggle');

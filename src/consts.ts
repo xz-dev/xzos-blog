@@ -8,7 +8,7 @@ export const SITE_DESCRIPTION = "xzOS - xzdev's blog home";
 // Home page boot screen (layouts/Home.astro).
 export const SITE_HOST = 'xzos.net';
 /** The day xzOS went up; the home page reports it as the uptime. */
-export const SITE_SINCE = '2025-11-16';
+export const SITE_SINCE = '2025-11-16T00:00:00+08:00';
 
 /** Social profiles, linked from the header, the footer and the home page. */
 export const SOCIAL_LINKS = {
