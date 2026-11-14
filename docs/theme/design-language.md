@@ -17,9 +17,16 @@ block redefines colours and the role tokens only.
   `--accent`, `em` and `i` take `--secondary`, and neither is underlined.
   The underline means a link and nothing else. Inside a link, the link colour
   wins.
-- **Type scale (rem; line heights land on whole pixels):** body 16/24,
-  prose 16/28, page title 32/40, card title 24/32, h2 22/32, h3 20/28,
-  meta 14/20, code 16/24.
+- **Type scale: three sizes on Unifont's pixel grid.** Unifont is a 16px
+  bitmap font; text takes 16px for text (`--font-size`), 24px for section and
+  list titles (`--text-medium`) and 32px for the page title (`--text-large`),
+  and no other size. Body and UI 16/24, prose 16/28, h3, meta and code 16/24;
+  h2 and post-list titles 24/32; the page's one h1 32/40. The UA's smaller
+  `small`, `sub` and `sup` take their context's size. Text of one size is
+  told apart by colour and markers: h3 is `--emphasized` with an accent
+  `### ` (a list excerpt's headings read as h3 and take `### ` too), h2 adds
+  `## ` and an extra blank line above, and meta text is `--secondary`. Line
+  heights are rem lengths that land on whole pixels.
 - **Spacing:** `--space-1` to `--space-7` (4, 8, 16, 24, 32, 48, 64 px).
 - **Radius:** `--radius: 0`. Every box is square.
 - **Roles:** `--code-color`, `--selection-*`, `--text-glow` and

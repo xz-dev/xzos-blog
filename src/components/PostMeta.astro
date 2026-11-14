@@ -29,7 +29,9 @@ const t = useTranslations(lang);
 	.post-meta {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--space-3);
+		/* Fields wrap onto the next text line with no gap between rows, so a
+		 * wrapped meta line reads as consecutive lines of one block. */
+		gap: 0 var(--space-3);
 		align-items: center;
 		color: var(--secondary);
 		font-size: var(--text-meta);
