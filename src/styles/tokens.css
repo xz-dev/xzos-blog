@@ -6,8 +6,10 @@
 
 /* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
  * links reach WCAG AA (>= 4.5:1) on the page, the surface (code, inline code)
- * and both ends of the header gradient. The border is the accent mixed 30%
- * into the page. */
+ * and both ends of the header gradient. Two borders: --border-strong (the
+ * accent mixed 80% into the page) outlines structure that must stay visible,
+ * such as tables, code, quotes, at >= 3:1 on the page and the surface;
+ * --border-color (30%) is for decorative separators only. */
 :root {
   --background: #fff8f2;
   --surface: #ffeadb;
@@ -15,7 +17,8 @@
   --accent: #b4410f;
   --secondary: #76605a;
   --emphasized: #42302a;
-  --border-color: #e9c1ae;
+  --border-color: #e9c1ae;        /* decorative separators: hr, list rules, image frames */
+  --border-strong: #c3663c;       /* structural: tables, code, quotes */
   --header-top: #ffe4cc;          /* header gradient: --header-top to --background */
 
   /* Size, spacing and width system shared by both themes. tty.css changes
@@ -54,7 +57,9 @@
   --icon-size: 1.25rem;           /* icon inside a control: 20px */
   --logo-size: 3rem;              /* header logo: 48px */
   --thumb-size: 4rem;             /* archive thumbnail square: 64px */
+  --pixel-icon-size: 1rem;        /* night pixel icons: Unifont's 16px grid */
   --rule: 2px;                    /* header, quote and control rules */
+  --hairline: 1px;                /* borders, underlines and bevel edges */
   --focus-width: 2px;             /* keyboard focus ring */
   --focus-offset: 2px;
   --underline-offset: 0.2em;
@@ -71,6 +76,7 @@
   --accent: #f0ff9a;
   --secondary: #a8cc2a;
   --border-color: #6a811c;
+  --border-strong: var(--border-color);
   --control-face: #232c07;
   --control-hover: #293309;
   --edge-light: #7e9821;
@@ -79,7 +85,8 @@
   --header-top: var(--background);
   --tty-font: "Unifont", "Unifont Upper", monospace;
   --code-foreground: #e8fff0;
-  --tty-glow: 0 0 2px currentColor, 0 0 8px rgba(212, 255, 58, 0.45);
+  --tty-glow: 0 0 2px currentColor, 0 0 8px color-mix(in srgb, var(--foreground) 45%, transparent);
+  /* Painted behind the content (tty.css), so they darken only the field. */
   --tty-scanlines: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px);
   --tty-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
 }

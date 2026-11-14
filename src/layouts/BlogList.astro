@@ -58,9 +58,12 @@ const pageHref = (page: number) => (page === 1 ? homePath : `${pagePrefix}/${pag
 			.post-excerpt :global(blockquote) {
 				margin: var(--space-3) 0;
 			}
-			.post-excerpt :global(h2),
+			/* Excerpt headings start at h3 (src/lib/excerpt.ts) and all read
+			 * as one sub-heading size under the entry title. */
 			.post-excerpt :global(h3),
-			.post-excerpt :global(h4) {
+			.post-excerpt :global(h4),
+			.post-excerpt :global(h5),
+			.post-excerpt :global(h6) {
 				font-size: var(--text-h3);
 				line-height: var(--leading-h3);
 				margin: var(--space-3) 0 var(--space-2) 0;
@@ -72,10 +75,6 @@ const pageHref = (page: number) => (page === 1 ? homePath : `${pagePrefix}/${pag
 			.post-excerpt :global(ol) {
 				margin: var(--space-2) 0;
 				padding-left: var(--space-5);
-			}
-			.post-excerpt :global(pre) {
-				padding: var(--space-3);
-				overflow-x: auto;
 			}
 			/* Page numbers are controls; the current one reads [n]. */
 			.pagination {

@@ -205,6 +205,19 @@ test('thumbnails are real images only, and article images remain unprocessed', (
 	}
 });
 
+test('archive thumbnails come from the hero image, else the first body image, and link to the post', async () => {
+	const { getPostImage } = await import('../src/lib/post-image.ts');
+	const hero = { src: '/hero.png', width: 10, height: 10, format: 'png' } as never;
+	assert.deepEqual(getPostImage({ data: { title: 'a', heroImage: hero }, body: '![x](/body.png)' }), { type: 'astro', src: hero });
+	assert.deepEqual(getPostImage({ data: { title: 'a' }, body: 'text\n\n![x](/body.png)' }), { type: 'url', src: '/body.png' });
+	assert.deepEqual(getPostImage({ data: { title: 'a' }, body: '<p><img alt="" src="/inline.jpg"></p>' }), { type: 'url', src: '/inline.jpg' });
+	assert.equal(getPostImage({ data: { title: 'a' }, body: 'no picture here' }), null);
+	assert.equal(getPostImage({ data: { title: 'a' } }), null);
+	const thumbnail = read('../src/components/PostThumbnail.astro');
+	assert.match(thumbnail, /<a class="post-thumbnail" href=\{href\}/);
+	assert.match(read('../src/layouts/BlogArchive.astro'), /<PostThumbnail post=\{post\} href=\{`\$\{blogPrefix\}\/\$\{post\.id\}\/`\} \/>/);
+});
+
 test('all visible night marks use integer-size grid scaling, currentColor and zero motion or decorative effects', () => {
 	for (const { selector } of cssRules()) {
 		for (const part of selector.split(',')) {
@@ -212,11 +225,15 @@ test('all visible night marks use integer-size grid scaling, currentColor and ze
 		}
 	}
 	const base = ruleFor(':root[data-theme="tty"] .tty-pixel-icon');
-	assert.match(base, /width:\s*16px\s*!important/);
-	assert.match(base, /height:\s*16px\s*!important/);
+	assert.match(base, /width:\s*var\(--pixel-icon-size\)\s*!important/);
+	assert.match(base, /height:\s*var\(--pixel-icon-size\)\s*!important/);
+	// One 16px grid unit (Unifont's), and the logo shares the day logo's size token.
+	const tokens = read('../src/styles/tokens.css');
+	assert.match(tokens, /--pixel-icon-size:\s*1rem;/);
+	assert.match(tokens, /--logo-size:\s*3rem;/);
 	assert.match(base, /fill:\s*currentColor/);
 	for (const property of ['animation', 'transition', 'filter', 'box-shadow', 'text-shadow']) assert.match(base, new RegExp(`${property}:\\s*none\\s*!important`));
-	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon.tty-site-logo'), /width:\s*48px\s*!important/);
+	assert.match(ruleFor(':root[data-theme="tty"] .tty-pixel-icon.tty-site-logo'), /width:\s*var\(--logo-size\)\s*!important/);
 });
 
 test('the same-origin static night favicon uses the same hand-drawn logo grid as page UI', async () => {

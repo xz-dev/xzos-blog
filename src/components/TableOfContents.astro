@@ -33,11 +33,17 @@ const entries = headings.filter((heading) => heading.depth === 2 || heading.dept
 		margin-bottom: var(--space-5);
 	}
 
-	/* A summary keeps its disclosure marker only as a list item. */
+	/* A summary keeps its disclosure marker only as a list item. The marker
+	 * sits outside the control's box, on the page, so it keeps the accent
+	 * instead of inheriting the hovered control's page-coloured text. */
 	.toc summary {
 		display: list-item;
 		width: fit-content;
 		padding-block: var(--space-2);
+	}
+
+	.toc summary::marker {
+		color: var(--accent);
 	}
 
 	.toc ul {

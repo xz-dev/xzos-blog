@@ -5,7 +5,7 @@
 import { getEntry } from 'astro:content';
 import { getBlogCollection, getBlogPrefix } from '../i18n/collections';
 import { defaultLang, languages, type Lang } from '../i18n/ui';
-import { useTranslations } from '../i18n/utils';
+import { isMachineTranslation, useTranslations } from '../i18n/utils';
 import PixelIcon from './PixelIcon.astro';
 
 interface Props {
@@ -15,7 +15,9 @@ interface Props {
 
 const { slug, lang = defaultLang } = Astro.props;
 const t = useTranslations(lang);
-const isTranslation = lang !== defaultLang;
+// Only machine translations carry the notice; a copy (is_copy) is the original text.
+const entry = lang === defaultLang ? undefined : await getEntry(getBlogCollection(lang) as any, slug);
+const isTranslation = isMachineTranslation(lang, (entry as any)?.data);
 
 const otherLangs = (Object.keys(languages) as Lang[]).filter((other) => other !== lang);
 const versions = [];

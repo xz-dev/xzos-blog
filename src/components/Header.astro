@@ -17,7 +17,7 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 			<img src="/dotted_circle.png" alt={t('site.logoAlt')} class="site-logo tty-original-icon" />
 			<PixelIcon name="logo" class="tty-site-logo" label={t('site.logoAlt')} />
 			<div class="title-text">
-				<h2><a href="/">{SITE_TITLE}</a></h2>
+				<h2><a href={`${basePath}/`}>{SITE_TITLE}</a></h2>
 				<p class="tagline">{t('site.tagline')}</p>
 			</div>
 		</div>

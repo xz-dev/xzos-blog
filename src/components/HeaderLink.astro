@@ -1,14 +1,15 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
+import { getNavCurrent } from '../i18n/utils';
 
 type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
-const pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, '');
-const subpath = pathname.match(/[^\/]+/g);
-const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
+// Compared without the language prefix and trailing slash, so /en/blog/,
+// /zh-CN/blog/foo/ and /page/2/ mark their section too.
+const current = getNavCurrent(Astro.url.pathname, String(href ?? ''));
 ---
 
-<a href={href} class:list={[className, 'control', { active: isActive }]} aria-current={isActive ? 'page' : undefined} {...props}>
+<a href={href} class:list={[className, 'control', { active: Boolean(current) }]} aria-current={current} {...props}>
 	<slot />
 </a>

@@ -9,9 +9,15 @@ const tty = read('../src/styles/tty.css');
 const reference = JSON.parse(read('../docs/theme/tty-dark.json'));
 const tokens = read('../src/styles/tokens.css');
 const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
-const palette = Object.fromEntries(
-	[...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]),
+const hexTokens = (block: string) => Object.fromEntries(
+	[...block.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]),
 );
+const palette = hexTokens(nightTokens);
+const dayTokens = tokens.match(/:root\s*\{([^}]+)\}/)![1];
+const day = hexTokens(dayTokens);
+// Night's --border-strong is var(--border-color); resolve it like the browser.
+const nightStrong = nightTokens.match(/--border-strong:\s*var\((--[\w-]+)\)/)?.[1];
+if (nightStrong) palette['--border-strong'] = palette[nightStrong];
 
 function luminance(hex: string) {
 	const channels = hex.match(/[\da-f]{2}/gi)!.map((channel) => {
@@ -52,12 +58,15 @@ test('night styles are scoped; glow, scanlines and vignette are static and opt o
 		if (selector === '@font-face') continue;
 		assert.ok(selector.startsWith(':root[data-theme="tty"]'), selector);
 	}
-	assert.match(nightTokens, /--tty-glow:\s*0 0 2px currentColor, 0 0 8px rgba\(212, 255, 58, 0\.45\);/);
+	// The halo is the foreground itself at 45%, not a second copy of its value.
+	assert.match(nightTokens, /--tty-glow:\s*0 0 2px currentColor, 0 0 8px color-mix\(in srgb, var\(--foreground\) 45%, transparent\);/);
 	assert.match(tty, /:root\[data-theme="tty"\] body\s*\{[^}]*text-shadow:\s*var\(--tty-glow\);/);
 	assert.match(tty, /:root\[data-theme="tty"\] pre\s*\{\s*text-shadow:\s*none;/);
 	const overlay = tty.match(/:root\[data-theme="tty"\] body::after\s*\{([^}]*)\}/)![1];
 	assert.match(overlay, /position:\s*fixed/);
 	assert.match(overlay, /pointer-events:\s*none/);
+	// Behind the content: the overlay darkens the field, never the text.
+	assert.match(overlay, /z-index:\s*-1;/);
 	assert.match(overlay, /background:\s*var\(--tty-scanlines\), var\(--tty-vignette\);/);
 	assert.match(nightTokens, /--tty-scanlines:\s*repeating-linear-gradient\(to bottom, rgba\(0, 0, 0, 0\.12\) 0, rgba\(0, 0, 0, 0\.12\) 1px, transparent 1px, transparent 3px\);/);
 	assert.match(nightTokens, /--tty-vignette:\s*radial-gradient\(ellipse at center/);
@@ -79,20 +88,18 @@ test('night typography is self-hosted, with real WOFF2 files and its license', (
 	assert.match(read('../public/fonts/unifont-OFL.txt'), /SIL OPEN FONT LICENSE/i);
 });
 
-test('day palette is pinned at WCAG AA and keeps the original font stack', () => {
-	const root = tokens.match(/:root\s*\{([^}]+)\}/)![1];
-	const day = {
-		background: '#fff8f2', surface: '#ffeadb', foreground: '#42302a', accent: '#b4410f',
-		secondary: '#76605a', emphasized: '#42302a', 'border-color': '#e9c1ae', 'header-top': '#ffe4cc',
-	};
-	for (const [name, value] of Object.entries(day)) assert.ok(root.includes(`--${name}: ${value};`), name);
-	// The border is the accent mixed 30% into the page.
+test('day palette keeps the peach hues and the original font stack', () => {
+	assert.equal(day['--background'], '#fff8f2');
+	assert.equal(day['--surface'], '#ffeadb');
+	assert.equal(day['--accent'], '#b4410f');
+	// Borders are the accent mixed into the page: 30% decorative, 80% structural.
 	const mix = (a: string, b: string, weight: number) =>
 		'#' + [0, 1, 2].map((i) => {
 			const channel = (hex: string) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
 			return Math.round(channel(a) * weight + channel(b) * (1 - weight)).toString(16).padStart(2, '0');
 		}).join('');
-	assert.equal(mix(day.accent, day.background, 0.3), day['border-color']);
+	assert.equal(mix(day['--accent'], day['--background'], 0.3), day['--border-color']);
+	assert.equal(mix(day['--accent'], day['--background'], 0.8), day['--border-strong']);
 	// Code and inline code sit on the surface; the header runs from header-top to the page.
 	assert.match(base, /pre\s*\{[^}]*background:\s*var\(--surface\)/);
 	assert.match(read('../src/components/Header.astro'), /background:\s*linear-gradient\(to bottom, var\(--header-top\), var\(--background\)\)/);
@@ -108,11 +115,11 @@ test('day palette is pinned at WCAG AA and keeps the original font stack', () =>
 test('both palettes keep every text colour at 4.5:1 or more on each field it sits on', () => {
 	const night = palette;
 	const fields = {
-		day: { background: '#fff8f2', surface: '#ffeadb', 'header-top': '#ffe4cc' },
+		day: { background: day['--background'], surface: day['--surface'], 'header-top': day['--header-top'] },
 		night: { background: night['--background'], surface: night['--surface'], 'control-face': night['--control-face'], 'control-hover': night['--control-hover'] },
 	};
 	const text = {
-		day: { foreground: '#42302a', secondary: '#76605a', accent: '#b4410f' },
+		day: { foreground: day['--foreground'], secondary: day['--secondary'], accent: day['--accent'] },
 		night: { foreground: night['--foreground'], secondary: night['--secondary'], accent: night['--accent'] },
 	};
 	for (const theme of ['day', 'night'] as const) {
@@ -138,4 +145,49 @@ test('controls share one box, focus ring and states; night only adds a bevel', (
 	for (const file of ['HeaderLink', 'LanguageSwitcher', 'ThemeToggle', 'TableOfContents']) {
 		assert.match(read(`../src/components/${file}.astro`), /class(?::list)?=[^>]*control/, file);
 	}
+});
+
+test('structural borders reach 3:1 in both themes; the soft border is decorative only', () => {
+	for (const [theme, colors] of Object.entries({ day, night: palette })) {
+		for (const field of ['--background', '--surface']) {
+			const ratio = contrast(colors['--border-strong'], colors[field]);
+			assert.ok(ratio >= 3, `${theme} --border-strong on ${field}: ${ratio.toFixed(2)}`);
+		}
+	}
+	// Tables, code and quotes outline structure; hr, list rules and image frames decorate.
+	const rules = [...base.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)];
+	const borderOf = (selector: string) => rules.filter((r) => r[1].split(',').map((x) => x.trim()).includes(selector)).map((r) => r[2]).join('');
+	for (const selector of ['pre', 'kbd', 'td', 'blockquote']) assert.match(borderOf(selector), /border(?:-left)?:[^;]*var\(--border-strong\)/, selector);
+	for (const selector of ['hr', 'img', '.post-item']) assert.doesNotMatch(borderOf(selector), /--border-strong/, selector);
+});
+
+// The night scanlines and vignette are black at the alphas in tokens.css. A
+// layer in front of the text multiplies text and field alike; a layer behind
+// darkens the field only. Measure every text token and syntax colour at the
+// darkest point (vignette edge on a scanline row) against the flat field.
+test('night text and syntax keep 4.5:1 at the darkest overlay point', () => {
+	const scanAlpha = Number(nightTokens.match(/--tty-scanlines:[^;]*rgba\(0, 0, 0, ([\d.]+)\)/)![1]);
+	const vignetteAlpha = Number(nightTokens.match(/--tty-vignette:[^;]*rgba\(0, 0, 0, ([\d.]+)\) 100%/)![1]);
+	const factor = (1 - scanAlpha) * (1 - vignetteAlpha);
+	const darken = (hex: string, f: number) => '#' + hex.match(/[\da-f]{2}/gi)!
+		.map((v) => Math.round(parseInt(v, 16) * f).toString(16).padStart(2, '0')).join('');
+	const overlay = tty.match(/:root\[data-theme="tty"\] body::after\s*\{([^}]*)\}/)![1];
+	const zIndex = Number(overlay.match(/z-index:\s*(-?\d+)/)![1]);
+	const inFront = zIndex >= 0;
+	const fields = { background: palette['--background'], surface: palette['--surface'] };
+	const text: Record<string, string> = {
+		'--foreground': palette['--foreground'], '--secondary': palette['--secondary'], '--accent': palette['--accent'],
+	};
+	for (const [role, color] of Object.entries(reference.syntax)) if (role !== 'background') text[`syntax ${role}`] = String(color);
+	let worst = Infinity;
+	for (const [name, color] of Object.entries(text)) {
+		for (const [field, bg] of Object.entries(fields)) {
+			for (const f of [1, factor]) {
+				const ratio = contrast(inFront ? darken(color, f) : color, darken(bg, f));
+				worst = Math.min(worst, ratio);
+				assert.ok(ratio >= 4.5, `${name} on ${field} at overlay factor ${f.toFixed(3)}: ${ratio.toFixed(2)}`);
+			}
+		}
+	}
+	assert.ok(worst >= 4.5);
 });

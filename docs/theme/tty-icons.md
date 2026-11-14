@@ -6,7 +6,7 @@
 
 - 唯一图形源：`src/lib/pixel-icons.ts` 的 `PIXEL_ICONS`，每个图标明确写成 **16 × 16** 个 `.` / `#`。`.` 透明，`#` 为当前文字色的实心方格。
 - `pixelIconRects()` 只合并同一行内相邻的实心格，输出整数坐标、整数宽高的 `<rect>`；没有曲线、斜线、圆角、滤镜、描边、栅格图或自动追踪步骤。
-- `src/components/PixelIcon.astro` 输出 `fill="currentColor"`、`shape-rendering="crispEdges"` 的内联 SVG。常规图标为 16 CSS px；页眉品牌 48 px（3 倍），生成占位图品牌 80 px（5 倍）。浏览器缩放仍可由用户控制；不承诺非整数缩放或非整数设备像素比下没有浏览器重采样。
+- `src/components/PixelIcon.astro` 输出 `fill="currentColor"`、`shape-rendering="crispEdges"` 的内联 SVG。常规图标为 16 CSS px（`--pixel-icon-size`）；页眉品牌与日间 logo 同用 `--logo-size`（48 px，3 倍）。浏览器缩放仍可由用户控制；不承诺非整数缩放或非整数设备像素比下没有浏览器重采样。
 - Logo 保留原 `/dotted_circle.png` 的**断续圆环、空心中央**语义。原图约 18 段蓝色短条，在手工 16 格版本中简化为 16 段分离短线；没有替换成实心圆、方框或无关徽记。
 - 所有夜间图标继承周围文字颜色；无模糊、光晕、曲面、动画或过渡。主题按钮的静态居中 `translate(-50%, -50%)` 不是运动效果。
 
@@ -19,8 +19,8 @@
 | `src/components/ThemeToggle.astro` | `moon` 当前夜间指示；也定义了配对 `sun` 网格 | 原 `sun-icon` / `moon-icon` SVG、20 px 尺寸与切换逻辑；维持日间太阳、夜间月亮的现有约定，手绘 `sun` 不会在夜间同时出现 |
 | `src/components/LanguageVersionNotice.astro` | `globe` 语言版本标记；`translation` 机器人翻译标记 | 无图标（原 🌐 / 🤖 已移除，改为纯文字说明行）；夜间仍用像素标记；语言名与链接 |
 | `src/components/TableOfContents.astro` | 关闭 `chevron-right`；打开 `chevron-down` | 原生 `<summary>` marker、目录文字与空格；仍是原生 `<details>` 键盘交互 |
-| `src/layouts/BlogList.astro` | 上一页 `arrow-left`，下一页与继续阅读 `arrow-right` | 原中文/英文/简中文案与箭头字符，分页 URL、页码和省略号 |
-| `src/components/PostThumbnail.astro` | 无（生成的渐变占位卡已移除，没有真实图片的文章不显示缩略图） | 真实 `Image` / `<img class="thumbnail-image">` 分支保留，改为归档列表中的小方图 |
+| `src/layouts/BlogList.astro` | 上一页 `arrow-left`，下一页与继续阅读 `arrow-right` | 原中文/英文/简中文案与箭头字符，分页 URL、页码（当前页显示为 `[n]`）和省略号 |
+| `src/components/PostThumbnail.astro` | 无（生成的渐变占位卡已移除，没有真实图片的文章不显示缩略图） | 真实 `Image` / `<img class="thumbnail-image">` 分支保留，改为归档列表中的 64 px 方形裁切（`object-fit: cover`），图片同样链接到文章 |
 | `src/components/BaseHead.astro` + `src/pages/favicon-tty.svg.ts` | 同源静态 `/favicon-tty.svg`，使用相同 `logo` 网格 | favicon 的 `/dotted_circle.png`、`image/png`、`192x192`；Apple touch icon 仍为原 PNG |
 
 `LanguageSwitcher.astro` 是纯文字语言名称，页脚 RSS/Source/CC 是文字链接，不添加无必要的装饰图标。正文、摘要和页码中的 Unicode 标点属于内容/文字，继续使用原文字体；只替换列表 UI 标签中的 `←` / `→`。

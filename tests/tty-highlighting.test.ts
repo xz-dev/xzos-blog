@@ -46,3 +46,15 @@ test('night marked text uses clear reverse video, like text selection', () => {
   assert.match(tty, /:root\[data-theme="tty"\] mark\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
   assert.match(tty, /:root\[data-theme="tty"\] ::selection\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--background\);/);
 });
+
+test('day syntax keeps every colour at WCAG AA on the day code surface', async () => {
+  const { daySyntax, daySyntaxTheme } = await import('../src/lib/syntax-day.ts');
+  const tokens = read('../src/styles/tokens.css');
+  const surface = tokens.match(/:root\s*\{[^}]*--surface:\s*(#[\da-f]{6});/i)![1];
+  assert.equal(daySyntax.background, surface, 'the theme describes the surface pre actually paints');
+  assert.equal(daySyntaxTheme.colors['editor.background'], surface);
+  const used = new Set<string>([daySyntaxTheme.colors['editor.foreground']]);
+  for (const rule of daySyntaxTheme.tokenColors) if ('foreground' in rule.settings) used.add(rule.settings.foreground!);
+  for (const color of used) assert.ok(contrast(color, surface) >= 4.5, `${color} on ${surface}: ${contrast(color, surface).toFixed(2)}`);
+  assert.match(config, /light:\s*daySyntaxTheme/);
+});

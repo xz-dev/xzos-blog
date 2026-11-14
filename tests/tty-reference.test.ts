@@ -54,8 +54,8 @@ test('the active manifest can be regenerated exactly without modifying the histo
   assert.deepEqual(JSON.parse(generated), active);
 });
 
-test('code highlighting uses the active dark surface and leaves daytime syntax untouched', () => {
-  assert.match(config, /light:\s*'github-light'/);
+test('code highlighting uses the active dark surface and the AA day theme', () => {
+  assert.match(config, /light:\s*daySyntaxTheme/);
   for (const color of Object.values(active.syntax)) assert.ok(config.includes(String(color)), `missing syntax color ${color}`);
   assert.match(config, new RegExp(`'editor\\.background':\\s*'${active.syntax.background}'`));
   assert.equal(active.syntax.background, palette['--surface']);

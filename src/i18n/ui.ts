@@ -39,7 +39,7 @@ export const ui = {
     'notice.translatedBefore': '本文由大语言模型译自',
     'notice.translatedLink': '中文原文',
     'notice.translatedAfter': '，可能有误，以原文为准。',
-    'notice.alsoIn': 'Also in: ',
+    'notice.alsoIn': '其他语言：',
 
     // 分页
     'pagination.label': '分页',
@@ -59,7 +59,8 @@ export const ui = {
     'links.description': 'xzOS 的友情链接页面',
     'table.label': '表格',
 
-    // 错误页面
+    // 错误页面：只有源站一份。静态构建只产出一个 /404.html，
+    // 所有语言前缀下的缺失地址都由它应答，因此 error.* 不做翻译。
     'error.pageNotFound': '页面未找到',
     'error.description': '您访问的页面不存在。',
     'error.message': '抱歉，我们找不到您要访问的页面。',
@@ -88,7 +89,7 @@ export const ui = {
     'notice.translatedBefore': 'Machine-translated from the ',
     'notice.translatedLink': 'Chinese original',
     'notice.translatedAfter': '; it may contain errors.',
-    'notice.alsoIn': '其他语言：',
+    'notice.alsoIn': 'Also in: ',
 
     // Pagination
     'pagination.label': 'Pagination',
@@ -107,12 +108,6 @@ export const ui = {
     // Content
     'links.description': 'Links to friends of xzOS',
     'table.label': 'Table',
-
-    // Error page
-    'error.pageNotFound': 'Page not found',
-    'error.description': 'The page you are looking for does not exist.',
-    'error.message': "Sorry, we couldn't find the page you're looking for.",
-    'error.backHome': 'Back to Home',
   },
   'zh-CN': {
     // 导航
@@ -156,12 +151,6 @@ export const ui = {
     // 正文
     'links.description': 'xzOS 的友情链接页面',
     'table.label': '表格',
-
-    // 错误页面
-    'error.pageNotFound': '页面未找到',
-    'error.description': '您访问的页面不存在。',
-    'error.message': '抱歉，我们找不到您要访问的页面。',
-    'error.backHome': '返回首页',
   },
 } as const;
 

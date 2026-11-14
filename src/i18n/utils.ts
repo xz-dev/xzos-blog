@@ -1,7 +1,7 @@
 /**
  * i18n 工具函数
  */
-import { ui, defaultLang, type Lang, type UIKey } from './ui';
+import { ui, defaultLang, type Lang, type UIKey } from './ui.ts';
 
 /**
  * 从 URL 获取当前语言
@@ -19,7 +19,10 @@ export function getLangFromUrl(url: URL): Lang {
  */
 export function useTranslations(lang: Lang) {
   return function t(key: UIKey, params?: Record<string, string | number>): string {
-    let text: string = ui[lang][key] ?? ui[defaultLang][key];
+    // Some keys exist only in the default language (error.*), so a locale's
+    // table is read as partial and falls back to the default.
+    const strings: Partial<Record<UIKey, string>> = ui[lang];
+    let text: string = strings[key] ?? ui[defaultLang][key];
     
     // 替换参数 {param}
     if (params) {
@@ -30,6 +33,34 @@ export function useTranslations(lang: Lang) {
     
     return text;
   };
+}
+
+/**
+ * 是否为机器翻译：非默认语言且不是原文副本（is_copy）。
+ * zh-CN 的中文副本与 en 下的英文原文副本都不是译文。
+ */
+export function isMachineTranslation(lang: Lang, data: { is_copy?: boolean } | undefined): boolean {
+  return lang !== defaultLang && Boolean(data) && !data!.is_copy;
+}
+
+/**
+ * 导航所属栏目：去掉语言前缀与尾部斜杠后的第一段路径。
+ * 首页列表的分页（/page/N）属于首页。
+ */
+export function getNavSection(pathname: string): string {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments[0] && segments[0] !== defaultLang && segments[0] in ui) segments.shift();
+  const first = segments[0] ?? '';
+  return first === 'page' ? '/' : `/${first}`;
+}
+
+/**
+ * 导航链接的当前状态：同一地址为 page，同一栏目为 true（如文章页的“博客”）。
+ */
+export function getNavCurrent(pathname: string, href: string): 'page' | 'true' | undefined {
+  const trim = (path: string) => path.replace(/\/+$/, '') || '/';
+  if (trim(pathname) === trim(href)) return 'page';
+  return getNavSection(pathname) === getNavSection(href) ? 'true' : undefined;
 }
 
 /**
@@ -77,8 +108,9 @@ export function getAlternateLanguagePath(url: URL, targetLang: Lang): string {
     path = path.replace(`/${currentLang}`, '') || '/';
   }
   
-  // 对于共享页面，切换语言时跳转到对应语言的首页
+  // 对于共享页面，当前语言指向本页，其他语言跳转到对应语言的首页
   if (isSharedPage(path)) {
+    if (targetLang === currentLang) return url.pathname;
     return targetLang === defaultLang ? '/' : `/${targetLang}/`;
   }
   

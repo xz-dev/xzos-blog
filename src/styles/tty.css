@@ -249,12 +249,14 @@
 }
 
 /* Static scanlines (a 1px dark line every 3px) and a soft vignette on a fixed
- * overlay that takes no pointer events. No animation, flicker or curvature. */
+ * layer that takes no pointer events. It sits behind the content (z-index -1;
+ * body makes no stacking context), so it darkens only the field and never the
+ * text, code or embedded comments. No animation, flicker or curvature. */
 :root[data-theme="tty"] body::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 2147483647;
+  z-index: -1;
   pointer-events: none;
   background: var(--tty-scanlines), var(--tty-vignette);
 }
@@ -313,7 +315,7 @@
 :root[data-theme="tty"] b,
 :root[data-theme="tty"] em {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: var(--hairline);
   text-underline-offset: var(--underline-offset);
 }
 
@@ -324,7 +326,7 @@
   color: var(--foreground);
   background: var(--control-face);
   border-color: var(--edge-light) var(--edge-dark) var(--edge-dark) var(--edge-light);
-  box-shadow: inset 1px 1px 0 var(--edge-inner), inset -1px -1px 0 var(--edge-dark);
+  box-shadow: inset var(--hairline) var(--hairline) 0 var(--edge-inner), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-dark);
 }
 
 :root[data-theme="tty"] .control:hover,
@@ -341,7 +343,7 @@
   color: var(--emphasized);
   background: var(--surface);
   border-color: var(--edge-dark) var(--edge-light) var(--edge-light) var(--edge-dark);
-  box-shadow: inset 1px 1px 0 var(--edge-dark), inset -1px -1px 0 var(--edge-inner);
+  box-shadow: inset var(--hairline) var(--hairline) 0 var(--edge-dark), inset calc(-1 * var(--hairline)) calc(-1 * var(--hairline)) 0 var(--edge-inner);
 }
 
 :root[data-theme="tty"] input,

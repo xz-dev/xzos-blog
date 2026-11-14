@@ -23,8 +23,8 @@
     "syntaxPolicy": "Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not shades of the phosphor UI."
   },
   "effects": {
-    "textGlow": "0 0 2px currentColor, 0 0 8px rgba(212, 255, 58, 0.45)",
-    "overlay": "Fixed, pointer-events: none: a 1px rgba(0, 0, 0, 0.12) line every 3px plus a radial vignette to rgba(0, 0, 0, 0.45) at the edges.",
+    "textGlow": "0 0 2px currentColor, 0 0 8px of the foreground at 45% (color-mix of --foreground)",
+    "overlay": "Fixed, pointer-events: none, behind the content (z-index -1): a 1px rgba(0, 0, 0, 0.12) line every 3px plus a radial vignette to rgba(0, 0, 0, 0.45) at the edges. It darkens the field only, never text.",
     "motion": "None. No animation, flicker, moving lines or curvature.",
     "prefersContrastMore": "Glow and overlay off."
   },

@@ -5,6 +5,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import translate from './src/integrations/translate';
+import { daySyntaxTheme } from './src/lib/syntax-day';
 import { tableScroll } from './src/lib/table-scroll';
 
 // https://astro.build/config
@@ -37,9 +38,10 @@ export default defineConfig({
     processor: satteri({ hastPlugins: [tableScroll] }),
     shikiConfig: {
       themes: {
-        light: 'github-light',
+        // GitHub Light's rules with AA colours on the peach code surface.
+        light: daySyntaxTheme,
         // Code is the explicit multicolour fluorescent exception to the phosphor UI.
-        // Crisp saturated accents, without glow or animation; daytime is unchanged.
+        // Crisp saturated accents, without glow or animation.
         dark: {
           name: 'tty-neon',
           type: 'dark',

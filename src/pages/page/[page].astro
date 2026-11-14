@@ -1,34 +1,13 @@
 ---
 import { getCollection } from 'astro:content';
-import { marked } from 'marked';
 import BlogList from '../../layouts/BlogList.astro';
+import { getExcerptHtml } from '../../lib/excerpt';
 import { getBlogCollection } from '../../i18n/collections';
 import type { Lang } from '../../i18n/ui';
 
 const lang: Lang = 'zh';
 
 export async function getStaticPaths() {
-	function getExcerptHtml(body: string): { html: string; hasMore: boolean } {
-		const moreMarker = '<!--more-->';
-		const moreIndex = body.indexOf(moreMarker);
-
-		if (moreIndex > 0) {
-			const excerptMd = body.substring(0, moreIndex).trim();
-			return {
-				html: marked.parse(excerptMd) as string,
-				hasMore: true,
-			};
-		}
-
-		const paragraphs = body.split(/\n\n+/);
-		const firstFewParagraphs = paragraphs.slice(0, 3).join('\n\n');
-
-		return {
-			html: marked.parse(firstFewParagraphs) as string,
-			hasMore: paragraphs.length > 3 || body.length > firstFewParagraphs.length + 100,
-		};
-	}
-
 	const collectionName = getBlogCollection('zh');
 	const posts = (await getCollection(collectionName as any)).sort(
 		(a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
