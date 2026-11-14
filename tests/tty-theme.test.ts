@@ -26,7 +26,7 @@ function contrast(a: string, b: string) {
 	return (values[0] + 0.05) / (values[1] + 0.05);
 }
 
-test('the active dark field retains green emission with AAA text contrast', () => {
+test('the active dark field stays on the green-dominant phosphor axis with AAA text contrast', () => {
 	for (const [name, value] of Object.entries(palette)) {
 		const [r, g, b] = value.match(/[\da-f]{2}/gi)!.map((v) => parseInt(v, 16));
 		assert.ok(g >= r && g >= b, `${name} must stay on the green phosphor axis`);
@@ -44,7 +44,7 @@ test('the active dark field retains green emission with AAA text contrast', () =
 	}
 });
 
-test('night styles are scoped, with no screen simulation or blurred text', () => {
+test('night styles are scoped; glow, scanlines and vignette are static and opt out for more contrast', () => {
 	const rules = [...tty.matchAll(/([^{}]+)\{[^{}]*\}/g)];
 	assert.ok(rules.length > 10);
 	for (const rule of rules) {
@@ -52,8 +52,21 @@ test('night styles are scoped, with no screen simulation or blurred text', () =>
 		if (selector === '@font-face') continue;
 		assert.ok(selector.startsWith(':root[data-theme="tty"]'), selector);
 	}
-	assert.doesNotMatch(base + tty, /repeating-linear-gradient|drop-shadow\(|text-shadow:\s*0\s/i);
-	assert.doesNotMatch(tty, /@keyframes|perspective|backdrop-filter|filter:\s*blur/i);
+	assert.match(nightTokens, /--tty-glow:\s*0 0 2px currentColor, 0 0 8px rgba\(212, 255, 58, 0\.45\);/);
+	assert.match(tty, /:root\[data-theme="tty"\] body\s*\{[^}]*text-shadow:\s*var\(--tty-glow\);/);
+	assert.match(tty, /:root\[data-theme="tty"\] pre\s*\{\s*text-shadow:\s*none;/);
+	const overlay = tty.match(/:root\[data-theme="tty"\] body::after\s*\{([^}]*)\}/)![1];
+	assert.match(overlay, /position:\s*fixed/);
+	assert.match(overlay, /pointer-events:\s*none/);
+	assert.match(overlay, /background:\s*var\(--tty-scanlines\), var\(--tty-vignette\);/);
+	assert.match(nightTokens, /--tty-scanlines:\s*repeating-linear-gradient\(to bottom, rgba\(0, 0, 0, 0\.12\) 0, rgba\(0, 0, 0, 0\.12\) 1px, transparent 1px, transparent 3px\);/);
+	assert.match(nightTokens, /--tty-vignette:\s*radial-gradient\(ellipse at center/);
+	const more = tty.match(/@media \(prefers-contrast: more\)\s*\{([\s\S]*?)\n\}/)![1];
+	assert.match(more, /body\s*\{\s*text-shadow:\s*none;/);
+	assert.match(more, /body::after\s*\{\s*content:\s*none;/);
+	// Static only: no motion, flicker, curvature or blur, and no glow in day.
+	assert.doesNotMatch(tty, /@keyframes|animation:(?!\s*none)|perspective|backdrop-filter|filter:\s*blur|transform:\s*(?:scale|rotate|skew|matrix)/i);
+	assert.doesNotMatch(base, /repeating-linear-gradient|drop-shadow\(|text-shadow|box-shadow:(?!\s*(?:none|inset))/i);
 	assert.match(tty, /transition:\s*none\s*!important/);
 	assert.match(tty, /border-radius:\s*0\s*!important/);
 });
@@ -69,28 +82,46 @@ test('night typography is self-hosted, with real WOFF2 files and its license', (
 test('day palette is pinned at WCAG AA and keeps the original font stack', () => {
 	const root = tokens.match(/:root\s*\{([^}]+)\}/)![1];
 	const day = {
-		background: '#fdf6e3', foreground: '#475b62', accent: '#1a659c',
-		secondary: '#566a70', emphasized: '#586e75', 'border-color': '#93a1a1',
+		background: '#fff8f2', surface: '#ffeadb', foreground: '#42302a', accent: '#b4410f',
+		secondary: '#76605a', emphasized: '#42302a', 'border-color': '#e9c1ae', 'header-top': '#ffe4cc',
 	};
-	for (const [name, value] of Object.entries(day)) assert.ok(root.includes(`--${name}: ${value};`));
-	// The code-block surface: color-mix(in srgb, var(--accent) 10%, var(--background)).
+	for (const [name, value] of Object.entries(day)) assert.ok(root.includes(`--${name}: ${value};`), name);
+	// The border is the accent mixed 30% into the page.
 	const mix = (a: string, b: string, weight: number) =>
 		'#' + [0, 1, 2].map((i) => {
 			const channel = (hex: string) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
 			return Math.round(channel(a) * weight + channel(b) * (1 - weight)).toString(16).padStart(2, '0');
 		}).join('');
-	const codeSurface = mix(day.accent, day.background, 0.1);
-	for (const surface of [day.background, codeSurface]) {
-		for (const name of ['foreground', 'accent', 'secondary'] as const) {
-			assert.ok(contrast(day[name], surface) >= 4.5, `${name} on ${surface}: 4.5:1 text floor`);
-		}
-	}
+	assert.equal(mix(day.accent, day.background, 0.3), day['border-color']);
+	// Code and inline code sit on the surface; the header runs from header-top to the page.
+	assert.match(base, /pre\s*\{[^}]*background:\s*var\(--surface\)/);
+	assert.match(read('../src/components/Header.astro'), /background:\s*linear-gradient\(to bottom, var\(--header-top\), var\(--background\)\)/);
+	assert.doesNotMatch(base, /text-shadow/);
 	assert.match(base, /font-family:\s*"Fira Code",\s*"JetBrains Mono"/);
 	// Fira Code is self-hosted: no render-blocking third-party font stylesheet.
 	assert.doesNotMatch(base, /@import|url\(['"]?https?:/);
 	assert.equal(readFileSync(new URL('../public/fonts/fira-code-5.2-latin.woff2', import.meta.url)).subarray(0, 4).toString(), 'wOF2');
 	assert.match(read('../public/fonts/fira-code-OFL.txt'), /SIL Open Font License, Version 1\.1/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);
+});
+
+test('both palettes keep every text colour at 4.5:1 or more on each field it sits on', () => {
+	const night = palette;
+	const fields = {
+		day: { background: '#fff8f2', surface: '#ffeadb', 'header-top': '#ffe4cc' },
+		night: { background: night['--background'], surface: night['--surface'], 'control-face': night['--control-face'], 'control-hover': night['--control-hover'] },
+	};
+	const text = {
+		day: { foreground: '#42302a', secondary: '#76605a', accent: '#b4410f' },
+		night: { foreground: night['--foreground'], secondary: night['--secondary'], accent: night['--accent'] },
+	};
+	for (const theme of ['day', 'night'] as const) {
+		for (const [role, color] of Object.entries(text[theme])) {
+			for (const [field, bg] of Object.entries(fields[theme])) {
+				assert.ok(contrast(color, bg) >= 4.5, `${theme} ${role} on ${field}: ${contrast(color, bg).toFixed(2)}`);
+			}
+		}
+	}
 });
 
 test('controls share one box, focus ring and states; night only adds a bevel', () => {

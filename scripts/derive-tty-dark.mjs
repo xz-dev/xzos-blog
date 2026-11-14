@@ -1,27 +1,40 @@
 #!/usr/bin/env node
-// Active dark adaptation. The original B-photo manifest stays unchanged as evidence.
+// Active night palette. The B-photo manifest stays unchanged as historical evidence.
 import { readFileSync } from 'node:fs';
 const photo = JSON.parse(readFileSync(new URL('../docs/theme/tektronix-4052-b.json', import.meta.url), 'utf8'));
 const decode = (v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-const encode = (v) => v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055;
 const rgb = (hex) => hex.match(/[\da-f]{2}/gi).map((c) => parseInt(c, 16));
-const scale = (hex, factor) => '#' + rgb(hex).map((c) => Math.round(255 * encode(decode(c / 255) * factor)).toString(16).padStart(2, '0')).join('');
+// sRGB channel mix of a over b at weight t, rounded (the same as the CSS tokens).
+const mix = (a, b, t) => '#' + rgb(a).map((c, i) => Math.round(c * t + rgb(b)[i] * (1 - t)).toString(16).padStart(2, '0')).join('');
 const luminance = (hex) => rgb(hex).reduce((sum, c, i) => sum + decode(c / 255) * [0.2126, 0.7152, 0.0722][i], 0);
 const contrast = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
-const field = photo.palette['--background'];
-const emission = photo.palette['--foreground'];
-const fieldFactors = { '--background': 0.025, '--surface': 0.05, '--control-face': 0.08, '--control-hover': 0.12, '--edge-dark': 0.005 };
-const emissionFactors = { '--foreground': 1, '--emphasized': 1, '--accent': 1, '--secondary': 0.70, '--border-color': 0.18, '--edge-light': 0.40, '--edge-inner': 0.18 };
-const palette = Object.fromEntries([
-  ...Object.entries(fieldFactors).map(([role, factor]) => [role, scale(field, factor)]),
-  ...Object.entries(emissionFactors).map(([role, factor]) => [role, scale(emission, factor)]),
-]);
-// Explicit user exception: multicolour fluorescent code, independent of green UI.
-const syntax = { background: palette['--surface'], foreground: '#e8fff0', comment: '#53d98f', keyword: '#ff79c6', string: '#32eaff', function: '#c58cff', parameter: '#f3ff57' };
+const anchors = { '--background': '#141a03', '--surface': '#1d2606', '--foreground': '#d4ff3a', '--secondary': '#a8cc2a', '--accent': '#f0ff9a' };
+const mixFactors = { '--control-face': 0.08, '--control-hover': 0.11, '--border-color': 0.45, '--edge-light': 0.55, '--edge-inner': 0.45 };
+const fixed = { '--emphasized': anchors['--foreground'], '--edge-dark': '#000000', '--code-foreground': '#e8fff0' };
+const palette = {
+  ...anchors,
+  ...fixed,
+  ...Object.fromEntries(Object.entries(mixFactors).map(([role, t]) => [role, mix(anchors['--foreground'], anchors['--background'], t)])),
+};
+// Explicit exception: multicolour fluorescent code, independent of the phosphor UI.
+const syntax = { background: palette['--surface'], foreground: palette['--code-foreground'], comment: '#53d98f', keyword: '#ff8acd', string: '#32eaff', function: '#cc99ff', parameter: '#f3ff57' };
+const text = ['--foreground', '--secondary', '--accent'];
+const fields = ['--background', '--surface', '--control-face', '--control-hover'];
 console.log(JSON.stringify({
-  intent: 'Dark-green field with brighter green emission. Explicitly replaces the earlier illuminated photographic background, not a new measured CRT state.',
-  reference: { manifest: 'docs/theme/tektronix-4052-b.json', sourceSha256: photo.source.sha256, retainedEmission: emission, originalPhotographicField: field },
-  derivation: { method: 'UI palette only: decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.', fieldFactors, emissionFactors, syntaxPolicy: 'Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not photo-derived green shades or measured physical fluorescence.' },
+  intent: 'Yellow-green phosphor on a dark olive field. Chosen anchors, not a measured CRT state; the B photograph stays as historical evidence only.',
+  reference: { manifest: 'docs/theme/tektronix-4052-b.json', sourceSha256: photo.source.sha256 },
+  derivation: {
+    method: 'Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground, --edge-dark is black and --code-foreground is the syntax foreground.',
+    anchors,
+    mixFactors,
+    syntaxPolicy: 'Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not shades of the phosphor UI.',
+  },
+  effects: {
+    textGlow: '0 0 2px currentColor, 0 0 8px rgba(212, 255, 58, 0.45)',
+    overlay: 'Fixed, pointer-events: none: a 1px rgba(0, 0, 0, 0.12) line every 3px plus a radial vignette to rgba(0, 0, 0, 0.45) at the edges.',
+    motion: 'None. No animation, flicker, moving lines or curvature.',
+    prefersContrastMore: 'Glow and overlay off.',
+  },
   palette,
   syntax,
   contrast: {
@@ -29,10 +42,10 @@ console.log(JSON.stringify({
     secondaryOnBackground: contrast(palette['--secondary'], palette['--background']),
     secondaryOnControlHover: contrast(palette['--secondary'], palette['--control-hover']),
     borderOnBackground: contrast(palette['--border-color'], palette['--background']),
+    minimumTextOnField: Math.min(...text.flatMap((t) => fields.map((f) => contrast(palette[t], palette[f])))),
     backgroundRelativeLuminance: luminance(palette['--background']),
-    originalFieldRelativeLuminance: luminance(field),
     minimumSyntaxOnSurface: Math.min(...Object.entries(syntax).filter(([role]) => role !== 'background').map(([, color]) => contrast(color, palette['--surface']))),
-    normalTextWcagAAA: contrast(palette['--secondary'], palette['--control-hover']) >= 7,
-    note: 'Calculated sRGB contrast, not measured monitor brightness or physical CRT colorimetry.',
+    normalTextWcagAAA: Math.min(...text.flatMap((t) => fields.map((f) => contrast(palette[t], palette[f])))) >= 7,
+    note: 'Calculated sRGB contrast of flat colours, before glow and overlay; not measured monitor brightness.',
   },
 }, null, 2));

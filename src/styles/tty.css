@@ -1,6 +1,8 @@
 /*
- * Night mode: a dark-field adaptation retaining the selected B green emission.
- * Palette: the night block in tokens.css; derivation: docs/theme/tty-dark.json.
+ * Night mode: yellow-green phosphor on a dark olive field.
+ * Active palette and derivation: docs/theme/tty-dark.json.
+ * Static phosphor glow on text and a static scanline and vignette overlay;
+ * nothing moves or flickers, and the layout is never distorted.
  * Flat documents; shallow, hard-edged relief only where it explains a control.
  * Keep every visual rule scoped to TTY so day mode is untouched.
  */
@@ -234,10 +236,38 @@
   unicode-range: U+1F000-1FAFF;
 }
 
+/* Static phosphor glow: text-shadow inherits, so the body sets it once. Code
+ * blocks keep sharp syntax colours. */
 :root[data-theme="tty"] body {
   font-family: var(--tty-font);
   font-variant-ligatures: none;
+  text-shadow: var(--tty-glow);
+}
+
+:root[data-theme="tty"] pre {
   text-shadow: none;
+}
+
+/* Static scanlines (a 1px dark line every 3px) and a soft vignette on a fixed
+ * overlay that takes no pointer events. No animation, flicker or curvature. */
+:root[data-theme="tty"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  background: var(--tty-scanlines), var(--tty-vignette);
+}
+
+/* Users who ask for more contrast get plain sharp text and no overlay. */
+@media (prefers-contrast: more) {
+  :root[data-theme="tty"] body {
+    text-shadow: none;
+  }
+
+  :root[data-theme="tty"] body::after {
+    content: none;
+  }
 }
 
 :root[data-theme="tty"] *,
@@ -327,10 +357,9 @@
   font-variant-ligatures: none;
 }
 
-/* Inline code is not highlighted, so it has no --shiki-dark colour; the
- * fallback is the syntax foreground in docs/theme/tty-dark.json. */
+/* Inline code is not highlighted, so it has no --shiki-dark colour. */
 :root[data-theme="tty"] code {
-  color: var(--shiki-dark, #e8fff0);
+  color: var(--shiki-dark, var(--code-foreground));
 }
 
 :root[data-theme="tty"] mark {

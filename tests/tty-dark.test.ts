@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const photo = JSON.parse(read('../docs/theme/tektronix-4052-b.json'));
+const tty = read('../src/styles/tty.css');
 const tokens = read('../src/styles/tokens.css');
 const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
 const colors = Object.fromEntries([...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
@@ -13,7 +14,7 @@ const contrast = (a: string, b: string) => (Math.max(luminance(a), luminance(b))
 test('the active night background is dark, not the earlier illuminated photo field', () => {
   assert.notEqual(colors['--background'], photo.palette['--background']);
   assert.ok(luminance(colors['--background']) <= 0.01, 'dark-green field must have relative luminance <= 0.01');
-  assert.equal(colors['--foreground'], photo.palette['--foreground'], 'retain the selected green emission anchor');
+  assert.equal(colors['--foreground'], '#d4ff3a', 'yellow-green phosphor emission');
   for (const role of ['--foreground', '--secondary', '--accent']) {
     assert.ok(contrast(colors[role], colors['--background']) >= 7, `${role}: 7:1 normal text floor`);
   }

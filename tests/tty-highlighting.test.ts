@@ -34,10 +34,11 @@ test('code is a multi-hue fluorescent exception, not green-only syntax', () => {
   });
   assert.equal(new Set(accents.map(c => Math.floor(c.hue / 45))).size, 4, 'four genuinely different accent hue families');
   assert.ok(accents.every(c => c.saturation >= 0.8), 'bright saturated neon-style accents, not muted pastels');
-  assert.equal(active.palette['--foreground'], '#31fea8', 'ordinary page UI retains the selected green');
+  assert.equal(active.palette['--foreground'], '#d4ff3a', 'ordinary page UI uses the yellow-green phosphor');
   assert.notEqual(active.syntax.foreground, active.palette['--foreground'], 'code has its own foreground');
   assert.match(config, /name:\s*'tty-neon'/);
-  assert.match(tty, new RegExp(`color:\\s*var\\(--shiki-dark,\\s*${active.syntax.foreground}\\)`));
+  assert.match(tty, /color:\s*var\(--shiki-dark,\s*var\(--code-foreground\)\)/);
+  assert.equal(active.palette['--code-foreground'], active.syntax.foreground);
   assert.match(tty, /font-synthesis:\s*none/);
 });
 

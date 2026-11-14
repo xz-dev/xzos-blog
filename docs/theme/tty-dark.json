@@ -1,63 +1,66 @@
 {
-  "intent": "Dark-green field with brighter green emission. Explicitly replaces the earlier illuminated photographic background, not a new measured CRT state.",
+  "intent": "Yellow-green phosphor on a dark olive field. Chosen anchors, not a measured CRT state; the B photograph stays as historical evidence only.",
   "reference": {
     "manifest": "docs/theme/tektronix-4052-b.json",
-    "sourceSha256": "71092ff150ff18f72d72070032d0e819c080b4052da3d51de29b0f00e80c851c",
-    "retainedEmission": "#31fea8",
-    "originalPhotographicField": "#248d54"
+    "sourceSha256": "71092ff150ff18f72d72070032d0e819c080b4052da3d51de29b0f00e80c851c"
   },
   "derivation": {
-    "method": "UI palette only: decode sRGB, multiply every linear channel by the stated factor, re-encode and round. No white mixing or gray/mint substitution.",
-    "fieldFactors": {
-      "--background": 0.025,
-      "--surface": 0.05,
+    "method": "Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground, --edge-dark is black and --code-foreground is the syntax foreground.",
+    "anchors": {
+      "--background": "#141a03",
+      "--surface": "#1d2606",
+      "--foreground": "#d4ff3a",
+      "--secondary": "#a8cc2a",
+      "--accent": "#f0ff9a"
+    },
+    "mixFactors": {
       "--control-face": 0.08,
-      "--control-hover": 0.12,
-      "--edge-dark": 0.005
+      "--control-hover": 0.11,
+      "--border-color": 0.45,
+      "--edge-light": 0.55,
+      "--edge-inner": 0.45
     },
-    "emissionFactors": {
-      "--foreground": 1,
-      "--emphasized": 1,
-      "--accent": 1,
-      "--secondary": 0.7,
-      "--border-color": 0.18,
-      "--edge-light": 0.4,
-      "--edge-inner": 0.18
-    },
-    "syntaxPolicy": "Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not photo-derived green shades or measured physical fluorescence."
+    "syntaxPolicy": "Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not shades of the phosphor UI."
+  },
+  "effects": {
+    "textGlow": "0 0 2px currentColor, 0 0 8px rgba(212, 255, 58, 0.45)",
+    "overlay": "Fixed, pointer-events: none: a 1px rgba(0, 0, 0, 0.12) line every 3px plus a radial vignette to rgba(0, 0, 0, 0.45) at the edges.",
+    "motion": "None. No animation, flicker, moving lines or curvature.",
+    "prefersContrastMore": "Glow and overlay off."
   },
   "palette": {
-    "--background": "#011307",
-    "--surface": "#031e0e",
-    "--control-face": "#052814",
-    "--control-hover": "#07321a",
-    "--edge-dark": "#000401",
-    "--foreground": "#31fea8",
-    "--emphasized": "#31fea8",
-    "--accent": "#31fea8",
-    "--secondary": "#28d98f",
-    "--border-color": "#11754b",
-    "--edge-light": "#1da96e",
-    "--edge-inner": "#11754b"
+    "--background": "#141a03",
+    "--surface": "#1d2606",
+    "--foreground": "#d4ff3a",
+    "--secondary": "#a8cc2a",
+    "--accent": "#f0ff9a",
+    "--emphasized": "#d4ff3a",
+    "--edge-dark": "#000000",
+    "--code-foreground": "#e8fff0",
+    "--control-face": "#232c07",
+    "--control-hover": "#293309",
+    "--border-color": "#6a811c",
+    "--edge-light": "#7e9821",
+    "--edge-inner": "#6a811c"
   },
   "syntax": {
-    "background": "#031e0e",
+    "background": "#1d2606",
     "foreground": "#e8fff0",
     "comment": "#53d98f",
-    "keyword": "#ff79c6",
+    "keyword": "#ff8acd",
     "string": "#32eaff",
-    "function": "#c58cff",
+    "function": "#cc99ff",
     "parameter": "#f3ff57"
   },
   "contrast": {
-    "foregroundOnBackground": 14.462541035612476,
-    "secondaryOnBackground": 10.398104764614676,
-    "secondaryOnControlHover": 7.7098135589045835,
-    "borderOnBackground": 3.343894862377117,
-    "backgroundRelativeLuminance": 0.004875379709051634,
-    "originalFieldRelativeLuminance": 0.20064914140907048,
-    "minimumSyntaxOnSurface": 7.165429181858941,
+    "foregroundOnBackground": 15.409096631290469,
+    "secondaryOnBackground": 9.616034068995285,
+    "secondaryOnControlHover": 7.212014660083702,
+    "borderOnBackground": 4.046178912888542,
+    "minimumTextOnField": 7.212014660083702,
+    "backgroundRelativeLuminance": 0.008940857581238484,
+    "minimumSyntaxOnSurface": 7.182526415647145,
     "normalTextWcagAAA": true,
-    "note": "Calculated sRGB contrast, not measured monitor brightness or physical CRT colorimetry."
+    "note": "Calculated sRGB contrast of flat colours, before glow and overlay; not measured monitor brightness."
   }
 }

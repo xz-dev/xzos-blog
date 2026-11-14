@@ -37,7 +37,7 @@ TOC 的两枚新图标与原“目录”在模板中连续相接，不引入日�
 
 ## Favicon
 
-`favicon-tty.svg.ts` 是 `prerender = true` 的 Astro 静态 SVG endpoint，调用与页面相同的 `pixelIconRects()` 来源。独立 SVG 没有父元素颜色，因此设定 `color="#31fea8"` 后仍以 `currentColor` 填充方格；透明背景，不做 PNG 过滤或二次栅格化。
+`favicon-tty.svg.ts` 是 `prerender = true` 的 Astro 静态 SVG endpoint，调用与页面相同的 `pixelIconRects()` 来源。独立 SVG 没有父元素颜色，因此设定 `color="#d4ff3a"` 后仍以 `currentColor` 填充方格；透明背景，不做 PNG 过滤或二次栅格化。
 
 `BaseHead.astro` 在首次主题检测后立即同步 favicon 的 `href`、`type`、`sizes`，并用只观察 `data-theme` 的 `MutationObserver` 跟随手动切换及未锁定偏好时的系统主题变化。回到日间时恢复全部原值。不依赖轮询、计时器、外部图标服务或另一个可能漂移的 logo 文件。Apple touch icon 是平台安装/收藏资源，保持原日间 PNG，不伪称能够动态控制平台已缓存的图标。
 

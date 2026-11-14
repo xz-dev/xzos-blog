@@ -2,19 +2,21 @@
  * control sizes. Day is :root; night (data-theme="tty") overrides colours and
  * effects only, so switching theme never moves or resizes anything.
  * terminal.css styles elements and shared classes from these tokens; tty.css
- * adds the night font and control bevels. */
+ * adds the night font, glow, overlay and control bevels. */
 
-/* Default (day) theme: Solarized Light backgrounds.
- * Text tokens are darkened Solarized base01/blue so text, links and secondary
- * text reach WCAG AA (>= 4.5:1) on the page and code-block backgrounds. */
+/* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
+ * links reach WCAG AA (>= 4.5:1) on the page, the surface (code, inline code)
+ * and both ends of the header gradient. The border is the accent mixed 30%
+ * into the page. */
 :root {
-  --background: #fdf6e3;
-  --surface: color-mix(in srgb, var(--accent) 10%, var(--background));
-  --foreground: #475b62;
-  --accent: #1a659c;
-  --secondary: #566a70;
-  --emphasized: #586e75;
-  --border-color: #93a1a1;
+  --background: #fff8f2;
+  --surface: #ffeadb;
+  --foreground: #42302a;
+  --accent: #b4410f;
+  --secondary: #76605a;
+  --emphasized: #42302a;
+  --border-color: #e9c1ae;
+  --header-top: #ffe4cc;          /* header gradient: --header-top to --background */
 
   /* Size, spacing and width system shared by both themes. tty.css changes
    * colour, font family and decoration only, so switching theme never moves
@@ -60,18 +62,24 @@
 
 :root[data-theme="tty"] {
   color-scheme: dark;
-  /* Derivation: docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
-  --background: #011307;
-  --surface: #031e0e;
-  --foreground: #31fea8;
-  --emphasized: #31fea8;
-  --accent: #31fea8;
-  --secondary: #28d98f;
-  --border-color: #11754b;
-  --control-face: #052814;
-  --control-hover: #07321a;
-  --edge-light: #1da96e;
-  --edge-dark: #000401;
-  --edge-inner: #11754b;
+  /* Chosen anchors; the other shades mix --foreground over --background at the
+   * weights in docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
+  --background: #141a03;
+  --surface: #1d2606;
+  --foreground: #d4ff3a;
+  --emphasized: #d4ff3a;
+  --accent: #f0ff9a;
+  --secondary: #a8cc2a;
+  --border-color: #6a811c;
+  --control-face: #232c07;
+  --control-hover: #293309;
+  --edge-light: #7e9821;
+  --edge-dark: #000000;
+  --edge-inner: #6a811c;
+  --header-top: var(--background);
   --tty-font: "Unifont", "Unifont Upper", monospace;
+  --code-foreground: #e8fff0;
+  --tty-glow: 0 0 2px currentColor, 0 0 8px rgba(212, 255, 58, 0.45);
+  --tty-scanlines: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px);
+  --tty-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
 }

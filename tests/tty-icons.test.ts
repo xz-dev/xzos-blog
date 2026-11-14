@@ -226,7 +226,7 @@ test('the same-origin static night favicon uses the same hand-drawn logo grid as
 	const response = await GET({} as never);
 	assert.equal(response.status, 200);
 	assert.match(response.headers.get('Content-Type')!, /^image\/svg\+xml/);
-	assert.equal(await response.text(), renderPixelIconSvg('logo', '#31fea8'));
+	assert.equal(await response.text(), renderPixelIconSvg('logo', '#d4ff3a'));
 	const head = read('../src/components/BaseHead.astro');
 	assert.ok(head.includes("import '../styles/tty-pixel-icons.css'"));
 	assert.match(head, /<link id="site-favicon" rel="icon" type="image\/png" href="\/dotted_circle.png" sizes="192x192"/);
