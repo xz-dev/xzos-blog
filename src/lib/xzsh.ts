@@ -13,6 +13,9 @@ export interface Cell {
 	external?: boolean;
 	/** Rendered as <time datetime>. */
 	datetime?: string;
+	/** A plain cell's colour: `command` draws the first word as a command name
+	 * (--term-prompt) and the rest dim; `text` is the body colour, not dim. */
+	role?: 'command' | 'text';
 }
 
 export type Line =
@@ -84,7 +87,10 @@ function help(data: ShellData): Result {
 		uptime: 'uptime',
 		clear: 'clear',
 	};
-	const rows = Object.entries(usage).map(([name, synopsis]) => ({ left: { text: synopsis }, right: { text: data.help[name] ?? '' } }));
+	const rows = Object.entries(usage).map(([name, synopsis]): { left: Cell; right: Cell } => ({
+		left: { text: synopsis, role: 'command' },
+		right: { text: data.help[name] ?? '', role: 'text' },
+	}));
 	return { lines: [{ type: 'rows', rows }, text(data.keys)] };
 }
 

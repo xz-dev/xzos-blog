@@ -38,6 +38,27 @@ block redefines colours and the role tokens only.
   text in a post (`.article-body`: paragraphs, lists, tables, quotes, links)
   sets `text-shadow: none`, and its headings take `--text-glow` back.
 
+### Semantic colours
+
+Like a shell's prompt and `LS_COLORS`, colour in terminal output says what a
+thing is. Each role is a Solarized hue with only its lightness moved, so it
+reaches 4.5:1 on `--background` and `--surface` in both themes. Colour only:
+Unifont has one weight, so nothing is bold, boxed or filled.
+
+| Role | Token | Where |
+|---|---|---|
+| Prompt, command name (green) | `--term-prompt` | the `$` of every prompt (`.term-sign`: `term/Prompt`, the shell's prompt and echoed commands); command names in `help` (`.term-name`) |
+| Path (blue) | `--term-path` | path arguments in prompt commands (`.term-path`, split by `commandParts` in `src/lib/term-command.ts`): `~/blog`, `~/friends`, `~/communities`, `~/comments`, `~/about.md` |
+| External link (cyan) | `--term-link` | external links in terminal output (`.term-link`): link-exchange names, the fetch block's `Links:`, external links in a `cat` page (about) |
+| Date (yellow) | `--term-date` | dates in listings (`.term-date`: home and shell `ls`) and in `PostMeta` (lists, archive, posts) |
+| Tag (magenta) | `--term-tag` | the category in `PostMeta` (`.post-category`) |
+| Error (red) | `--error` | shell errors (`.shell-error`) |
+
+Everything else keeps its role: `--accent` for fetch keys and `user@host`,
+`##` heading markers, current markers (`*`) and links in prose;
+`--secondary` for comments and meta text; `--foreground` for body text,
+post titles and `help`'s descriptions.
+
 ## Primitives
 
 | Role | Primitive | Where |
@@ -61,7 +82,9 @@ Home, about and link-exchange read as one shell session, built from the
 `src/components/term/` primitives and their classes in `terminal.css`. The
 commands are i18n keys (`term.*`), shown verbatim in every locale.
 
-- **Prompt:** `$` in `--secondary`, the command in `--foreground`. A prompt
+- **Prompt:** `$` in `--term-prompt`, the command in `--foreground` with
+  path arguments in `--term-path`; the text is unchanged, so a copied prompt
+  is the command as typed. A prompt
   follows output after one blank line (`--space-4`); the first one in a
   block has no top margin. The line is `aria-hidden`: it is the visible
   title or decoration, and the page's h1 or a `sr-only` h2 carries the
@@ -71,9 +94,11 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
   characters count two) and sets every left cell to that width, so the right
   column lines up and dates and names never wrap; the right cell takes the
   rest of the row and wraps inside it. Columns are `--cell-gap` (2ch) apart.
-  Linked cells are `--foreground`; hover turns them `--accent` and
-  underlines them, with no fill. Plain cells (dates, hosts) are
-  `--secondary`. A `stack` list keeps the right column on one line as well:
+  Linked cells are `--foreground` (`--term-link` when external); hover turns
+  them `--accent` and underlines them, with no fill. Dates are `--term-date`;
+  other plain cells (hosts, `help`'s synopses) are `--secondary`, except
+  cells marked as body text (`help`'s descriptions), which are
+  `--foreground`. A `stack` list keeps the right column on one line as well:
   when the row is narrower than the widest `left  right` pair, every row
   puts its right cell on its own line, 2ch in, at once. The switch follows
   the entries, not a breakpoint. Words break only when one alone is wider
@@ -81,7 +106,8 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
 - **Page as output:** under its prompt, a page's content uses the body line
   height, paragraphs one blank line apart, quotes as indented output behind
   the 2px `--rule` in `--border-strong`, list items as `- ` rows with a
-  hanging indent; links keep their underline.
+  hanging indent; links keep their underline, external ones in
+  `--term-link`.
 - **Cursor:** blinks only with `blink` (`data-blink`), which only the home
   page sets, because it has a pause control (WCAG 2.2.2). Other cursors are
   steady.
@@ -279,12 +305,13 @@ info; below that the art stacks above the info.
   count), Shell, Theme, Font (the version in `tty-font.json`), Locale,
   Links. The theme in use (it follows `data-theme`) and the current locale
   are marked like the status line's current entry (`--accent`, trailing
-  `*`), never inverted. Links are plain values with a dotted 1px underline,
-  solid on hover and focus. After one blank line comes one row of six 3ch
+  `*`), never inverted. Links are values with a dotted 1px underline, solid
+  on hover and focus: `Locale:` in `--foreground`, the external `Links:` in
+  `--term-link`. After one blank line comes one row of six 3ch
   swatches, no frame: the theme's own tokens (`--surface`,
   `--border-color`, `--border-strong`, `--secondary`, `--accent`,
   `--foreground`), so the row recolours with the theme. The shell's errors
-  use `--error`, the one colour outside that set.
+  use `--error` (see Semantic colours).
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a

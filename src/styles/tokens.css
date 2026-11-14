@@ -32,8 +32,16 @@
   --text-glow: none;              /* text-shadow on body text */
   --field-overlay: none;          /* fixed layer painted behind the content */
 
-  /* Error text (xzsh's "command not found"): a muted red, 4.5:1 on the page. */
-  --error: #dc322f;
+  /* Semantic terminal colours: what a thing is, as a shell's prompt and
+   * LS_COLORS would say it. Solarized hues with only the lightness moved so
+   * each one reaches 4.5:1 on the page and the surface in both themes
+   * (docs/theme/design-language.md, "Semantic colours"). */
+  --term-prompt: #5f6d00;         /* green: the prompt's `$`, command names in `help` */
+  --term-path: #1d6ca2;           /* blue: paths in prompt commands */
+  --term-link: #1e736c;           /* cyan: external links in command output */
+  --term-date: #826200;           /* yellow: dates in listings and post meta */
+  --term-tag: #bd2971;            /* magenta: categories and tags */
+  --error: #c72421;               /* red: shell errors (xzsh's "command not found") */
 
   /* Size, spacing, width and font system shared by both themes. The night
    * block changes colour and effects only, so switching theme never moves or
@@ -109,8 +117,13 @@
   --code-color: var(--code-foreground);
   --selection-bg: #073642;  /* reverse video, like mark */
   --selection-fg: #93a1a1;
-  /* Error text: a dim phosphor level, still 4.5:1 on the field. */
-  --error: #dc322f;
+  /* Semantic terminal colours: the same hues, lighter for the dark field. */
+  --term-prompt: #8fa400;
+  --term-path: #4aa1de;
+  --term-link: #2daba1;
+  --term-date: #c29300;
+  --term-tag: #e178ab;
+  --error: #e87977;
   /* Static phosphor glow and a scanline and vignette layer behind the content. */
   --text-glow: none;
   --field-overlay: none;

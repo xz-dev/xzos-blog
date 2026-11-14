@@ -717,15 +717,33 @@ a :is(strong, b, em, i) {
   color: var(--foreground);
 }
 
+/* Semantic colours, as a shell's prompt and LS_COLORS draw them: the
+ * prompt's `$` and command names green, paths blue, external links cyan,
+ * dates yellow. Colour only: Unifont has one weight, so no bold. */
+.term-sign,
+.term-name {
+  color: var(--term-prompt);
+}
+
+.term-path {
+  color: var(--term-path);
+}
+
+.term-date {
+  color: var(--term-date);
+}
+
 /* `left  right` rows. OutputList sets --term-left and --term-right to the
  * widest entry of each column in character cells, so every left cell is as
  * wide as the longest one: the right column lines up and a left entry never
  * wraps. The right cell takes the rest of the row and wraps inside it.
  * Each cell is a .term-cell that carries the width; a link inside it is
  * only as wide as its text, so the empty part of a column is not a link.
- * Linked cells use the text colour and, on hover, the accent and an
- * underline (no fill); plain cells (dates, hosts) are dim. Words never break
- * unless one alone is wider than the row. */
+ * Linked cells use the text colour, external ones --term-link, and on
+ * hover the accent and an underline (no fill); dates are --term-date and
+ * other plain cells (hosts, synopses) dim, unless marked as body text
+ * (`help`'s descriptions). Words never break unless one alone is wider than
+ * the row. */
 .term-output {
   margin: 0;
   list-style: none;
@@ -758,6 +776,14 @@ a :is(strong, b, em, i) {
   text-decoration: none;
 }
 
+.term-output .term-cell > a.term-link {
+  color: var(--term-link);
+}
+
+.term-output li > .term-cell-text {
+  color: var(--foreground);
+}
+
 .term-output .term-cell > a:hover {
   color: var(--accent);
   text-decoration: underline;
@@ -788,6 +814,16 @@ a :is(strong, b, em, i) {
  * indent. Links keep their underline. */
 .term-text {
   line-height: var(--line-height);
+}
+
+/* External links in the output keep their underline in the terminal's link
+ * colour; links within the site stay in the accent. */
+.term-text a[href^="http"] {
+  color: var(--term-link);
+}
+
+.term-text a[href^="http"]:hover {
+  color: var(--emphasized);
 }
 
 .term-text > :first-child {

@@ -21,7 +21,7 @@ const t = useTranslations(lang);
 	<FormattedDate date={pubDate} source={pubDateSource} />
 	{updatedDate && <span>{t('blog.updatedOn')} <FormattedDate date={updatedDate} source={updatedDateSource} /></span>}
 	{author && <span>{t('blog.authorLabel')}{author}</span>}
-	{category && <span>{t('blog.categoryLabel')}{category}</span>}
+	{category && <span>{t('blog.categoryLabel')}<span class="post-category">{category}</span></span>}
 	<slot />
 </div>
 
@@ -36,5 +36,12 @@ const t = useTranslations(lang);
 		color: var(--secondary);
 		font-size: var(--text-meta);
 		line-height: var(--leading-meta);
+	}
+	/* Dates and the category in their semantic colours; labels stay dim. */
+	.post-meta :global(time) {
+		color: var(--term-date);
+	}
+	.post-category {
+		color: var(--term-tag);
 	}
 </style>

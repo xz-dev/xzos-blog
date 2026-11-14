@@ -153,6 +153,10 @@ const recent = posts.slice(0, LS);
 			.fetch a:focus-visible {
 				text-decoration-style: solid;
 			}
+			/* External links (Links:) in the terminal's link colour. */
+			.fetch a.term-link {
+				color: var(--term-link);
+			}
 			/* The current theme and language are marked like the status line's
 			 * current entry: the accent and a trailing `*` with empty alternative
 			 * text. Screen readers get the state in words instead: aria-current on
@@ -265,7 +269,7 @@ const recent = posts.slice(0, LS);
 							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={getHomePath(locale)} hreflang={locale} aria-current={locale === lang ? 'page' : undefined} aria-label={`${languages[locale]} (${langCodes[locale]})`}>{langCodes[locale]}</a></span></>
 						))}</dd></div>
 						<div><dt>Links<span>:</span></dt> <dd>{links.map((link, index) => (
-							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
+							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a class="term-link" href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
 						))}</dd></div>
 					</dl>
 					<div class="palette" aria-hidden="true">

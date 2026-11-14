@@ -243,6 +243,7 @@ test('no frame, fill or bevel exists in one theme and not the other', () => {
 		'--background', '--surface', '--foreground', '--emphasized', '--accent', '--secondary',
 		'--border-color', '--border-strong', '--code-foreground', '--code-color',
 		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay', '--error',
+		'--term-prompt', '--term-path', '--term-link', '--term-date', '--term-tag',
 		'--tty-glow', '--tty-scanlines', '--tty-vignette',
 	]);
 	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name), name);
