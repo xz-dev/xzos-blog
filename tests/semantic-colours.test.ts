@@ -74,7 +74,8 @@ test('terminal output draws each role from its token', () => {
 	assert.match(rule('.term-name'), /color:\s*var\(--term-prompt\)/);
 	assert.match(rule('.term-path'), /color:\s*var\(--term-path\)/);
 	assert.match(rule('.term-date'), /color:\s*var\(--term-date\)/);
-	assert.match(rule('a.term-link'), /color:\s*var\(--term-link\)/);
+	// Command output lists keep links in the body colour; only prose links are cyan.
+	assert.doesNotMatch(terminal, /\.term-output[^{]*a\.term-link/);
 	assert.match(rule('.term-text a[href^="http"]'), /color:\s*var\(--term-link\)/);
 
 	const prompt = read('../src/components/term/Prompt.astro');
@@ -86,7 +87,8 @@ test('terminal output draws each role from its token', () => {
 	assert.match(shell, /commandParts\(command\)/);
 	assert.match(shell, /node\('time', 'term-date'/);
 	const list = read('../src/components/term/OutputList.astro');
-	assert.match(list, /<a class="term-link"[^>]*target="_blank"/);
+	assert.match(list, /<a href=\{cell\.href\} target="_blank"/);
+	assert.doesNotMatch(list, /class="term-link"/);
 	assert.match(list, /<time class="term-date"/);
 	const meta = read('../src/components/PostMeta.astro');
 	// The post meta line stays dim: semantic colours are for terminal output only.

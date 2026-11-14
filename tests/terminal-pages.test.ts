@@ -31,7 +31,7 @@ test('home, about and link-exchange are drawn with the shared terminal primitive
 	// Friends, then communities, each its own `ls` block of stacked rows; the cursor prompt is last.
 	assert.match(
 		pages.links,
-		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} stack label=\{t\('links\.friends'\)\} \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} stack label=\{t\('links\.communities'\)\} \/>\s*<Prompt cursor \/>/,
+		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} leftWidth=\{nameWidth\} stack label=\{t\('links\.friends'\)\} \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} leftWidth=\{nameWidth\} stack label=\{t\('links\.communities'\)\} \/>\s*<Prompt cursor \/>/,
 	);
 	assert.match(pages.links, /const communities = \[\{ name: 'Gentoo 中文社群', url: 'https:\/\/gentoozh\.org\/zh-tw\/' \}\];/);
 	assert.equal(pages.links.match(/gentoozh\.org/g)?.length, 1);
@@ -64,7 +64,9 @@ test('cellWidth counts wide East Asian characters as two cells', () => {
 test('output rows: the left column is as wide as its widest entry and never wraps', () => {
 	const list = read('../src/components/term/OutputList.astro');
 	assert.match(list, /style=\{`--term-left: \$\{left\}ch; --term-right: \$\{right\}ch`\}/);
-	assert.doesNotMatch(list, /leftMax/);
+	assert.match(list, /const left = leftWidth \?\? widest\(rows\.map\(\(row\) => row\.left\)\);/);
+	// Link exchange: both lists share one name column of at most 32 cells.
+	assert.match(pages.links, /const nameWidth = Math\.min\(32, Math\.max\(\.\.\.\[\.\.\.friends, \.\.\.communities\]/);
 	assert.match(css, /\.term-output li\s*\{[^}]*display:\s*flex;[^}]*flex-wrap:\s*wrap;[^}]*column-gap:\s*var\(--cell-gap\);/);
 	assert.match(css, /\.term-output li > :first-child\s*\{\s*flex:\s*none;\s*width:\s*min\(var\(--term-left\), 100%\);/);
 	assert.match(css, /\.term-output li > :last-child\s*\{\s*flex:\s*1 1 0;/);

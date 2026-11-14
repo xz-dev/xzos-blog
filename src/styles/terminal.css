@@ -743,7 +743,9 @@ a :is(strong, b, em, i) {
  * wraps. The right cell takes the rest of the row and wraps inside it.
  * Each cell is a .term-cell that carries the width; a link inside it is
  * only as wide as its text, so the empty part of a column is not a link.
- * Linked cells use the text colour, external ones --term-link, and on
+ * A page can pass one width to several lists so their right columns share
+ * a line; a left entry longer than that wraps inside its column.
+ * Linked cells, internal or external, use the text colour, and on
  * hover the accent and an underline (no fill); dates are --term-date and
  * other plain cells (hosts, synopses) dim, unless marked as body text
  * (`help`'s descriptions). Words never break unless one alone is wider than
@@ -778,10 +780,6 @@ a :is(strong, b, em, i) {
 .term-output .term-cell > a {
   color: var(--foreground);
   text-decoration: none;
-}
-
-.term-output .term-cell > a.term-link {
-  color: var(--term-link);
 }
 
 .term-output li > .term-cell-text {
