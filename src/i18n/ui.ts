@@ -70,6 +70,7 @@ export const ui = {
     'term.recent': 'ls -t ~/blog | head -{count}',
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
+    'term.communities': 'ls ~/communities',
 
     // 分页
     'pagination.label': '分页',
@@ -140,6 +141,7 @@ export const ui = {
     'term.recent': 'ls -t ~/blog | head -{count}',
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
+    'term.communities': 'ls ~/communities',
 
     // Pagination
     'pagination.label': 'Pagination',
@@ -203,6 +205,7 @@ export const ui = {
     'term.recent': 'ls -t ~/blog | head -{count}',
     'term.cat': 'cat ~/{file}',
     'term.friends': 'ls ~/friends',
+    'term.communities': 'ls ~/communities',
 
     // 分页
     'pagination.label': '分页',

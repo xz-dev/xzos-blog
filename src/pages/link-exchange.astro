@@ -1,7 +1,7 @@
 ---
 /**
- * 友链页，画成一段终端会话：`$ ls ~/friends`，每个友链一行 `名字  主机名`
- * （名字是链接；名字列最宽 24ch，更长的名字在列内换行），最后是带块光标的提示符。h1 只对读屏器可见，提示符行就是画面上的标题。
+ * 友链页，画成一段终端会话：`$ ls ~/friends` 与 `$ ls ~/communities`，每项一行 `名字  主机名`
+ * （名字是链接，不换行；一行放不下时主机名换到下一行），最后是带块光标的提示符。h1 只对读屏器可见，提示符行就是画面上的标题。
  */
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
@@ -27,12 +27,13 @@ const friends = [
 	{ name: 'Coelacanthus', url: 'https://blog.coelacanthus.moe/' },
 	{ name: 'Flykhan', url: 'https://flykhan.com/' },
 	{ name: '半瓶斋', url: 'https://blog.plz.ac/' },
-	{ name: 'Gentoo 中文社群', url: 'https://gentoozh.org/zh-tw/' },
 ];
-const rows = friends.map(({ name, url }) => ({
-	left: { text: name, href: url, external: true },
-	right: { text: new URL(url).hostname },
-}));
+const communities = [{ name: 'Gentoo 中文社群', url: 'https://gentoozh.org/zh-tw/' }];
+const rows = (links: { name: string; url: string }[]) =>
+	links.map(({ name, url }) => ({
+		left: { text: name, href: url, external: true },
+		right: { text: new URL(url).hostname },
+	}));
 ---
 
 <!doctype html>
@@ -44,7 +45,9 @@ const rows = friends.map(({ name, url }) => ({
 		<Header />
 		<PageFrame title={t('nav.links')} hideTitle>
 			<Prompt command={t('term.friends')} />
-			<OutputList rows={rows} leftMax="24ch" stack />
+			<OutputList rows={rows(friends)} stack />
+			<Prompt command={t('term.communities')} />
+			<OutputList rows={rows(communities)} stack />
 			<Prompt cursor />
 		</PageFrame>
 		<Footer />

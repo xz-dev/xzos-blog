@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { ui } from '../src/i18n/ui.ts';
+import { cellWidth } from '../src/lib/term-width.ts';
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const pages = {
@@ -26,11 +27,17 @@ test('home, about and link-exchange are drawn with the shared terminal primitive
 		assert.match(pages[name], /<OutputList\b/, name);
 	}
 	assert.match(pages.about, /<article class="prose term-text">/);
-	assert.match(pages.links, /<Prompt command=\{t\('term\.friends'\)\} \/>/);
+	// Friends, then communities, each its own `ls` block of stacked rows; the cursor prompt is last.
+	assert.match(
+		pages.links,
+		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} stack \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} stack \/>\s*<Prompt cursor \/>/,
+	);
+	assert.match(pages.links, /const communities = \[\{ name: 'Gentoo 中文社群', url: 'https:\/\/gentoozh\.org\/zh-tw\/' \}\];/);
+	assert.equal(pages.links.match(/gentoozh\.org/g)?.length, 1);
 	assert.match(pages.about, /<Prompt command=\{t\('term\.cat', \{ file: `\$\{slug\}\.md` \}\)\} \/>/);
 	// Commands are i18n keys in every locale.
 	for (const lang of Object.keys(ui) as (keyof typeof ui)[]) {
-		for (const key of ['term.recent', 'term.cat', 'term.friends'] as const) assert.ok(ui[lang][key], `${lang} ${key}`);
+		for (const key of ['term.recent', 'term.cat', 'term.friends', 'term.communities'] as const) assert.ok(ui[lang][key], `${lang} ${key}`);
 	}
 });
 
@@ -45,10 +52,60 @@ test('the prompt line is the visible title; each page keeps one visually hidden 
 	assert.match(read('../src/components/term/Prompt.astro'), /<p class="term-prompt" aria-hidden="true">/);
 });
 
-test('output rows align on shared tracks; only the home cursor blinks', () => {
-	assert.match(css, /\.term-output\s*\{[^}]*grid-template-columns:\s*fit-content\(var\(--term-left-max, 50%\)\) minmax\(0, 1fr\);/);
-	assert.match(css, /\.term-output li\s*\{[^}]*grid-template-columns:\s*subgrid;/);
-	assert.match(css, /\.term-output li > \*\s*\{[^}]*overflow-wrap:\s*anywhere;/);
+test('cellWidth counts wide East Asian characters as two cells', () => {
+	assert.equal(cellWidth('limu'), 4);
+	assert.equal(cellWidth('简记'), 4);
+	assert.equal(cellWidth('星梦的小站（坂本dalao）'), 23);
+	assert.equal(cellWidth("Ran's Blog | 旋律的博客"), 23);
+	assert.equal(cellWidth(''), 0);
+});
+
+test('output rows: the left column is as wide as its widest entry and never wraps', () => {
+	const list = read('../src/components/term/OutputList.astro');
+	assert.match(list, /style=\{`--term-left: \$\{left\}ch; --term-right: \$\{right\}ch`\}/);
+	assert.doesNotMatch(list, /leftMax/);
+	assert.match(css, /\.term-output li\s*\{[^}]*display:\s*flex;[^}]*flex-wrap:\s*wrap;[^}]*column-gap:\s*var\(--cell-gap\);/);
+	assert.match(css, /\.term-output li > :first-child\s*\{\s*flex:\s*none;\s*width:\s*min\(var\(--term-left\), 100%\);/);
+	assert.match(css, /\.term-output li > :last-child\s*\{\s*flex:\s*1 1 0;/);
+	// Words break only when one alone is wider than the row.
+	assert.match(css, /\.term-output li > \*\s*\{[^}]*overflow-wrap:\s*break-word;/);
+	assert.doesNotMatch(css, /term-left-max|overflow-wrap:\s*anywhere;\s*\}\s*\.term-output/);
+	// A stacked list switches every row at once when the widest pair no longer fits; no breakpoint.
+	assert.match(css, /\.term-output-stack\s*\{\s*--term-row:\s*calc\(var\(--term-left\) \+ var\(--cell-gap\) \+ var\(--term-right\)\);/);
+	assert.match(css, /\.term-output-stack li > :first-child\s*\{\s*width:\s*max\(min\(var\(--term-left\), 100%\), calc\(\(var\(--term-row\) - 100%\) \* 999\)\);\s*max-width:\s*100%;/);
+	assert.match(css, /\.term-output-stack li > :last-child\s*\{\s*padding-inline-start:\s*clamp\(0px, calc\(\(var\(--term-row\) - 100%\) \* 999\), var\(--cell-gap\)\);/);
+});
+
+test('link hover changes colour and underlines; no hover or focus paints a fill', () => {
+	assert.match(css, /\.term-output li > a:hover\s*\{\s*color:\s*var\(--accent\);\s*text-decoration:\s*underline;\s*\}/);
+	const sheets = [css, tty, read('../src/styles/tty-pixel-icons.css'), read('../src/components/Header.astro'), read('../src/components/Footer.astro'), ...Object.values(pages)];
+	for (const sheet of sheets) {
+		for (const [, body] of sheet.matchAll(/:(?:hover|focus|focus-visible|active)[^{,]*\{([^}]*)\}/g)) {
+			assert.doesNotMatch(body, /background/, body);
+		}
+	}
+});
+
+test('home: the info block is centred on the ring; the all-posts arrow is off the underline', () => {
+	assert.match(pages.home, /\.boot\s*\{[^}]*align-items:\s*center;/);
+	assert.match(pages.home, /\.fetch\s*\{\s*margin-block-end:\s*var\(--menu-item-height\);/);
+	assert.match(pages.home, /<a class="all-posts" href=\{`\$\{blogPrefix\}\/`\}><span class="all-posts-arrow"><PixelArrowText text="→" \/><\/span>\{allPosts\}<\/a>/);
+	assert.match(pages.home, /\.all-posts-arrow\s*\{\s*display:\s*inline-block;\s*margin-inline-end:\s*1ch;/);
+});
+
+test('status line: items 2ch apart, a reserved `*` cell, `│` between groups, glyph-size icons', () => {
+	const header = read('../src/components/Header.astro');
+	assert.match(read('../src/styles/tokens.css'), /--cell-gap:\s*2ch;/);
+	assert.match(header, /\.internal-links,\s*\.right-section,\s*\.social-links\s*\{[^}]*gap:\s*var\(--cell-gap\);/);
+	assert.match(read('../src/components/LanguageSwitcher.astro'), /gap:\s*var\(--cell-gap\);/);
+	assert.match(header, /\.internal-links :global\(\.menu-item\),\s*\.right-section :global\(\.menu-item\)\s*\{\s*padding-inline:\s*0;/);
+	assert.match(header, /:global\(\.lang-link\)::after\s*\{\s*content:\s*"\*";\s*content:\s*"\*" \/ "";\s*visibility:\s*hidden;/);
+	assert.match(header, /:global\(\.lang-link\[aria-current\]\)::after\s*\{\s*visibility:\s*visible;/);
+	assert.equal(header.match(/<span class="status-sep" aria-hidden="true">│<\/span>/g)?.length, 2);
+	assert.match(header, /\.social-links :global\(\.menu-item-icon svg\)\s*\{\s*width:\s*var\(--pixel-icon-size\);\s*height:\s*var\(--pixel-icon-size\);/);
+});
+
+test('only the home cursor blinks', () => {
 	// The cursor blinks only with data-blink, set by `blink`, which only the
 	// home page (it has a pause control) passes.
 	assert.match(read('../src/components/term/Cursor.astro'), /data-blink=\{blink \? '' : undefined\}/);

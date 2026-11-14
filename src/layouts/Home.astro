@@ -39,6 +39,8 @@ const links = [
 ];
 // The palette strip: one cell per colour token, darkest role first.
 const swatches = ['background', 'surface', 'border-color', 'border-strong', 'secondary', 'foreground', 'accent'];
+// `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
+const allPosts = t('home.allPosts').replace(/^→\s*/, '');
 const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
 ---
 
@@ -49,13 +51,15 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 		<style>
 			/* Two columns from 720px: the art, then the info block. The art box
 			 * is a fixed character grid (--cols × --rows), so frames never move
-			 * anything. */
+			 * anything. The info block is shorter than the ring, so it sits
+			 * centred on the ring (the bottom margin matches the pause control
+			 * under the art) instead of leaving a band below it. */
 			.boot {
 				display: grid;
 				grid-template-columns: max-content minmax(0, 1fr);
 				column-gap: var(--space-6);
 				row-gap: var(--space-4);
-				align-items: start;
+				align-items: center;
 			}
 			.ring {
 				width: calc(var(--cols) * 1ch);
@@ -93,6 +97,9 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 			}
 
 			/* fastfetch: a fixed label column, values wrap under their column. */
+			.fetch {
+				margin-block-end: var(--menu-item-height);
+			}
 			.fetch p,
 			.fetch dl {
 				margin: 0;
@@ -156,10 +163,19 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 				display: inline-block;
 				margin-top: var(--space-2);
 			}
+			/* The arrow and the space after it stay outside the underline: an
+			 * inline-block takes no decoration from its link. */
+			.all-posts-arrow {
+				display: inline-block;
+				margin-inline-end: 1ch;
+			}
 
 			@media (max-width: 720px) {
 				.boot {
 					grid-template-columns: minmax(0, 1fr);
+				}
+				.fetch {
+					margin-block-end: 0;
 				}
 			}
 			@media (max-width: 420px) {
@@ -241,7 +257,7 @@ const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSo
 						right: { text: post.data.title, href: `${blogPrefix}/${post.id}/` },
 					}))}
 				/>
-				<a class="all-posts" href={`${blogPrefix}/`}><PixelArrowText text={t('home.allPosts')} /></a>
+				<a class="all-posts" href={`${blogPrefix}/`}><span class="all-posts-arrow"><PixelArrowText text="→" /></span>{allPosts}</a>
 				<Prompt cursor blink />
 			</section>
 		</PageFrame>

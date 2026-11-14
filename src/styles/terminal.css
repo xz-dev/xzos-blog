@@ -519,29 +519,38 @@ a :is(strong, b, em, i) {
   color: var(--foreground);
 }
 
-/* `left  right` rows. Every row shares the parent's two tracks (subgrid),
- * so the right column lines up: the left track is as wide as its longest
- * entry, up to --term-left-max (half the row unless the list sets one; a
- * longer entry wraps inside it), and the right one wraps inside itself. Linked
- * cells use the text colour and underline on hover, like post titles;
- * plain cells (dates, hosts) are dim. */
+/* `left  right` rows. OutputList sets --term-left and --term-right to the
+ * widest entry of each column in character cells, so every left cell is as
+ * wide as the longest one: the right column lines up and a left entry never
+ * wraps. The right cell takes the rest of the row and wraps inside it.
+ * Linked cells use the text colour and, on hover, the accent and an
+ * underline (no fill); plain cells (dates, hosts) are dim. Words never break
+ * unless one alone is wider than the row. */
 .term-output {
-  display: grid;
-  grid-template-columns: fit-content(var(--term-left-max, 50%)) minmax(0, 1fr);
-  column-gap: 2ch;
   margin: 0;
   list-style: none;
 }
 
 .term-output li {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  column-gap: var(--cell-gap);
 }
 
 .term-output li > * {
+  min-width: 0;
   color: var(--secondary);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+}
+
+.term-output li > :first-child {
+  flex: none;
+  width: min(var(--term-left), 100%);
+}
+
+.term-output li > :last-child {
+  flex: 1 1 0;
 }
 
 .term-output li > a {
@@ -550,7 +559,27 @@ a :is(strong, b, em, i) {
 }
 
 .term-output li > a:hover {
+  color: var(--accent);
   text-decoration: underline;
+}
+
+/* A stacked list keeps the right column on one line too. When the row is
+ * narrower than the widest `left  right` pair (--term-row), the whole list
+ * switches at once: (row - 100%) * 999 is negative while everything fits and
+ * huge once it does not, so the left cell grows to the full row, the right
+ * cell wraps under it and gains a 2ch indent. No breakpoint: the switch
+ * follows the entries. */
+.term-output-stack {
+  --term-row: calc(var(--term-left) + var(--cell-gap) + var(--term-right));
+}
+
+.term-output-stack li > :first-child {
+  width: max(min(var(--term-left), 100%), calc((var(--term-row) - 100%) * 999));
+  max-width: 100%;
+}
+
+.term-output-stack li > :last-child {
+  padding-inline-start: clamp(0px, calc((var(--term-row) - 100%) * 999), var(--cell-gap));
 }
 
 /* A page's content as command output (`cat`), right under its prompt: body
@@ -584,17 +613,6 @@ a :is(strong, b, em, i) {
   position: absolute;
   inset-inline-start: 0;
   color: var(--secondary);
-}
-
-/* Phones: a stacked list puts the right cell on its own line, 2ch in. */
-@media (max-width: 480px) {
-  .term-output-stack {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .term-output-stack li > :last-child {
-    padding-inline-start: 2ch;
-  }
 }
 
 /* Block cursor: a full Unifont cell (U+2588) after a prompt. Only a cursor

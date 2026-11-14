@@ -26,7 +26,9 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		</div>
 		<div class="right-section">
 			<LanguageSwitcher />
+			<span class="status-sep" aria-hidden="true">│</span>
 			<ThemeToggle />
+			<span class="status-sep" aria-hidden="true">│</span>
 			<div class="social-links">
 				<a class="menu-item menu-item-icon" href={SOCIAL_LINKS.mastodon} target="_blank">
 					<span class="sr-only">{t('social.mastodon')}</span>
@@ -117,14 +119,53 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 	}
 
 	/* Menus follow the site name; the status area (languages, theme, social
-	 * links) sits at the right end. Two character cells separate entries:
-	 * each item's inline padding plus the gap. */
+	 * links) sits at the right end. The status line is a character grid:
+	 * items carry no inline padding, so the --cell-gap (2ch) between two
+	 * items is their distance edge to edge, and the groups of the status area
+	 * are split by a `│` with a --cell-gap on each side, as tmux draws it. */
 	.internal-links,
 	.right-section,
 	.social-links {
 		display: flex;
 		align-items: center;
-		gap: var(--space-2);
+		gap: var(--cell-gap);
+	}
+
+	.internal-links :global(.menu-item),
+	.right-section :global(.menu-item) {
+		padding-inline: 0;
+	}
+
+	/* An item that can be current reserves the cell of its `*`: the others
+	 * draw it invisibly, so marking one never moves its neighbours and the
+	 * columns stay put from page to page. */
+	.internal-links :global(.menu-item)::after,
+	.right-section :global(.lang-link)::after {
+		content: "*";
+		content: "*" / "";
+		visibility: hidden;
+	}
+
+	.internal-links :global(.menu-item[aria-current])::after,
+	.right-section :global(.lang-link[aria-current])::after {
+		visibility: visible;
+	}
+
+	/* Icons are glyphs of the grid: 16px (Unifont's cell height) and two
+	 * cells wide, centred on the row like the labels, in both themes. */
+	.right-section :global(#theme-toggle),
+	.social-links :global(.menu-item-icon) {
+		width: 2ch;
+		min-width: 0;
+	}
+
+	.social-links :global(.menu-item-icon svg) {
+		width: var(--pixel-icon-size);
+		height: var(--pixel-icon-size);
+	}
+
+	.status-sep {
+		color: var(--secondary);
 	}
 
 	/* Text slots: an item's label never breaks (white-space: nowrap on
@@ -135,14 +176,6 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 		flex: 1;
 		flex-wrap: wrap;
 		min-width: 0;
-	}
-
-	.right-section {
-		gap: var(--space-3);
-	}
-
-	.social-links {
-		gap: var(--space-1);
 	}
 
 	@media (max-width: 960px) {
@@ -180,7 +213,10 @@ const basePath = lang === 'zh' ? '' : `/${lang}`;
 
 		.right-section {
 			flex: 1 1 auto;
-			gap: var(--space-2);
+		}
+
+		.status-sep {
+			display: none;
 		}
 
 		.right-section :global(#theme-toggle) {

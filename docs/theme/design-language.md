@@ -53,13 +53,18 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
   block has no top margin. The line is `aria-hidden`: it is the visible
   title or decoration, and the page's h1 or a `sr-only` h2 carries the
   meaning.
-- **Output rows:** every row shares the list's two tracks (`subgrid`), so the
-  right column lines up. The left track is as wide as its longest entry, up
-  to `leftMax` (default half the row); an entry longer than that wraps
-  inside it, otherwise dates and names never wrap. The right column wraps
-  inside itself. Linked cells are `--foreground` and underline on hover,
-  like post titles; plain cells (dates, hosts) are `--secondary`. A `stack`
-  list puts the right cell on its own line, 2ch in, at 480px and below.
+- **Output rows:** `OutputList` measures each column's widest entry in
+  character cells (`cellWidth` in `src/lib/term-width.ts`: wide East Asian
+  characters count two) and sets every left cell to that width, so the right
+  column lines up and dates and names never wrap; the right cell takes the
+  rest of the row and wraps inside it. Columns are `--cell-gap` (2ch) apart.
+  Linked cells are `--foreground`; hover turns them `--accent` and
+  underlines them, with no fill. Plain cells (dates, hosts) are
+  `--secondary`. A `stack` list keeps the right column on one line as well:
+  when the row is narrower than the widest `left  right` pair, every row
+  puts its right cell on its own line, 2ch in, at once. The switch follows
+  the entries, not a breakpoint. Words break only when one alone is wider
+  than the row.
 - **Page as output:** under its prompt, a page's content uses the body line
   height, paragraphs one blank line apart, quotes as indented output behind
   the 2px `--rule` in `--border-strong`, list items as `- ` rows with a
@@ -78,15 +83,20 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
 The header is a terminal status line, like tmux's, the same in both themes:
 
 ```
-◌ xzOS   0:首页  1:文章*  2:关于  3:友链        lang: zh*  en  zh-CN   ☾
+◌ xzOS  0:首页   1:文章*  2:关于   3:友链        lang:  zh*  en   zh-CN   │  ☾  │  M  G  S
 ```
 
 It is one flat row of plain text on `--surface` with a 1px `--border-strong`
 bottom edge (`border-block-end`). The row holds the pixel logo (`--accent`),
 the site name, the menus and a status area (the language field, the theme
-toggle and the social links). Menu and language items are `.menu-item`s,
-32px tall with `--space-1` inline padding; `--space-2` gaps leave two
-character cells between entries.
+toggle and the social links). The row is a character grid: menu and
+language items are `.menu-item`s, 32px tall with no inline padding, so the
+`--cell-gap` (2ch) between two items is their distance edge to edge. Items
+that can be current (menus, languages) reserve the cell of the `*`; the
+others draw it invisibly, so marking one moves nothing. The status area's
+groups (languages, theme, social links) are split by an `aria-hidden` `│` in
+`--secondary` with a `--cell-gap` on each side. Icons (theme toggle, social
+links) are 16px glyphs in a 2ch cell, centred on the row like the labels.
 
 - **Menus** read `index:label`. The order and labels come from `navItems` and
   `nav.*` in `src/i18n/ui.ts`; the index is a dim `.menu-label`
@@ -105,8 +115,8 @@ character cells between entries.
 
 Tablets put the menus on a second row. At 720px and below the title takes
 its own row, the menus and the status area follow and share a row only when
-both fit, and the tagline and social links (which the footer repeats) are
-hidden.
+both fit, and the tagline, the `│` separators and the social links (which
+the footer repeats) are hidden.
 
 Text slots wrap or stay on one line by declaration. A menu label never breaks
 (`nowrap`); a row that runs out of room wraps whole items. Post titles and
@@ -127,7 +137,7 @@ pattern as the `zh` route.
 | `/blog/`, `/en/blog/`, `/zh-CN/blog/` | list | `layouts/BlogArchive.astro` |
 | `/blog/<slug>/`, `/en/blog/<slug>/`, `/zh-CN/blog/<slug>/` | article | `layouts/BlogPost.astro` |
 | `/about/`, `/en/about/`, `/zh-CN/about/` | page, shell session (`$ cat ~/about.md`, `hideTitle`) | `layouts/Page.astro` |
-| `/link-exchange` | page, shell session (`$ ls ~/friends`, `hideTitle`) | `pages/link-exchange.astro` |
+| `/link-exchange` | page, shell session (`$ ls ~/friends`, then `$ ls ~/communities`, `hideTitle`) | `pages/link-exchange.astro` |
 | `/404` | page | `pages/404.astro` |
 
 Endpoints that are not HTML pages have no pattern: `/rss.xml`
@@ -162,10 +172,13 @@ block sit side by side; below that the art stacks above the info.
   `--foreground` that wrap under their column, and a palette strip of the
   seven palette tokens. The current language in `Lang:` is marked like the
   status line's current entry (`--accent`, trailing `*`), never inverted.
+  The block is shorter than the ring, so it sits centred on the ring
+  instead of leaving a band below it.
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a
-  link to the locale's archive, then `$` and the blinking block cursor.
+  link to the locale's archive (the `→ ` stays off its underline), then `$`
+  and the blinking block cursor.
 - **Motion:** the logo and the cursor are the site's only motion, in both
   themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
   control and stops the blink.

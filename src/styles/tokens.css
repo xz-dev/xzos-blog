@@ -61,6 +61,7 @@
   --space-5: 2rem;                /* 32px */
   --space-6: 3rem;                /* 48px */
   --space-7: 4rem;                /* 64px */
+  --cell-gap: 2ch;                /* two character cells: between output columns and status-line items */
 
   --prose-width: 45rem;           /* post column incl. padding: 720px */
   --page-width: 60rem;            /* list and static-page frame: 960px */
