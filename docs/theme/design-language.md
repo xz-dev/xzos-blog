@@ -32,12 +32,46 @@ block redefines colours and the role tokens only.
 
 | Role | Primitive | Where |
 |---|---|---|
-| Page frame and title | `PageFrame` (`list`, `page`, `article`) with `.page-title` | `src/components/PageFrame.astro`, `terminal.css` |
+| Page frame and title | `PageFrame` (`list`, `page`, `article`, `home`; `hideTitle`) with `.page-title` | `src/components/PageFrame.astro`, `terminal.css` |
 | Menu item | `.menu-item`, `.menu-label`, `.menu-item-icon` | header status line, footer social links |
 | Control | `.control` | pagination |
 | Pixel mark (both themes) | `PixelIcon bothThemes` (`.pixel-icon`) | header logo, theme toggle |
 | Meta line | `PostMeta` (`.post-meta`) | post lists, posts |
-| Block cursor | `.cursor` (U+2588 after a `$` prompt) | home page |
+| Prompt line | `term/Prompt` (`.term-prompt`, `.term-command`): `$ command`, or `$` and the cursor | home, about, link-exchange |
+| Command output | `term/OutputList` (`.term-output`): aligned `left  right` rows | home (recent posts), link-exchange |
+| Page as output | `.term-text` on the content under a `cat` prompt | about |
+| Block cursor | `term/Cursor` (`.cursor`, U+2588); `blink` only with a pause control | home (blinking), about, link-exchange (steady) |
+
+## Shell session
+
+Home, about and link-exchange read as one shell session, built from the
+`src/components/term/` primitives and their classes in `terminal.css`. The
+commands are i18n keys (`term.*`), shown verbatim in every locale.
+
+- **Prompt:** `$` in `--secondary`, the command in `--foreground`. A prompt
+  follows output after one blank line (`--space-4`); the first one in a
+  block has no top margin. The line is `aria-hidden`: it is the visible
+  title or decoration, and the page's h1 or a `sr-only` h2 carries the
+  meaning.
+- **Output rows:** every row shares the list's two tracks (`subgrid`), so the
+  right column lines up. The left track is as wide as its longest entry, up
+  to `leftMax` (default half the row); an entry longer than that wraps
+  inside it, otherwise dates and names never wrap. The right column wraps
+  inside itself. Linked cells are `--foreground` and underline on hover,
+  like post titles; plain cells (dates, hosts) are `--secondary`. A `stack`
+  list puts the right cell on its own line, 2ch in, at 480px and below.
+- **Page as output:** under its prompt, a page's content uses the body line
+  height, paragraphs one blank line apart, quotes as indented output behind
+  the 2px `--rule` in `--border-strong`, list items as `- ` rows with a
+  hanging indent; links keep their underline.
+- **Cursor:** blinks only with `blink` (`data-blink`), which only the home
+  page sets, because it has a pause control (WCAG 2.2.2). Other cursors are
+  steady.
+- **Current markers** (the `Lang:` row, the pause control) take `--accent`
+  and a trailing `*`, as in the status line; nothing is inverted.
+- **Title:** the prompt line, or fastfetch's `xz@xzos` on the home page, is
+  the visible title, so these pages pass `hideTitle` to `PageFrame`: the one
+  h1 stays in the document, visually hidden (`sr-only`).
 
 ## Status line
 
@@ -92,8 +126,8 @@ pattern as the `zh` route.
 | `/page/N/`, `/en/page/N/`, `/zh-CN/page/N/` | list | `layouts/BlogList.astro` (pending: kept reachable as is until the home redesign settles pagination and redirects) |
 | `/blog/`, `/en/blog/`, `/zh-CN/blog/` | list | `layouts/BlogArchive.astro` |
 | `/blog/<slug>/`, `/en/blog/<slug>/`, `/zh-CN/blog/<slug>/` | article | `layouts/BlogPost.astro` |
-| `/about/`, `/en/about/`, `/zh-CN/about/` | page | `layouts/Page.astro` |
-| `/link-exchange` | page | `pages/link-exchange.astro` |
+| `/about/`, `/en/about/`, `/zh-CN/about/` | page, shell session (`$ cat ~/about.md`, `hideTitle`) | `layouts/Page.astro` |
+| `/link-exchange` | page, shell session (`$ ls ~/friends`, `hideTitle`) | `pages/link-exchange.astro` |
 | `/404` | page | `pages/404.astro` |
 
 Endpoints that are not HTML pages have no pattern: `/rss.xml`
@@ -106,8 +140,8 @@ The home page reads like fastfetch at login. From 720px the art and the info
 block sit side by side; below that the art stacks above the info.
 
 - **Title:** `PageFrame` still draws the page's one h1 (`xzOS - For Coding
-  Life`), visually hidden; the visible title line is the info block's
-  `xz@xzos`. This is the only pattern whose h1 is not drawn on screen.
+  Life`), visually hidden (`home` sets `hideTitle` by default); the visible
+  title line is the info block's `xz@xzos`.
 - **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
   (`src/lib/ascii-ring.ts`), on a fixed grid of 44 × 22 cells, 32 × 16 at
   420px and below. Cells are 8 × 16 (`--leading-art`), so the box never
@@ -130,8 +164,8 @@ block sit side by side; below that the art stacks above the info.
   status line's current entry (`--accent`, trailing `*`), never inverted.
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
-  (a 10ch date column that never wraps; titles wrap under the title column), a link to the locale's archive, then `$` and the
-  block cursor.
+  (`OutputList`: dates never wrap; titles wrap under the title column), a
+  link to the locale's archive, then `$` and the blinking block cursor.
 - **Motion:** the logo and the cursor are the site's only motion, in both
   themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
   control and stops the blink.
