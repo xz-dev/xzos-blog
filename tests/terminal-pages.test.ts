@@ -137,4 +137,7 @@ test('current markers are the accent and a trailing *, never an inverted block',
 	// The fetch block's Theme line marks the theme in use, following data-theme.
 	assert.match(pages.home, /:root:not\(\[data-theme="tty"\]\) \.fetch-theme-day,\s*:root\[data-theme="tty"\] \.fetch-theme-night\s*\{\s*color:\s*var\(--accent\);\s*\}/);
 	assert.match(pages.home, /:root:not\(\[data-theme="tty"\]\) \.fetch-theme-day::after,\s*:root\[data-theme="tty"\] \.fetch-theme-night::after\s*\{\s*content:\s*"\*";\s*content:\s*"\*" \/ "";/);
+	// The marker is silent; assistive tech reads a hidden "current" shown by the same selectors.
+	assert.match(pages.home, /\.fetch-current\s*\{\s*display:\s*none;\s*\}\s*:root:not\(\[data-theme="tty"\]\) \.fetch-theme-day \.fetch-current,\s*:root\[data-theme="tty"\] \.fetch-theme-night \.fetch-current\s*\{\s*display:\s*inline;/);
+	assert.equal(pages.home.match(/<span class="sr-only fetch-current">\{t\('home\.themeCurrent'\)\}<\/span>/g)?.length, 2);
 });

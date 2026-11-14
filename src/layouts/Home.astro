@@ -150,10 +150,12 @@ const recent = posts.slice(0, LS);
 				text-decoration-style: solid;
 			}
 			/* The current theme and language are marked like the status line's
-			 * current entry: the accent and a trailing `*` (empty alternative
-			 * text, so screen readers announce aria-current instead). The theme
-			 * follows data-theme, so it changes with the toggle. Inline-block
-			 * keeps a link's underline off the marker. */
+			 * current entry: the accent and a trailing `*` with empty alternative
+			 * text. Screen readers get the state in words instead: aria-current on
+			 * the locale link, and on the theme a visually hidden "current" that
+			 * shows under the same selectors as the marker, so it follows
+			 * data-theme without script. Inline-block keeps a link's underline
+			 * off the marker. */
 			.fetch a[aria-current] {
 				color: var(--accent);
 			}
@@ -170,6 +172,13 @@ const recent = posts.slice(0, LS);
 			:root[data-theme="tty"] .fetch-theme-night::after {
 				content: "*";
 				content: "*" / "";
+			}
+			.fetch-current {
+				display: none;
+			}
+			:root:not([data-theme="tty"]) .fetch-theme-day .fetch-current,
+			:root[data-theme="tty"] .fetch-theme-night .fetch-current {
+				display: inline;
 			}
 			.sep {
 				color: var(--secondary);
@@ -244,7 +253,7 @@ const recent = posts.slice(0, LS);
 						<div><dt>Uptime<span>:</span></dt> <dd><span data-uptime={SITE_SINCE}>{formatUptime(SITE_SINCE, Date.now())}</span></dd></div>
 						<div><dt>Packages<span>:</span></dt> <dd>{postCount} (posts)</dd></div>
 						<div><dt>Shell<span>:</span></dt> <dd>xzsh</dd></div>
-						<div><dt>Theme<span>:</span></dt> <dd><span class="fetch-theme-day">Peach [day]</span>, <span class="fetch-theme-night">Phosphor [night]</span></dd></div>
+						<div><dt>Theme<span>:</span></dt> <dd><span class="fetch-theme-day">Peach [day]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span>, <span class="fetch-theme-night">Phosphor [night]<span class="sr-only fetch-current">{t('home.themeCurrent')}</span></span></dd></div>
 						<div><dt>Font<span>:</span></dt> <dd>GNU {font.family} {font.version}</dd></div>
 						{/* One plain space after the key, as fastfetch prints it; each item after the first opens
 						    with a plain space, where the line may break, then `· ` and the link. */}

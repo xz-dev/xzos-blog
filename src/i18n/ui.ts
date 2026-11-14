@@ -56,6 +56,7 @@ export const ui = {
     'home.logoAlt': 'xzOS 标志：16 段短线围成的圆环，以字符画绘制并缓慢旋转',
     'home.pause': '暂停',
     'home.pauseLabel': '暂停动画',
+    'home.themeCurrent': '（当前）',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
@@ -136,6 +137,7 @@ export const ui = {
     'home.logoAlt': 'The xzOS logo, a ring of 16 dashes, slowly turning in ASCII art',
     'home.pause': 'pause',
     'home.pauseLabel': 'Pause animation',
+    'home.themeCurrent': '(current)',
     'home.recent': 'Recent posts',
     'home.allPosts': '→ All posts',
 
@@ -209,6 +211,7 @@ export const ui = {
     'home.logoAlt': 'xzOS 标志：16 段短线围成的圆环，以字符画绘制并缓慢旋转',
     'home.pause': '暂停',
     'home.pauseLabel': '暂停动画',
+    'home.themeCurrent': '（当前）',
     'home.recent': '最近文章',
     'home.allPosts': '→ 全部文章',
 
