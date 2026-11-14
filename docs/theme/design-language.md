@@ -216,7 +216,8 @@ and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
 **Open Graph.** The 1200×630 PNG cards use the day palette from the exported
 `OG_PALETTE` in `src/lib/og-image.ts` and only GNU Unifont 18.0.01. A flat
 status line uses the site navigation translations on the surface colour
-with a 1px strong bottom border.
+with a 1px strong bottom border. Post cards mark the Posts entry as current;
+the shared default card has no current marker.
 Post cards put a `$ cat ~/blog/<slug>.md` prompt before the title:
 64px for short titles, otherwise 48px, wrapped on character cells into at
 most three lines with an ellipsis. Latin words wrap at spaces or hyphens;

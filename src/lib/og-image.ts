@@ -2,6 +2,8 @@ import { Resvg } from '@resvg/resvg-js';
 import fs from 'node:fs';
 import path from 'node:path';
 import satori from 'satori';
+import { SITE_TITLE, SITE_HOST } from '../consts.ts';
+import { cellWidth } from './term-width.ts';
 import { defaultLang, langCodes, ui } from '../i18n/ui.ts';
 
 export const OG_IMAGE_WIDTH = 1200;
@@ -16,9 +18,7 @@ export const OG_PALETTE = {
 } as const;
 
 export interface OgImageContent {
-	title: string;
-	brand?: string;
-	footer?: string;
+	title?: string;
 	slug?: string;
 	date?: string;
 	category?: string;
@@ -30,10 +30,6 @@ let font: Buffer | undefined;
 function loadFont(): Buffer {
 	return font ??= fs.readFileSync(path.join(process.cwd(), 'src/assets/og-fonts/unifont-18.0.01.otf'));
 }
-
-// Reserve two cells for non-ASCII glyphs, including fullwidth punctuation.
-// This also bounds uncommon Unifont glyphs without a second font metrics parser.
-const cells = (text: string) => [...text].reduce((n, char) => n + (char.codePointAt(0)! < 128 ? 1 : 2), 0);
 
 const closing = /[，。、：；！？）」』]/u;
 const cjk = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
@@ -47,13 +43,13 @@ export function wrapOgText(text: string, columns: number, maxLines = 3): string[
 	const lines: string[] = [];
 	let start = 0;
 	while (start < chars.length && lines.length < maxLines) {
-		const truncated = lines.length === maxLines - 1 && cells(chars.slice(start).join('')) > columns;
-		const budget = columns - (truncated ? cells('…') : 0);
+		const truncated = lines.length === maxLines - 1 && cellWidth(chars.slice(start).join('')) > columns;
+		const budget = columns - (truncated ? cellWidth('…') : 0);
 		let end = start;
 		let width = 0;
 		let boundary = start;
-		while (end < chars.length && width + cells(chars[end]) <= budget) {
-			width += cells(chars[end++]);
+		while (end < chars.length && width + cellWidth(chars[end]) <= budget) {
+			width += cellWidth(chars[end++]);
 			const previous = chars[end - 1];
 			const next = chars[end];
 			if (!next || (!closing.test(next) && (
@@ -72,9 +68,9 @@ export function wrapOgText(text: string, columns: number, maxLines = 3): string[
 }
 
 export async function renderOgImage(content: OgImageContent): Promise<Buffer> {
-	const { title, slug, date, category, postCount, locale = 'src' } = content;
+	const { title = '', slug, date, category, postCount, locale = 'src' } = content;
 	const isPost = slug !== undefined;
-	const fontSize = cells(title) <= 34 ? 64 : 48;
+	const fontSize = cellWidth(title) <= 34 ? 64 : 48;
 	const titleLines = wrapOgText(title, Math.floor(1104 / (fontSize / 2)));
 	const clip = (text: string, columns: number) => wrapOgText(text, columns, 1)[0] ?? '';
 	const command = isPost ? `cat ~/blog/${clip(slug, 53)}.md` : 'fastfetch';
@@ -92,7 +88,7 @@ export async function renderOgImage(content: OgImageContent): Promise<Buffer> {
 		text('xz@xzos', 48, 208, 48, OG_PALETTE.accent),
 		text('-------', 48, 264),
 		...[
-			['OS', 'xzOS'],
+			['OS', SITE_TITLE],
 			['Shell', 'xzsh'],
 			['Packages', `${postCount ?? '?'} (posts)`],
 			['Locale', Object.values(langCodes).join(' · ')],
@@ -114,14 +110,14 @@ export async function renderOgImage(content: OgImageContent): Promise<Buffer> {
 					position: 'absolute', top: 0, left: 0, width: OG_IMAGE_WIDTH, height: 80,
 					background: OG_PALETTE.surface, borderBottom: `1px solid ${OG_PALETTE.borderStrong}`,
 				} } },
-				text(`xzOS │ 0:${nav[0]}${isPost ? '' : '*'}  1:${nav[1]}${isPost ? '*' : ''}`, 48, 24),
+				text(`${SITE_TITLE} │ 0:${nav[0]}  1:${nav[1]}${isPost ? '*' : ''}`, 48, 24),
 				text(`lang: ${locale}`, 944, 24, 32, OG_PALETTE.secondary),
 				text('$', 48, 128, 32, OG_PALETTE.accent),
 				text(command, 80, 128),
 				...output,
 				text('$', 48, 550, 32, OG_PALETTE.accent),
 				text('█', 80, 550, 32, OG_PALETTE.accent),
-				text('xzos.net', 1024, 550),
+				text(SITE_HOST, OG_IMAGE_WIDTH - 48 - cellWidth(SITE_HOST) * 16, 550),
 			],
 		},
 	}, {
