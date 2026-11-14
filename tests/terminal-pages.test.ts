@@ -93,7 +93,6 @@ test('home: ring rows sit beside fetch lines on one line grid; the all-posts arr
 	// fastfetch: title, rule, one line per key, a blank line and one row of the theme's own colours.
 	const keys = pages.home.match(/<div><dt>/g)?.length ?? 0;
 	assert.equal(RING_GRIDS.wide.rows, keys + 4);
-	assert.doesNotMatch(pages.home, /var\(--ansi-/);
 	assert.match(pages.home, /\.palette\s*\{[^}]*grid-template-columns:\s*repeat\(6, 3ch\);\s*grid-auto-rows:\s*var\(--line-height\);\s*margin-top:\s*var\(--line-height\);/);
 	assert.match(pages.home, /<a class="all-posts" href=\{`\$\{blogPrefix\}\/`\}><span class="all-posts-arrow"><PixelArrowText text="→" \/><\/span>\{allPosts\}<\/a>/);
 	assert.match(pages.home, /\.all-posts-arrow\s*\{\s*display:\s*inline-block;\s*margin-inline-end:\s*1ch;/);

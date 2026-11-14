@@ -10,7 +10,7 @@ const luminance = (hex) => rgb(hex).reduce((sum, c, i) => sum + decode(c / 255) 
 const contrast = (a, b) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
 const anchors = { '--background': '#141a03', '--surface': '#1d2606', '--foreground': '#d4ff3a', '--secondary': '#a8cc2a', '--accent': '#f0ff9a' };
 const mixFactors = { '--border-color': 0.45 };
-const fixed = { '--emphasized': anchors['--foreground'], '--code-foreground': '#e8fff0' };
+const fixed = { '--emphasized': anchors['--foreground'], '--code-foreground': '#e8fff0', '--error': '#728b1d' };
 const palette = {
   ...anchors,
   ...fixed,
@@ -24,7 +24,7 @@ console.log(JSON.stringify({
   intent: 'Yellow-green phosphor on a dark olive field. Chosen anchors, not a measured CRT state; the B photograph stays as historical evidence only.',
   reference: { manifest: 'docs/theme/tektronix-4052-b.json', sourceSha256: photo.source.sha256 },
   derivation: {
-    method: 'Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground and --code-foreground is the syntax foreground.',
+    method: 'Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground, --code-foreground is the syntax foreground and --error is a dim phosphor level that keeps 4.5:1 on the background.',
     anchors,
     mixFactors,
     syntaxPolicy: 'Code is an explicit multicolour fluorescent exception: independently selected saturated accents, not shades of the phosphor UI.',

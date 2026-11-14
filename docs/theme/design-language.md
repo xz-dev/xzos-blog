@@ -180,9 +180,11 @@ info; below that the art stacks above the info.
   Links. The theme in use (it follows `data-theme`) and the current locale
   are marked like the status line's current entry (`--accent`, trailing
   `*`), never inverted. Links are plain values with a dotted 1px underline,
-  solid on hover and focus. After one blank line come the 16 terminal
-  colours (`--ansi-0` … `--ansi-15`, normal then bright) as two rows of
-  eight 3ch blocks, no frame: muted hues on day, one phosphor ramp at night.
+  solid on hover and focus. After one blank line comes one row of six 3ch
+  swatches, no frame: the theme's own tokens (`--surface`,
+  `--border-color`, `--border-strong`, `--secondary`, `--accent`,
+  `--foreground`), so the row recolours with the theme. The shell's errors
+  use `--error`, the one colour outside that set.
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a

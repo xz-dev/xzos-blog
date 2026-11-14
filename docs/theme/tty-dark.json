@@ -5,7 +5,7 @@
     "sourceSha256": "71092ff150ff18f72d72070032d0e819c080b4052da3d51de29b0f00e80c851c"
   },
   "derivation": {
-    "method": "Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground and --code-foreground is the syntax foreground.",
+    "method": "Five chosen anchors. Every other UI shade mixes the foreground over the background per sRGB channel at the stated weight and rounds; --emphasized repeats the foreground, --code-foreground is the syntax foreground and --error is a dim phosphor level that keeps 4.5:1 on the background.",
     "anchors": {
       "--background": "#141a03",
       "--surface": "#1d2606",
@@ -32,6 +32,7 @@
     "--accent": "#f0ff9a",
     "--emphasized": "#d4ff3a",
     "--code-foreground": "#e8fff0",
+    "--error": "#728b1d",
     "--border-color": "#6a811c"
   },
   "syntax": {

@@ -204,18 +204,10 @@ test('both palettes keep every text colour at 4.5:1 or more on each field it sit
 	}
 });
 
-test('both themes define 16 terminal colours: swatches apart from the page, 1-6 readable as text', () => {
+test('both themes define one error colour that reads as text on the page', () => {
 	for (const [theme, colors] of [['day', day], ['night', palette]] as const) {
-		for (let index = 0; index < 16; index++) {
-			const color = colors[`--ansi-${index}`];
-			assert.ok(color, `${theme} --ansi-${index}`);
-			const ratio = contrast(color, colors['--background']);
-			assert.ok(ratio >= (index >= 1 && index <= 6 ? 4.5 : 1.5), `${theme} --ansi-${index}: ${ratio.toFixed(2)}`);
-		}
-	}
-	// Night is one phosphor ramp, dark to bright.
-	for (let index = 1; index < 16; index++) {
-		assert.ok(luminance(palette[`--ansi-${index}`]) > luminance(palette[`--ansi-${index - 1}`]), `night --ansi-${index}`);
+		const ratio = contrast(colors['--error'], colors['--background']);
+		assert.ok(ratio >= 4.5, `${theme} --error: ${ratio.toFixed(2)}`);
 	}
 });
 
@@ -242,10 +234,10 @@ test('no frame, fill or bevel exists in one theme and not the other', () => {
 	const allowed = new Set([
 		'--background', '--surface', '--foreground', '--emphasized', '--accent', '--secondary',
 		'--border-color', '--border-strong', '--code-foreground', '--code-color',
-		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay',
+		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay', '--error',
 		'--tty-glow', '--tty-scanlines', '--tty-vignette',
 	]);
-	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name) || /^--ansi-\d+$/.test(name), name);
+	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name), name);
 	assert.doesNotMatch(tokens.replace(/\/\*[\s\S]*?\*\//g, ''), /bevel|--edge-|--control-(?!size)|--field-(?!overlay)/);
 	// Every box-shadow, background and border in the shared rules reads a
 	// value both themes define the same way, or a palette colour.

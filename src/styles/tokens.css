@@ -32,26 +32,8 @@
   --text-glow: none;              /* text-shadow on body text */
   --field-overlay: none;          /* fixed layer painted behind the content */
 
-  /* Terminal palette (ANSI 0-15: black, red, green, yellow, blue, magenta,
-   * cyan, white, then the bright set): muted hues for the peach page. Each
-   * stands apart from the page at >= 1.5:1, and 1-6 reach 4.5:1 as text
-   * (xzsh prints errors in --ansi-1). */
-  --ansi-0: #3a2a24;    /* black */
-  --ansi-1: #a8321f;    /* red */
-  --ansi-2: #3f6a24;    /* green */
-  --ansi-3: #7f5a00;    /* yellow */
-  --ansi-4: #2d5c8a;    /* blue */
-  --ansi-5: #8a3a72;    /* magenta */
-  --ansi-6: #1f6a6c;    /* cyan */
-  --ansi-7: #a8948a;    /* white */
-  --ansi-8: #76605a;    /* bright black */
-  --ansi-9: #d8644a;    /* bright red */
-  --ansi-10: #74a04c;   /* bright green */
-  --ansi-11: #c99a2a;   /* bright yellow */
-  --ansi-12: #6a95c8;   /* bright blue */
-  --ansi-13: #c271a8;   /* bright magenta */
-  --ansi-14: #4ea4a4;   /* bright cyan */
-  --ansi-15: #d9c3b5;   /* bright white */
+  /* Error text (xzsh's "command not found"): a muted red, 4.5:1 on the page. */
+  --error: #a8321f;
 
   /* Size, spacing, width and font system shared by both themes. The night
    * block changes colour and effects only, so switching theme never moves or
@@ -120,25 +102,8 @@
   --code-color: var(--code-foreground);
   --selection-bg: var(--accent);  /* reverse video, like mark */
   --selection-fg: var(--background);
-  /* Terminal palette: one phosphor ramp, dark to bright from --ansi-0 to
-   * --ansi-15, like a monochrome screen's 16 levels. 0 stands apart from the
-   * field at >= 1.5:1, 1 and up reach 4.5:1 as text. */
-  --ansi-0: #33410b;
-  --ansi-1: #728b1d;
-  --ansi-2: #78931f;
-  --ansi-3: #7f9a21;
-  --ansi-4: #85a223;
-  --ansi-5: #8caa25;
-  --ansi-6: #93b327;
-  --ansi-7: #9abb29;
-  --ansi-8: #a2c42b;
-  --ansi-9: #aacd2d;
-  --ansi-10: #b2d730;
-  --ansi-11: #bae132;
-  --ansi-12: #c3eb35;
-  --ansi-13: #ccf638;
-  --ansi-14: #d8ff4e;
-  --ansi-15: #f6ffd0;
+  /* Error text: a dim phosphor level, still 4.5:1 on the field. */
+  --error: #728b1d;
   /* Static phosphor glow and a scanline and vignette layer behind the content. */
   --text-glow: var(--tty-glow);
   --field-overlay: var(--tty-scanlines), var(--tty-vignette);

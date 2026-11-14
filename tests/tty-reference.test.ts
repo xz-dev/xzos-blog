@@ -10,8 +10,7 @@ const tty = read('../src/styles/tty.css');
 const config = read('../astro.config.mjs');
 const tokens = read('../src/styles/tokens.css');
 const nightTokens = tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
-// The terminal colours (--ansi-*) are their own ramp, checked in tty-theme.test.ts.
-const palette = Object.fromEntries([...nightTokens.matchAll(/(--(?!ansi-)[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
+const palette = Object.fromEntries([...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
 const hex = (rgb: number[]) => '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('');
 
 test('B remains the pinned historical photograph, not a generic phosphor or active dark-field measurement', () => {

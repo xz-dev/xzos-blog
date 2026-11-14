@@ -13,7 +13,7 @@ export interface Cell {
 }
 
 export type Line =
-	| { type: 'text'; text: string; /** Drawn in the terminal red (--ansi-1). */ error?: true }
+	| { type: 'text'; text: string; /** Drawn in the error colour (--error). */ error?: true }
 	| { type: 'rows'; rows: { left: Cell; right: Cell }[] }
 	| { type: 'link'; text: string; href: string };
 
