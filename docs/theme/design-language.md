@@ -64,8 +64,8 @@ colours come from each palette: night keeps Aura's token colours except the
 comment grey, lifted to `#858585` for 4.5:1 on the code surface; day uses
 Termius Light's hues on `#dde1e7`. Every token reaches 4.5:1 on its code
 surface (day 4.514:1 at the lowest, night 4.505:1). Inline code uses the page
-foreground. The 16 home swatches are Aura's ANSI colours, the same in both
-themes; they are decorative.
+foreground. The 16 home swatches are the tokens `--ansi-0` to `--ansi-15`: Termius
+Light's terminal colours by day, Aura Dark's by night; they are decorative.
 `docs/theme/tty-dark.json` retains only the night favicon's foreground
 (`#edecee`); a test checks it against the CSS token. OG cards use the fixed
 night palette (Aura Dark), titles in the emphasized colour.
@@ -340,8 +340,8 @@ info; below that the art stacks above the info.
   `*`), never inverted. Links are values with a dotted 1px underline, solid
   on hover and focus: `Locale:` in `--foreground`, the external `Links:` in
   `--term-link`. After one blank line come 16 decorative
-  swatches in Aura's ANSI colours, shared by both
-  themes. The shell's errors use `--error` (see Semantic colours).
+  swatches from `--ansi-0` to `--ansi-15`, the current
+  theme's terminal colours. The shell's errors use `--error` (see Semantic colours).
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a

@@ -214,6 +214,8 @@ test('no frame, fill or bevel exists in one theme and not the other', () => {
 		'--border-color', '--border-strong', '--code-foreground', '--code-color',
 		'--selection-bg', '--selection-fg', '--text-glow', '--field-overlay', '--error',
 		'--term-prompt', '--term-path', '--term-link', '--term-date', '--term-tag',
+		// The home page's fastfetch swatches: each theme's 16 terminal colours.
+		...Array.from({ length: 16 }, (_, i) => `--ansi-${i}`),
 	]);
 	for (const [, name] of nightTokens.matchAll(/(--[\w-]+):/g)) assert.ok(allowed.has(name), name);
 	assert.doesNotMatch(tokens.replace(/\/\*[\s\S]*?\*\//g, ''), /bevel|--edge-|--control-(?!size)|--field-(?!overlay)/);

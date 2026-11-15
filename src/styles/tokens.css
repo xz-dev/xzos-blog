@@ -37,6 +37,13 @@
   --term-tag: #8a3fa0;            /* magenta: categories and tags */
   --error: #be2626;               /* red: shell errors (xzsh's "command not found") */
 
+  /* The 16 ANSI colours behind the home page's fastfetch swatches: Termius
+   * Light's terminal palette, 0-7 then bright 8-15. Decorative only. */
+  --ansi-0: #dde1e7; --ansi-1: #be2626; --ansi-2: #117140; --ansi-3: #865c00;
+  --ansi-4: #1d67a5; --ansi-5: #8a3fa0; --ansi-6: #106f6f; --ansi-7: #2b3040;
+  --ansi-8: #768097; --ansi-9: #e05252; --ansi-10: #1f9a5c; --ansi-11: #b07d10;
+  --ansi-12: #3a86c8; --ansi-13: #a85cc0; --ansi-14: #1f9090; --ansi-15: #141824;
+
   /* Size, spacing, width and font system shared by both themes. The night
    * block changes colour and effects only, so switching theme never moves or
    * resizes anything. Unifont is a 16px bitmap font, so text takes three
@@ -116,6 +123,11 @@
   --term-date: #ffca85;
   --term-tag: #f694ff;
   --error: #ff6767;
+  /* Aura Dark's terminal palette for the swatches. */
+  --ansi-0: #1f1d27; --ansi-1: #ff6767; --ansi-2: #61ffca; --ansi-3: #ffca85;
+  --ansi-4: #a277ff; --ansi-5: #f694ff; --ansi-6: #82e2ff; --ansi-7: #edecee;
+  --ansi-8: #6d6d6d; --ansi-9: #ff6767; --ansi-10: #61ffca; --ansi-11: #ffca85;
+  --ansi-12: #a277ff; --ansi-13: #f694ff; --ansi-14: #82e2ff; --ansi-15: #ffffff;
   --text-glow: none;
   --field-overlay: none;
 }

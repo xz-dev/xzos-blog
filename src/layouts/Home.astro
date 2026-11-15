@@ -46,11 +46,9 @@ const rule = '-'.repeat(`${user}@${host}`.length);
 // Every value is real: the Astro that built the page, the post count, the font manifest.
 const kernel = Astro.generator.replace(/^Astro v/, 'Astro ');
 // The terminal's 16 ANSI colours as fastfetch prints them: 0-7, then the
-// bright 8-15, in Aura's terminal mapping (the same in both themes).
-const palette = [
-	'#1f1d27', '#ff6767', '#61ffca', '#ffca85', '#a277ff', '#f694ff', '#82e2ff', '#edecee',
-	'#6d6d6d', '#ff6767', '#61ffca', '#ffca85', '#a277ff', '#f694ff', '#82e2ff', '#ffffff',
-];
+// bright 8-15. The values are tokens (--ansi-0 to --ansi-15), so the swatches
+// follow the theme: Termius Light by day, Aura Dark by night.
+const palette = Array.from({ length: 16 }, (_, i) => `var(--ansi-${i})`);
 // `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
 const allPosts = t('home.allPosts').replace(/^→\s*/, '');
 const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
