@@ -347,6 +347,10 @@ info; below that the art stacks above the info.
   unhides it; without script the page has no motion to stop. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It
   stops the logo, its variant clock and the cursor (`data-paused` on the frame).
+- **Next:** `[next]` sits left of `[pause]`, one cell gap apart, the same
+  plain menu item. It switches to another random variant from its first step;
+  while paused it shows that step and stays paused. Reduced motion hides it
+  with the pause control.
 - **Info block:** fastfetch's layout: `xz@xzos` (names in `--accent`, `@`
   plain), a rule of as many dashes, then `Key: value` lines with no column
   alignment, keys in `--accent` and `:` and values in `--foreground`. Keys
@@ -369,7 +373,7 @@ info; below that the art stacks above the info.
   localized help hint (`shell.hint`) in `--secondary`. `clear` wipes it.
 - **Motion:** the logo and the cursor are the site's only motion, in both
   themes. `prefers-reduced-motion: reduce` keeps `tumble`'s frame 0, with no
-  variant switching, hides the pause control and stops the blink. The cursor blinks only while the script has
+  variant switching, hides the next and pause controls and stops the blink. The cursor blinks only while the script has
   shown the pause control (`data-pausable`), so without script it is
   steady. The ring rewrites its `innerHTML` 12 times a second; at 4× CPU
   throttling on `/` (1440px, day) five seconds of animation produced no long

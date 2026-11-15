@@ -94,3 +94,10 @@ test('the home script plays a random variant and switches to a different one', (
 	assert.match(home, /if \(time >= RING_SWITCH\) \{\s*variant = pick\(variant\);\s*time = 0;\s*\}/);
 	assert.match(home, /ringHtml\(time, \{ cols: Number\(art\.dataset\.cols\), rows: Number\(art\.dataset\.rows\) \}, variant\)/);
 });
+
+test('the next control sits beside pause and switches to another variant from its start', () => {
+	const home = readFileSync(new URL('../src/layouts/Home.astro', import.meta.url), 'utf8');
+	assert.match(home, /<div class="ring-controls">\s*<button type="button" class="menu-item ring-next"[^>]*hidden>[\s\S]*?<button type="button" class="menu-item ring-toggle"/);
+	assert.match(home, /next\.addEventListener\('click', \(\) => \{\s*variant = pick\(variant\);\s*time = 0;\s*paint\(\);/);
+	assert.match(home, /next\.hidden = reduce\.matches;/);
+});

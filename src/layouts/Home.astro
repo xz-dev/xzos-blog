@@ -97,10 +97,14 @@ const recent = posts.slice(0, LS);
 			.art {
 				width: max-content;
 			}
-			.ring-toggle {
+			.ring-controls {
 				position: absolute;
 				right: 0;
 				bottom: 0;
+				display: flex;
+				gap: var(--cell-gap);
+			}
+			.ring-controls button {
 				min-height: var(--line-height);
 				line-height: var(--line-height);
 			}
@@ -243,9 +247,14 @@ const recent = posts.slice(0, LS);
 							set:html={ringHtml(0, grid)}
 						/>
 					))}
-					<button type="button" class="menu-item ring-toggle" aria-pressed="false" aria-label={t('home.pauseLabel')} hidden>
-						<span aria-hidden="true">[</span>{t('home.pause')}<span aria-hidden="true">]</span>
-					</button>
+					<div class="ring-controls">
+						<button type="button" class="menu-item ring-next" aria-label={t('home.nextLabel')} hidden>
+							<span aria-hidden="true">[</span>{t('home.next')}<span aria-hidden="true">]</span>
+						</button>
+						<button type="button" class="menu-item ring-toggle" aria-pressed="false" aria-label={t('home.pauseLabel')} hidden>
+							<span aria-hidden="true">[</span>{t('home.pause')}<span aria-hidden="true">]</span>
+						</button>
+					</div>
 				</div>
 
 				<div class="fetch">
@@ -312,7 +321,8 @@ const recent = posts.slice(0, LS);
 
 			const root = document.querySelector<HTMLElement>('[data-ring-root]');
 			const button = root?.querySelector<HTMLButtonElement>('.ring-toggle');
-			if (root && button) {
+			const next = root?.querySelector<HTMLButtonElement>('.ring-next');
+			if (root && button && next) {
 				const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 				const shown = new Set<HTMLElement>();
 				let paused = false;
@@ -341,6 +351,9 @@ const recent = posts.slice(0, LS);
 						variant = pick(variant);
 						time = 0;
 					}
+					paint();
+				};
+				const paint = () => {
 					for (const art of shown) {
 						art.innerHTML = ringHtml(time, { cols: Number(art.dataset.cols), rows: Number(art.dataset.rows) }, variant);
 					}
@@ -350,6 +363,7 @@ const recent = posts.slice(0, LS);
 					button.hidden = reduce.matches;
 					// The cursor blinks only while this control is there to stop it.
 					main?.toggleAttribute('data-pausable', !button.hidden);
+					next.hidden = reduce.matches;
 					const run = !paused && !reduce.matches && !document.hidden && shown.size > 0;
 					if (run && !frame) {
 						last = 0;
@@ -375,6 +389,13 @@ const recent = posts.slice(0, LS);
 					// Pausing stops the cursor too (WCAG 2.2.2): [data-paused] in terminal.css.
 					main?.toggleAttribute('data-paused', paused);
 					update();
+				});
+				// Another variant now, from its first step; while paused it shows that
+				// step and stays there.
+				next.addEventListener('click', () => {
+					variant = pick(variant);
+					time = 0;
+					paint();
 				});
 				document.addEventListener('visibilitychange', update);
 				reduce.addEventListener('change', update);
