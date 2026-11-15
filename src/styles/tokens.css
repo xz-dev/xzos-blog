@@ -6,34 +6,43 @@
  * express. One font serves both themes, and no frame, fill or bevel exists in
  * one theme but not the other. */
 
-/* Default (day) theme: warm "sunrise peach" paper. Text, secondary text and
- * links reach WCAG AA (>= 4.5:1) on the page and the surface (code, inline
- * code, the header status line). Two borders: --border-strong (the
- * accent mixed 80% into the page) outlines structure that must stay visible,
- * such as tables, code, quotes and the header's edge, at >= 3:1 on the page
- * and the surface;
- * --border-color (30%) is for decorative separators only. */
+/* Termius Light with its green accent. Text reaches 4.5:1 on both fields;
+ * structural borders reach 3:1. Soft borders are decorative only. */
 :root {
   color-scheme: light;
-  --background: #fff8f2;
-  --surface: #ffeadb;
-  --foreground: #42302a;
-  --accent: #b4410f;
-  --secondary: #76605a;
-  --emphasized: #42302a;
-  --border-color: #e9c1ae;        /* decorative separators: hr, list rules, image frames */
-  --border-strong: #c3663c;       /* structural: tables, code, quotes, header edge */
+  --background: #e9ecf0;
+  --surface: #dde1e7;
+  --foreground: #2b3040;
+  --accent: #117140;
+  --secondary: #555d70;
+  --emphasized: #141824;
+  --border-color: #cfd5de;        /* decorative separators: hr, list rules, image frames */
+  --border-strong: #768097;       /* structural: tables, code, quotes, header edge */
 
   /* Role tokens that differ between the themes in colour or effect only;
    * the night block redefines them, so no element rule depends on the theme. */
   --code-color: var(--foreground);
-  --selection-bg: Highlight;
-  --selection-fg: HighlightText;
+  --selection-bg: var(--accent);
+  --selection-fg: var(--background);
   --text-glow: none;              /* text-shadow on body text */
   --field-overlay: none;          /* fixed layer painted behind the content */
 
-  /* Error text (xzsh's "command not found"): a muted red, 4.5:1 on the page. */
-  --error: #a8321f;
+  /* Semantic terminal colours: what a thing is, as a shell's prompt and
+   * LS_COLORS would say it. Termius Light's hues, so each one reaches 4.5:1 on the page and the surface in both themes
+   * (docs/theme/design-language.md, "Semantic colours"). */
+  --term-prompt: #117140;         /* green: the prompt's `$`, command names in `help` */
+  --term-path: #1d67a5;           /* blue: paths in prompt commands */
+  --term-link: #106f6f;           /* cyan: external links in command output */
+  --term-date: #865c00;           /* yellow: dates in listings and post meta */
+  --term-tag: #8a3fa0;            /* magenta: categories and tags */
+  --error: #be2626;               /* red: shell errors (xzsh's "command not found") */
+
+  /* The 16 ANSI colours behind the home page's fastfetch swatches: Termius
+   * Light's terminal palette, 0-7 then bright 8-15. Decorative only. */
+  --ansi-0: #dde1e7; --ansi-1: #be2626; --ansi-2: #117140; --ansi-3: #865c00;
+  --ansi-4: #1d67a5; --ansi-5: #8a3fa0; --ansi-6: #106f6f; --ansi-7: #2b3040;
+  --ansi-8: #768097; --ansi-9: #e05252; --ansi-10: #1f9a5c; --ansi-11: #b07d10;
+  --ansi-12: #3a86c8; --ansi-13: #a85cc0; --ansi-14: #1f9090; --ansi-15: #141824;
 
   /* Size, spacing, width and font system shared by both themes. The night
    * block changes colour and effects only, so switching theme never moves or
@@ -95,29 +104,32 @@
 
 :root[data-theme="tty"] {
   color-scheme: dark;
-  /* Chosen anchors; --border-color mixes --foreground over --background at the
-   * weight in docs/theme/tty-dark.json (scripts/derive-tty-dark.mjs). */
-  --background: #141a03;
-  --surface: #1d2606;
-  --foreground: #d4ff3a;
-  --emphasized: #d4ff3a;
-  --accent: #f0ff9a;
-  --secondary: #a8cc2a;
-  --border-color: #6a811c;
-  --border-strong: var(--border-color);
-  --code-foreground: #e8fff0;
+  --background: #15141b;
+  --surface: #1f1d27;
+  --foreground: #edecee;
+  --emphasized: #ffffff;
+  --accent: #a277ff;
+  --secondary: #a19fad;
+  --border-color: #4f4a74;
+  --border-strong: #6a677b;
+  --code-foreground: #edecee;
   --code-color: var(--code-foreground);
   --selection-bg: var(--accent);  /* reverse video, like mark */
   --selection-fg: var(--background);
-  /* Error text: a dim phosphor level, still 4.5:1 on the field. */
-  --error: #728b1d;
-  /* Static phosphor glow and a scanline and vignette layer behind the content. */
-  --text-glow: var(--tty-glow);
-  --field-overlay: var(--tty-scanlines), var(--tty-vignette);
-  --tty-glow: 0 0 2px currentColor, 0 0 8px color-mix(in srgb, var(--foreground) 45%, transparent);
-  /* Painted behind the content (terminal.css body::after), so they darken only the field. */
-  --tty-scanlines: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 0, rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 3px);
-  --tty-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+  /* Aura Dark: the theme's own colours, all above 4.5:1 as they are. */
+  --term-prompt: #61ffca;
+  --term-path: #82e2ff;
+  --term-link: #61ffca;
+  --term-date: #ffca85;
+  --term-tag: #f694ff;
+  --error: #ff6767;
+  /* Aura Dark's terminal palette for the swatches. */
+  --ansi-0: #1f1d27; --ansi-1: #ff6767; --ansi-2: #61ffca; --ansi-3: #ffca85;
+  --ansi-4: #a277ff; --ansi-5: #f694ff; --ansi-6: #82e2ff; --ansi-7: #edecee;
+  --ansi-8: #6d6d6d; --ansi-9: #ff6767; --ansi-10: #61ffca; --ansi-11: #ffca85;
+  --ansi-12: #a277ff; --ansi-13: #f694ff; --ansi-14: #82e2ff; --ansi-15: #ffffff;
+  --text-glow: none;
+  --field-overlay: none;
 }
 
 /* Users who ask for more contrast get plain sharp text and no overlay. */

@@ -1,8 +1,9 @@
 # Design language
 
 One layout and one font in both themes; night only recolours. Day
-(`data-theme="solarized"`) is peach paper and night (`data-theme="tty"`) is
-phosphor on olive. Switching theme never moves or resizes anything, and no
+(`data-theme="solarized"`, an attribute that keeps its old name) is Termius Light
+with a green accent and night (`data-theme="tty"`) is Aura Dark with a purple accent.
+The two themes have different accents. Switching theme never moves or resizes anything, and no
 frame, fill or bevel exists in one theme but not the other.
 
 ## Tokens
@@ -30,13 +31,65 @@ block redefines colours and the role tokens only.
 - **Spacing:** `--space-1` to `--space-7` (4, 8, 16, 24, 32, 48, 64 px).
 - **Radius:** `--radius: 0`. Every box is square.
 - **Roles:** `--code-color`, `--selection-*`, `--text-glow` and
-  `--field-overlay`. Night redefines the palette and these roles only: a glow
-  and a scanline-and-vignette layer behind the content, and reverse-video
-  selection. Controls, menu items and form fields are drawn the same in both
-  themes. `prefers-contrast: more` removes the glow and the layer. The glow
-  stays on the frame, the title and headings, and the home page; running
-  text in a post (`.article-body`: paragraphs, lists, tables, quotes, links)
-  sets `text-shadow: none`, and its headings take `--text-glow` back.
+  `--field-overlay`. Both themes use reverse-video selection, no glow and no
+  overlay. Controls, menu items and form fields share their geometry.
+
+### Palette
+
+Termius Light supplies the day fields and Aura Dark the night fields; each
+theme keeps its own accent, green by day and purple by night. Every text role
+reaches 4.5:1 on both fields; structural borders reach 3:1. Decorative borders
+do not convey state.
+
+| Token | Light | Dark |
+|---|---|---|
+| `--background` | `#e9ecf0` | `#15141b` |
+| `--surface` | `#dde1e7` | `#1f1d27` |
+| `--foreground` | `#2b3040` | `#edecee` |
+| `--emphasized` | `#141824` | `#ffffff` |
+| `--secondary` | `#555d70` | `#a19fad` |
+| `--accent` | `#117140` | `#a277ff` |
+| `--border-strong` | `#768097` | `#6a677b` |
+| `--border-color` | `#cfd5de` | `#4f4a74` |
+
+Aura Dark's own colours already reach 4.5:1, so night needs no lightness
+adjustment. Structural borders are chosen to reach 3:1 against both fields
+(light 3.016:1 on the surface, dark 3.039:1 on the surface). The night
+decorative border is 2.03:1 against its surface. Selection and `mark` use the
+accent as their background and the page background as their foreground.
+
+Shiki uses two custom themes in `src/lib/syntax-day.ts`, since Shiki bundles
+neither palette. Their keyword, string, function, type, constant and comment
+colours come from each palette: night keeps Aura's token colours except the
+comment grey, lifted to `#858585` for 4.5:1 on the code surface; day uses
+Termius Light's hues on `#dde1e7`. Every token reaches 4.5:1 on its code
+surface (day 4.514:1 at the lowest, night 4.505:1). Inline code uses the page
+foreground. The 16 home swatches are the tokens `--ansi-0` to `--ansi-15`: Termius
+Light's terminal colours by day, Aura Dark's by night; they are decorative.
+`docs/theme/tty-dark.json` retains only the night favicon's foreground
+(`#edecee`); a test checks it against the CSS token. OG cards use the fixed
+night palette (Aura Dark), titles in the emphasized colour.
+
+### Semantic colours
+
+Like a shell's prompt and `LS_COLORS`, colour in terminal output says what a
+thing is. Day roles use Termius Light's hues and night roles Aura Dark's own colours, so each
+reaches 4.5:1 on `--background` and `--surface` in its theme. Colour only:
+Unifont has one weight, so nothing is bold, boxed or filled.
+
+| Role | Token | Where |
+|---|---|---|
+| Prompt, command name (green) | `--term-prompt` | the `$` of every prompt (`.term-sign`: `term/Prompt`, the shell's prompt and echoed commands); command names in `help` (`.term-name`) |
+| Path (blue) | `--term-path` | path arguments in prompt commands (`.term-path`, split by `commandParts` in `src/lib/term-command.ts`): `~/blog`, `~/friends`, `~/communities`, `~/comments`, `~/about.md` |
+| External link (cyan) | `--term-link` | external links in terminal output (`.term-link`): link-exchange names, the fetch block's `Links:`, external links in a `cat` page (about) |
+| Date (yellow) | `--term-date` | dates in listings (`.term-date`: home and shell `ls`) and in `PostMeta` (lists, archive, posts) |
+| Tag (magenta) | `--term-tag` | the category in `PostMeta` (`.post-category`) |
+| Error (red) | `--error` | shell errors (`.shell-error`) |
+
+Everything else keeps its role: `--accent` for fetch keys and `user@host`,
+`##` heading markers, current markers (`*`) and links in prose;
+`--secondary` for comments and meta text; `--foreground` for body text,
+post titles and `help`'s descriptions.
 
 ## Primitives
 
@@ -61,7 +114,9 @@ Home, about and link-exchange read as one shell session, built from the
 `src/components/term/` primitives and their classes in `terminal.css`. The
 commands are i18n keys (`term.*`), shown verbatim in every locale.
 
-- **Prompt:** `$` in `--secondary`, the command in `--foreground`. A prompt
+- **Prompt:** `$` in `--term-prompt`, the command in `--foreground` with
+  path arguments in `--term-path`; the text is unchanged, so a copied prompt
+  is the command as typed. A prompt
   follows output after one blank line (`--space-4`); the first one in a
   block has no top margin. The line is `aria-hidden`: it is the visible
   title or decoration, and the page's h1 or a `sr-only` h2 carries the
@@ -71,9 +126,11 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
   characters count two) and sets every left cell to that width, so the right
   column lines up and dates and names never wrap; the right cell takes the
   rest of the row and wraps inside it. Columns are `--cell-gap` (2ch) apart.
-  Linked cells are `--foreground`; hover turns them `--accent` and
-  underlines them, with no fill. Plain cells (dates, hosts) are
-  `--secondary`. A `stack` list keeps the right column on one line as well:
+  Linked cells are `--foreground` (`--term-link` when external); hover turns
+  them `--accent` and underlines them, with no fill. Dates are `--term-date`;
+  other plain cells (hosts, `help`'s synopses) are `--secondary`, except
+  cells marked as body text (`help`'s descriptions), which are
+  `--foreground`. A `stack` list keeps the right column on one line as well:
   when the row is narrower than the widest `left  right` pair, every row
   puts its right cell on its own line, 2ch in, at once. The switch follows
   the entries, not a breakpoint. Words break only when one alone is wider
@@ -81,7 +138,8 @@ commands are i18n keys (`term.*`), shown verbatim in every locale.
 - **Page as output:** under its prompt, a page's content uses the body line
   height, paragraphs one blank line apart, quotes as indented output behind
   the 2px `--rule` in `--border-strong`, list items as `- ` rows with a
-  hanging indent; links keep their underline.
+  hanging indent; links keep their underline, external ones in
+  `--term-link`.
 - **Cursor:** blinks only with `blink` (`data-blink`), which only the home
   page sets, because it has a pause control (WCAG 2.2.2). Other cursors are
   steady.
@@ -222,7 +280,7 @@ Endpoints that are not HTML pages have no pattern: `/rss.xml`
 (`pages/rss.xml.js`), `/og/default.png` and `/og/<slug>.png` (`pages/og/`)
 and `/favicon-tty.svg` (`pages/favicon-tty.svg.ts`).
 
-**Open Graph.** The 1200×630 PNG cards use the day palette from the exported
+**Open Graph.** The 1200×630 PNG cards use the night palette from the exported
 `OG_PALETTE` in `src/lib/og-image.ts` and only GNU Unifont 18.0.01. A flat
 status line uses the site navigation translations on the surface colour
 with a 1px strong bottom border. Post cards mark the Posts entry as current;
@@ -253,8 +311,8 @@ info; below that the art stacks above the info.
   Life`), visually hidden (`home` sets `hideTitle` by default); the visible
   title line is the info block's `xz@xzos`.
 - **Logo:** the 16-dash ring of `pixel-icons.ts` as a 3D ring of characters
-  (`src/lib/ascii-ring.ts`), on a fixed grid of 42 × 14 cells, one row per
-  line of the info block (the blank line and the palette row included),
+  (`src/lib/ascii-ring.ts`), on a fixed grid of 45 × 15 cells, one row per
+  line of the info block (the blank line and the two palette rows included),
   and 30 × 10 at 420px and below. Cells are
   8 × 24 (one character on a body line), so x is scaled three times y to
   keep the ring round, and the box never changes size. The dashes are a flat band (half-width 0.17 across the ring,
@@ -266,7 +324,7 @@ info; below that the art stacks above the info.
   page script animates it at 12 fps while it is on screen and the tab is
   visible. The art is `aria-hidden` with a visually hidden text alternative.
 - **Pause:** `[pause]` is a plain menu item at the bottom right of the boot
-  block, on the palette row's line, so it takes no line of its own. It has
+  block, on the last palette row's line, so it takes no line of its own. It has
   `aria-pressed` and a constant accessible name, and the page script
   unhides it; without script the page has no motion to stop. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It
@@ -279,12 +337,11 @@ info; below that the art stacks above the info.
   count), Shell, Theme, Font (the version in `tty-font.json`), Locale,
   Links. The theme in use (it follows `data-theme`) and the current locale
   are marked like the status line's current entry (`--accent`, trailing
-  `*`), never inverted. Links are plain values with a dotted 1px underline,
-  solid on hover and focus. After one blank line comes one row of six 3ch
-  swatches, no frame: the theme's own tokens (`--surface`,
-  `--border-color`, `--border-strong`, `--secondary`, `--accent`,
-  `--foreground`), so the row recolours with the theme. The shell's errors
-  use `--error`, the one colour outside that set.
+  `*`), never inverted. Links are values with a dotted 1px underline, solid
+  on hover and focus: `Locale:` in `--foreground`, the external `Links:` in
+  `--term-link`. After one blank line come 16 decorative
+  swatches from `--ansi-0` to `--ansi-15`, the current
+  theme's terminal colours. The shell's errors use `--error` (see Semantic colours).
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows
   (`OutputList`: dates never wrap; titles wrap under the title column), a

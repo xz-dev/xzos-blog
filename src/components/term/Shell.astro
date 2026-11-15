@@ -41,7 +41,7 @@ const data: ShellData = {
 	    `clear` wipes it with the rest of the screen. */}
 	<div class="shell-out" aria-live="polite"><p class="shell-motd">{t('shell.hint')}</p></div>
 	<p class="term-prompt shell-prompt">
-		<span aria-hidden="true">$</span>
+		<span class="term-sign" aria-hidden="true">$</span>
 		<span class="shell-field">
 			<input
 				class="shell-input"
@@ -144,6 +144,7 @@ const data: ShellData = {
 
 <script>
 	import { complete, run, type Line, type ShellData } from '../../lib/xzsh';
+	import { commandParts, splitName } from '../../lib/term-command';
 	import { cellWidth } from '../../lib/term-width';
 
 	// Keep about this many output lines; older commands scroll away whole.
@@ -170,9 +171,11 @@ const data: ShellData = {
 		const echo = (command: string) => {
 			const line = node('p', 'term-prompt');
 			line.dataset.echo = '';
-			const dollar = node('span', '', '$ ');
+			const dollar = node('span', 'term-sign', '$');
 			dollar.setAttribute('aria-hidden', 'true');
-			line.append(dollar, node('span', 'term-command', command));
+			const typed = node('span', 'term-command');
+			typed.append(...commandParts(command).map((part) => (part.path ? node('span', 'term-path', part.text) : part.text)));
+			line.append(dollar, ' ', typed);
 			return line;
 		};
 		const draw = (line: Line): HTMLElement => {
@@ -195,15 +198,18 @@ const data: ShellData = {
 				// The same markup as OutputList: the cell carries the width, a link
 				// inside it only its text.
 				for (const cell of [row.left, row.right]) {
-					const wrapper = node('span', 'term-cell');
+					const wrapper = node('span', cell.role === 'text' ? 'term-cell term-cell-text' : 'term-cell');
 					if (cell.href) {
 						const link = node('a', '', cell.text);
 						link.href = cell.href;
 						wrapper.append(link);
 					} else if (cell.datetime) {
-						const time = node('time', '', cell.text);
+						const time = node('time', 'term-date', cell.text);
 						time.dateTime = cell.datetime;
 						wrapper.append(time);
+					} else if (cell.role === 'command') {
+						const [name, rest] = splitName(cell.text);
+						wrapper.append(node('span', 'term-name', name), rest);
 					} else {
 						wrapper.textContent = cell.text;
 					}

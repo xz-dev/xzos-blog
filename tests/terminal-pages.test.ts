@@ -31,7 +31,7 @@ test('home, about and link-exchange are drawn with the shared terminal primitive
 	// Friends, then communities, each its own `ls` block of stacked rows; the cursor prompt is last.
 	assert.match(
 		pages.links,
-		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} stack label=\{t\('links\.friends'\)\} \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} stack label=\{t\('links\.communities'\)\} \/>\s*<Prompt cursor \/>/,
+		/<Prompt command=\{t\('term\.friends'\)\} \/>\s*<OutputList rows=\{rows\(friends\)\} leftWidth=\{nameWidth\} stack label=\{t\('links\.friends'\)\} \/>\s*<Prompt command=\{t\('term\.communities'\)\} \/>\s*<OutputList rows=\{rows\(communities\)\} leftWidth=\{nameWidth\} stack label=\{t\('links\.communities'\)\} \/>\s*<Prompt cursor \/>/,
 	);
 	assert.match(pages.links, /const communities = \[\{ name: 'Gentoo 中文社群', url: 'https:\/\/gentoozh\.org\/zh-tw\/' \}\];/);
 	assert.equal(pages.links.match(/gentoozh\.org/g)?.length, 1);
@@ -64,7 +64,9 @@ test('cellWidth counts wide East Asian characters as two cells', () => {
 test('output rows: the left column is as wide as its widest entry and never wraps', () => {
 	const list = read('../src/components/term/OutputList.astro');
 	assert.match(list, /style=\{`--term-left: \$\{left\}ch; --term-right: \$\{right\}ch`\}/);
-	assert.doesNotMatch(list, /leftMax/);
+	assert.match(list, /const left = leftWidth \?\? widest\(rows\.map\(\(row\) => row\.left\)\);/);
+	// Link exchange: both lists share one name column of at most 32 cells.
+	assert.match(pages.links, /const nameWidth = Math\.min\(32, Math\.max\(\.\.\.\[\.\.\.friends, \.\.\.communities\]/);
 	assert.match(css, /\.term-output li\s*\{[^}]*display:\s*flex;[^}]*flex-wrap:\s*wrap;[^}]*column-gap:\s*var\(--cell-gap\);/);
 	assert.match(css, /\.term-output li > :first-child\s*\{\s*flex:\s*none;\s*width:\s*min\(var\(--term-left\), 100%\);/);
 	assert.match(css, /\.term-output li > :last-child\s*\{\s*flex:\s*1 1 0;/);
@@ -90,10 +92,10 @@ test('link hover changes colour and underlines; no hover or focus paints a fill'
 test('home: ring rows sit beside fetch lines on one line grid; the all-posts arrow is off the underline', () => {
 	assert.match(pages.home, /\.boot\s*\{[^}]*align-items:\s*start;/);
 	assert.match(pages.home, /\.ring\s*\{[^}]*height:\s*calc\(var\(--rows\) \* var\(--line-height\)\);\s*line-height:\s*var\(--line-height\);/);
-	// fastfetch: title, rule, one line per key, a blank line and one row of the theme's own colours.
+	// fastfetch: title, rule, one line per key, a blank line and two rows of the theme's 16 colours.
 	const keys = pages.home.match(/<div><dt>/g)?.length ?? 0;
-	assert.equal(RING_GRIDS.wide.rows, keys + 4);
-	assert.match(pages.home, /\.palette\s*\{[^}]*grid-template-columns:\s*repeat\(6, 3ch\);\s*grid-auto-rows:\s*var\(--line-height\);\s*margin-top:\s*var\(--line-height\);/);
+	assert.equal(RING_GRIDS.wide.rows, keys + 5);
+	assert.match(pages.home, /\.palette\s*\{[^}]*grid-template-columns:\s*repeat\(8, 3ch\);\s*grid-auto-rows:\s*var\(--line-height\);\s*margin-top:\s*var\(--line-height\);/);
 	assert.match(pages.home, /<a class="all-posts" href=\{`\$\{blogPrefix\}\/`\}><span class="all-posts-arrow"><PixelArrowText text="→" \/><\/span>\{allPosts\}<\/a>/);
 	assert.match(pages.home, /\.all-posts-arrow\s*\{\s*display:\s*inline-block;\s*margin-inline-end:\s*1ch;/);
 });

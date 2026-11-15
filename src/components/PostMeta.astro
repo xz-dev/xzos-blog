@@ -21,7 +21,7 @@ const t = useTranslations(lang);
 	<FormattedDate date={pubDate} source={pubDateSource} />
 	{updatedDate && <span>{t('blog.updatedOn')} <FormattedDate date={updatedDate} source={updatedDateSource} /></span>}
 	{author && <span>{t('blog.authorLabel')}{author}</span>}
-	{category && <span>{t('blog.categoryLabel')}{category}</span>}
+	{category && <span>{t('blog.categoryLabel')}<span class="post-category">{category}</span></span>}
 	<slot />
 </div>
 
@@ -37,4 +37,6 @@ const t = useTranslations(lang);
 		font-size: var(--text-meta);
 		line-height: var(--leading-meta);
 	}
+	/* The whole meta line stays dim so the title above it leads; semantic
+	 * colours belong to terminal output, not to every list entry. */
 </style>

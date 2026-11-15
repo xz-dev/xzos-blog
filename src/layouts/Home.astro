@@ -45,10 +45,11 @@ const [user, host] = ['xz', 'xzos'];
 const rule = '-'.repeat(`${user}@${host}`.length);
 // Every value is real: the Astro that built the page, the post count, the font manifest.
 const kernel = Astro.generator.replace(/^Astro v/, 'Astro ');
+// The terminal's 16 ANSI colours as fastfetch prints them: 0-7, then the
+// bright 8-15. The values are tokens (--ansi-0 to --ansi-15), so the swatches
+// follow the theme: Termius Light by day, Aura Dark by night.
+const palette = Array.from({ length: 16 }, (_, i) => `var(--ansi-${i})`);
 // `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
-// The palette swatches: the site's own colour tokens, which the theme
-// toggle redefines, from the surface through the borders to the text.
-const palette = ['surface', 'border-color', 'border-strong', 'secondary', 'accent', 'foreground'];
 const allPosts = t('home.allPosts').replace(/^→\s*/, '');
 const day = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).text.split(' ')[0];
 const datetime = (post: any) => formatPostDate(post.data.pubDate, post.data.pubDateSource).datetime;
@@ -92,7 +93,7 @@ const recent = posts.slice(0, LS);
 				display: none;
 			}
 			/* The pause control sits at the far right of the boot block's last line
-			 * (the palette row), so it takes no line of its own. */
+			 * (the second palette row), so it takes no line of its own. */
 			.art {
 				width: max-content;
 			}
@@ -149,6 +150,10 @@ const recent = posts.slice(0, LS);
 			.fetch a:focus-visible {
 				text-decoration-style: solid;
 			}
+			/* External links (Links:) in the terminal's link colour. */
+			.fetch a.term-link {
+				color: var(--term-link);
+			}
 			/* The current theme and language are marked like the status line's
 			 * current entry: the accent and a trailing `*` with empty alternative
 			 * text. Screen readers get the state in words instead: aria-current on
@@ -184,10 +189,10 @@ const recent = posts.slice(0, LS);
 				color: var(--secondary);
 			}
 			/* The theme's palette after one blank line, like fastfetch's colour
-			 * row: one line high, each swatch three cells wide, no frame. */
+			 * rows: 16 swatches in two lines of eight, each swatch three cells wide, no frame. */
 			.palette {
 				display: grid;
-				grid-template-columns: repeat(6, 3ch);
+				grid-template-columns: repeat(8, 3ch);
 				grid-auto-rows: var(--line-height);
 				margin-top: var(--line-height);
 				width: max-content;
@@ -261,11 +266,11 @@ const recent = posts.slice(0, LS);
 							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={getHomePath(locale)} hreflang={locale} aria-current={locale === lang ? 'page' : undefined} aria-label={`${languages[locale]} (${langCodes[locale]})`}>{langCodes[locale]}</a></span></>
 						))}</dd></div>
 						<div><dt>Links<span>:</span></dt> <dd>{links.map((link, index) => (
-							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
+							<>{index > 0 && ' '}<span>{index > 0 && <span class="sep" aria-hidden="true">· </span>}<a class="term-link" href={link.href} target="_blank" rel="noopener">{link.name}</a></span></>
 						))}</dd></div>
 					</dl>
 					<div class="palette" aria-hidden="true">
-						{palette.map((token) => <span style={`background: var(--${token})`} />)}
+						{palette.map((hex) => <span style={`background: ${hex}`} />)}
 					</div>
 				</div>
 			</div>

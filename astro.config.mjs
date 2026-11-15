@@ -7,7 +7,7 @@ import { defineConfig } from 'astro/config';
 import localized404 from './src/integrations/localized-404';
 import { getCopyPaths } from './src/lib/copy-pages';
 import translate from './src/integrations/translate';
-import { daySyntaxTheme } from './src/lib/syntax-day';
+import { daySyntaxTheme, nightSyntaxTheme } from './src/lib/syntax-day';
 import { tableScroll } from './src/lib/table-scroll';
 
 // Read on first use, in astro:build:done, so the files the translate step
@@ -50,25 +50,8 @@ export default defineConfig({
     processor: satteri({ hastPlugins: [tableScroll] }),
     shikiConfig: {
       themes: {
-        // GitHub Light's rules with AA colours on the peach code surface.
         light: daySyntaxTheme,
-        // Code is the explicit multicolour fluorescent exception to the phosphor UI.
-        // Crisp saturated accents, without glow or animation.
-        dark: {
-          name: 'tty-neon',
-          type: 'dark',
-          colors: {
-            'editor.background': '#1d2606',
-            'editor.foreground': '#e8fff0',
-          },
-          tokenColors: [
-            { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: '#53d98f' } },
-            { scope: ['keyword', 'storage', 'entity.name.tag', 'constant.language'], settings: { foreground: '#ff8acd' } },
-            { scope: ['string', 'markup.inline.raw'], settings: { foreground: '#32eaff' } },
-            { scope: ['constant.numeric', 'constant.character', 'entity.name.function', 'support.function'], settings: { foreground: '#cc99ff' } },
-            { scope: ['entity.other.attribute-name', 'variable.parameter'], settings: { foreground: '#f3ff57' } },
-          ],
-        },
+        dark: nightSyntaxTheme,
       },
     },
   },

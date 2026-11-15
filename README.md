@@ -32,17 +32,17 @@ Existing date-only records stay date-only: do not fabricate a time or offset. A 
 
 ## Themes
 
-- **Tokens:** every value lives in `src/styles/tokens.css`. `:root` holds the day palette and the type scale, spacing, widths and control sizes that both themes share; `:root[data-theme="tty"]` overrides colours and night effect values (glow, scanlines, vignette) only. `src/styles/terminal.css` styles elements and the shared classes (page frame, controls, menu items, post list) from them; pages compose `PageFrame`, `PostMeta` and the `.control` class instead of styling their own.
-- **Day (`data-theme="solarized"`):** the palette is a warm peach paper (page `#fff8f2`, surface `#ffeadb`, text `#42302a`, secondary `#76605a`, accent `#b4410f`); every text color keeps WCAG AA (4.5:1) on the page, the code surface and the header status line. Structural borders (tables, code, quotes, the header's bottom edge) use `--border-strong` `#c3663c` at 3:1 or more on the page and the surface; the lighter `--border-color` is for decorative separators only. Day code uses GitHub Light's rules with its comment, keyword, tag and variable colours darkened in hue (`src/lib/syntax-day.ts`), so every syntax colour reaches 4.5:1 on the code surface.
+- **Tokens:** every value lives in `src/styles/tokens.css`. `:root` holds the day palette and the type scale, spacing, widths and control sizes that both themes share; `:root[data-theme="tty"]` overrides colour values only. `src/styles/terminal.css` styles elements and the shared classes (page frame, controls, menu items, post list) from them; pages compose `PageFrame`, `PostMeta` and the `.control` class instead of styling their own.
+- **Day (`data-theme="solarized"`, the attribute keeps its old name):** Termius Light (page `#e9ecf0`, surface `#dde1e7`, text `#2b3040`, secondary `#555d70`) with green accent `#117140`. Text reaches 4.5:1 on both fields; structural borders use `#768097` at 3:1 or more. Decorative separators use `--border-color` (`#cfd5de`).
 - **Font (both themes):** `src/styles/fonts.css` loads the self-hosted **GNU Unifont**, including Latin, Chinese and other supported scripts, and `--font-ui` in `tokens.css` applies it once on `body`. Day and night, titles, prose, navigation, form controls and code share this pixel family (social preview cards under `/og/` are rendered at build time with GNU Unifont from `src/assets/og-fonts/`), so switching theme never changes a line break; no component sets its own `font-family`.
 - **Header:** a terminal status line like tmux's (`xzOS For Coding Life │ 0:首页 1:文章* 2:关于 3:友链 lang: src* en zh-CN │ ☾ │` then the Mastodon, GitHub and Stack Overflow icons), groups split by `│`, one flat row of plain text on `--surface` with a 1px `--border-strong` bottom edge, the same in both themes. Entries are `.menu-item`s: hover recolours and underlines, the current page or section takes the accent and a trailing `*`; nothing is filled, framed or bevelled. The pixel logo and theme toggle are the same drawing in both themes. Details are in `docs/theme/design-language.md`.
-- **Night / TTY:** the night block in `tokens.css` redefines the palette and the effect tokens (glow, scanline and vignette layer, code colour, selection); `terminal.css` draws them in both themes. `src/styles/tty.css` keeps only what a token cannot express: motion off and Shiki's per-span night colours.
+- **Night / TTY:** Aura Dark (page `#15141b`, surface `#1f1d27`, text `#edecee`, secondary `#a19fad`) with purple accent `#a277ff`. The two themes have different accents: green by day, purple by night. Text reaches 4.5:1 on both fields; structural borders use `#6a677b` at 3:1 or more. The decorative border `#4f4a74` remains visible against the surface at 2:1. `tty.css` selects Shiki night colours and preserves the existing motion policy.
 - **Browser dark modes:** `BaseHead.astro` declares `<meta name="color-scheme" content="light dark">` and `<meta name="darkreader-lock">`, so Dark Reader leaves the site's own themes alone; `tokens.css` sets `color-scheme: light` on day and `dark` on night, so native scrollbars and form controls follow the active theme.
 - **Design language:** tokens, type scale, primitives, the header status line and the route-to-pattern map are in [`docs/theme/design-language.md`](docs/theme/design-language.md). Attribution and OFL license are in `public/fonts/unifont-OFL.txt`; only characters missing from the font use system glyph fallback.
-- Night mode deliberately keeps the artistic distance of a monochrome terminal, not an actual reading barrier. Keep text legible, links recognizable and controls direct. Allowed effects are static only: a phosphor glow on text (`0 0 2px currentColor, 0 0 8px` at 45% of the foreground; code blocks stay sharp), scanlines (a 1px line at 12% black every 3px) and a soft vignette, both on a fixed layer behind the content that takes no pointer events, so they darken the field and never the text. No motion, flicker, moving lines, blur of the layout or curvature distortion. Exception: the home page's ASCII logo turns and its block cursor blinks, in both themes; both stop under `prefers-reduced-motion: reduce` and with the page's pause control. `prefers-contrast: more` turns the glow and the overlay off. Night UI states are immediate: disable CSS animations, transitions and smooth scrolling on the root, descendants and their before/after pseudo-elements. No decorative hover movement. Keep pressed/selected/focus feedback as instant state changes.
+- Both themes keep text sharp, with no glow, scanlines or vignette. The home logo and cursor stop under reduced motion and the pause control. Night UI feedback stays immediate, without transitions or smooth scrolling.
 - Both directions of the theme switch are immediate. `ThemeToggle.astro` briefly sets `data-theme-switching`, commits the destination styles and removes the guard synchronously; neither theme has hover transitions. Do not leave the guard enabled or use an animation/timer to switch themes.
-- Documents and controls stay flat in both themes: no frame, fill or bevel exists in one theme and not the other, and keyboard focus is a distinct outline. **Code syntax is an explicit multicolour fluorescent exception** to the phosphor UI: pink keywords, cyan strings, violet functions/numbers and yellow parameters, with a separate neutral code foreground and readable green comments. Use crisp, bright, saturated accents, not muted pastels, glow, blur or animation. The independent syntax palette is declared in `astro.config.mjs` and `docs/theme/tty-dark.json`; it is not derived from the UI palette. Every declared syntax shade retains at least 7:1 text/surface contrast. Article images retain their original colors; marked prose and text selection use dark-on-phosphor reverse video.
-- Express night-only changes as token values in the night block of `tokens.css`, and limit them to colour, glow and overlay: night never adds or changes a shape, frame, fill, size or spacing. Run `npm test` for palette/contrast and isolation regressions, then verify phone/desktop rendering, theme persistence and keyboard operation in a browser.
+- Documents and controls stay flat in both themes, with the same geometry and focus outline. Code uses custom Termius Light and Aura Dark Shiki themes, and every token reaches 4.5:1 on its code surface (`src/lib/syntax-day.ts`). Article images keep their original colours; selection and marked prose use readable reverse video.
+- Express night-only changes as token values in the night block of `tokens.css`, and limit them to colour: night never adds or changes a shape, frame, fill, size or spacing. Run `npm test` for palette/contrast and isolation regressions, then verify phone/desktop rendering, theme persistence and keyboard operation in a browser.
 
 ### Pixel typography
 
@@ -60,23 +60,13 @@ To reproduce the webfont, download the pinned upstream OpenType source and its O
 uv run --with fonttools==4.67.0 --with brotli==1.2.1 python scripts/build-tty-font.py /path/to/unifont-18.0.01.otf /path/to/OFL-1.1.txt /path/to/unifont_upper-18.0.01.otf
 ```
 
-### TTY active palette and photographic provenance
+### Palette
 
-The active theme is **yellow-green phosphor on a dark olive field**. [`docs/theme/tty-dark.json`](docs/theme/tty-dark.json), generated by `scripts/derive-tty-dark.mjs`, records the palette, its derivation, the static effects and calculated contrast.
-
-- Background `#141a03`, surface `#1d2606`, text `#d4ff3a`, secondary `#a8cc2a`, accent `#f0ff9a`. The border mixes the text color over the background at a fixed weight.
-- Text on the background has about **15.41:1** contrast, secondary text about **9.62:1**; the lowest text/field pair (secondary on the surface) is about **8.51:1**. These are calculated sRGB contrasts of flat colors, before glow and overlay, not measured display brightness.
-- The [Electronix & More Tektronix 4052 photograph](https://www.electronixandmore.com/resources/teksystem/tek4052.gif) (**B**) stays in the unchanged historical [`docs/theme/tektronix-4052-b.json`](docs/theme/tektronix-4052-b.json), with its hash and pixel rectangles, as evidence only; no active color is taken from it. No physical 1:1 colorimetry claim is made.
-- Keep the static-only effects above and the existing CJK pixel type. Article pictures, diagrams and screenshots keep their original assets and rendering. Archive thumbnails show a post's own hero or first image as a 64px square crop (`object-fit: cover`); a post without an image shows none.
-- Hand-drawn night UI icons are documented in [`docs/theme/tty-icons.md`](docs/theme/tty-icons.md). The header logo, the theme toggle and the social icons use the pixel drawings in both themes; only the favicon changes with the theme (`dotted_circle.png` by day, `favicon-tty.svg` at night).
-
-Reproduce the active manifest without a network request:
-
-```sh
-node scripts/derive-tty-dark.mjs
-```
-
-The original photo manifest can still be reproduced with `node scripts/derive-tty-reference.mjs /path/to/tek4052.gif`; it refuses source bytes that do not match the pinned hash. It is historical evidence, not the active palette.
+The palette, accents and semantic terminal colours are documented in
+[`docs/theme/design-language.md`](docs/theme/design-language.md).
+`docs/theme/tty-dark.json` supplies the night favicon's foreground and is
+checked against `tokens.css`; it contains no photographic reference or
+derived palette. The day favicon remains `dotted_circle.png`.
 
 For a deterministic local build without translation API calls or rewritten language variants:
 

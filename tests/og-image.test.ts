@@ -122,8 +122,9 @@ test('all text colours meet 4.5:1 on both terminal fields', () => {
 		return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
 	};
 	for (const field of [OG_PALETTE.background, OG_PALETTE.surface]) {
-		for (const text of [OG_PALETTE.foreground, OG_PALETTE.secondary, OG_PALETTE.accent]) {
-			assert.ok((luminance(field) + 0.05) / (luminance(text) + 0.05) >= 4.5);
+		for (const text of [OG_PALETTE.foreground, OG_PALETTE.emphasized, OG_PALETTE.secondary, OG_PALETTE.accent]) {
+			const [light, dark] = [luminance(field), luminance(text)].sort((x, y) => y - x);
+			assert.ok((light + 0.05) / (dark + 0.05) >= 4.5, `${text} on ${field}`);
 		}
 	}
 });
@@ -148,4 +149,12 @@ test('the committed Unifont has the pinned upstream bytes', () => {
 		createHash('sha256').update(fs.readFileSync('src/assets/og-fonts/unifont-18.0.01.otf')).digest('hex'),
 		'88d0a14d4aa9a96419720b39ba5da921a59560d76d4ec7d523acc06ed85cd3c2',
 	);
+});
+
+test('social cards use the same fixed night palette as CSS', () => {
+  const css = fs.readFileSync('src/styles/tokens.css', 'utf8').match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1];
+  for (const [role, value] of Object.entries(OG_PALETTE)) {
+    const token = role === 'borderStrong' ? 'border-strong' : role;
+    assert.equal(value, css.match(new RegExp(`--${token}:\\s*(#[\\da-f]{6});`, 'i'))![1], role);
+  }
 });

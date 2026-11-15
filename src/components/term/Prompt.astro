@@ -2,7 +2,9 @@
 /**
  * 终端提示符行：`$ command`，或只有 `$` 与块光标的最后一行。
  * 整行对读屏器隐藏：它是画面上的标题或装饰，语义由页面的 h1 / h2（sr-only）承担。
+ * `$` 用 --term-prompt，命令里的路径参数（`~/blog`）用 --term-path，其余文字不变，复制出来与原命令一致。
  */
+import { commandParts } from '../../lib/term-command';
 import Cursor from './Cursor.astro';
 
 interface Props {
@@ -17,4 +19,4 @@ interface Props {
 const { command, cursor = false, blink = false } = Astro.props;
 ---
 
-<p class="term-prompt" aria-hidden="true">$ {command && <span class="term-command">{command}</span>}{cursor && <Cursor blink={blink} />}</p>
+<p class="term-prompt" aria-hidden="true"><span class="term-sign">$</span> {command && <span class="term-command">{commandParts(command).map((part) => (part.path ? <span class="term-path">{part.text}</span> : part.text))}</span>}{cursor && <Cursor blink={blink} />}</p>
