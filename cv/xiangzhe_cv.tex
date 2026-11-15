@@ -1,0 +1,126 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=1.4cm, right=1.4cm, top=1.2cm, bottom=1.4cm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setmainfont{Noto Sans}
+\setCJKmainfont{LXGW WenKai}
+% The subtitle interpunct is U+00B7. Leave it in the Latin class so xeCJK does not
+% redraw it as a CJK bullet and eat the spaces around it.
+\xeCJKDeclareCharClass{Default}{"00B7}
+\usepackage{xcolor}
+\usepackage[pdfborder={0 0 0}, colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+% Same list spacing as the Chinese résumé, whose 4pt itemsep needs a third page.
+\setlist[itemize]{leftmargin=1.3em, topsep=3pt, itemsep=3pt, parsep=0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{\footnotesize Xiangzhe Zeng\quad\thepage}
+\setlength{\footskip}{18pt}
+\raggedbottom
+\hypersetup{pdftitle={Xiangzhe Zeng - AI Agent Platform Engineer}, pdfauthor={Xiangzhe Zeng}}
+
+\begin{document}
+\begin{center}
+	{\LARGE\textbf{Xiangzhe Zeng}}\\[4pt]
+	{\large AI Agent Platform Engineer (Memory · RAG · Skill · Agent Runtime)}\\[5pt]
+	\small
+	\href{mailto:xz@xzos.net}{xz@xzos.net}\quad |\quad +86 15530859511\quad |\quad
+	\href{https://github.com/xz-dev}{github.com/xz-dev}\quad |\quad
+	\href{https://xzos.net}{xzos.net}
+\end{center}
+
+\section*{\textcolor{red}{Summary}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+4 years of backend/full-stack experience. At Capital Dynamics I own the company's \textbf{AI Agent infrastructure}: I designed and shipped the \textbf{Memory/RAG/Skill} stack and a model gateway, and exposed those capabilities as services to the business. Previously I led the MCP tool platform at Klavis AI (the Strata engine: capability registration and orchestration). I use coding agents daily through \textbf{Vibe Coding}, maintain a Pi downstream distribution plus Memory/continuity/retry plugins, have source-level practice on \textbf{Hermes Agent} and \textbf{Claude Code}-class systems (agent loop, memory, and skills), and keep contributing upstream (see Open Source).\\
+\textbf{Engineering approach:} \textbf{baseline before migration} (containerize the legacy system and add regression tests, then refactor); \textbf{do not treat unknown outcomes as success} (unreturned tool calls are marked ``unknown effect'' and are not replayed automatically); \textbf{make boundaries and permissions explicit} (filter models by user, use session IDs only for routing not authorization, allow only necessary network targets); \textbf{fix the root cause and contribute upstream} (reproduce in our system first, then send the fix upstream).
+
+\section*{\textcolor{red}{Open Source}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\begin{itemize}
+	\item \textbf{Agent Memory:} \href{https://github.com/chandra447/pi-hermes-memory/pulls?q=author\%3Axz-dev+is\%3Amerged}{pi-hermes-memory} (Hermes-style memory plugin for Pi), \textbf{7 merged PRs}, including \href{https://github.com/chandra447/pi-hermes-memory/pull/142}{atomic application of memory-merge plans}; \href{https://github.com/plastic-labs/honcho/pull/689}{Honcho} (\textcolor{red}{7.9k stars}, agent memory framework), merged a deriver startup health-check fix.
+	\item \textbf{Agent runtime / sub-agents:} \href{https://github.com/nicobailon/pi-subagents/pulls?q=author\%3Axz-dev+is\%3Amerged}{pi-subagents} (\textcolor{red}{4.1k stars}), \textbf{7 merged PRs} covering durable retrieval of async completion results, isolation of forked sub-sessions, and MCP request-header caching; \href{https://github.com/earendil-works/pi}{Pi coding agent} (\textcolor{red}{119k stars}), merged \href{https://github.com/earendil-works/pi/pull/6764}{\#6764} and \href{https://github.com/earendil-works/pi/pull/6697}{\#6697}.
+	\item \textbf{MCP/Skill tool platform:} \href{https://github.com/Klavis-AI/klavis/pulls?q=author\%3Axz-dev+is\%3Amerged}{Klavis-AI/klavis} (\textcolor{red}{5.8k stars}), \textbf{34 merged PRs} on the Strata engine and 20+ third-party MCP integrations (capability registration, retrieval, and orchestration).
+	\item \textbf{Model gateway:} \href{https://github.com/cheaper-inference/OmniRoute/pulls?q=author\%3Axz-dev+is\%3Amerged}{OmniRoute} (\textcolor{red}{84k stars}), 57 PRs with \textbf{50 merged}, covering overload control, model permissions, quota fallback, and inference streams; \href{https://github.com/api7/aisix/pull/1387}{APISIX AISIX}, 2 merged proxy-performance PRs; \href{https://github.com/Wei-Shaw/sub2api/pull/7215}{Sub2API} (\textcolor{red}{45k stars}), 2 merged model-catalog PRs.
+	\item \textbf{Agent frontend:} \href{https://github.com/nesquena/hermes-webui}{Hermes WebUI} (\textcolor{red}{19k stars}), 2 merged PRs (session usage metering, reasoning-card state).
+	\item \textbf{Runtime fundamentals:} \href{https://github.com/denoland/deno/pull/36644}{Deno} (\textcolor{red}{108k stars}) child-process signal fix and \href{https://github.com/youki-dev/youki/pull/3867}{youki} (Rust OCI runtime) both merged; \href{https://github.com/virtio-win/kvm-guest-drivers-windows/pulls?q=is\%3Apr+author\%3Axz-dev+is\%3Amerged}{virtio-win}, 4 merged PRs (including RHEL-149886); \href{https://github.com/ansible/ansible-runner/pull/1306}{ansible-runner} \#1306.
+	\item \textbf{Own projects:} founder of \href{https://github.com/DUpdateSystem/UpgradeAll}{UpgradeAll} (\textbf{\textcolor{red}{1.3k+ stars}}); \href{https://github.com/xz-dev/AI-gateway}{AI-gateway}, \textcolor{red}{31 stars}; \href{https://github.com/xz-dev/pi}{Pi downstream}, \textcolor{red}{16 stars}.
+	\item \textbf{Totals:} \textbf{368 PRs merged} into other people's repositories since 2018 (GitHub search, 2026-11); \textbf{200+} public GitHub repositories.
+\end{itemize}
+
+\section*{\textcolor{red}{Skills}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{Agents \& LLM:} agent loop/tool calling, \textbf{context engineering} (context compaction and continuity), agent memory (store/retrieve/manage/evolve: mem0, Honcho, Hindsight, Hermes-style memory), RAG retrieval and context construction (recall + semantic rerank), Skill/plugin registration and orchestration, sub-agents, MCP; daily use of Hermes Agent/Pi/Claude Code (\textbf{Vibe Coding}).\\
+\textbf{Gateways \& protocols:} APISIX (Lua), OpenAI/Anthropic-compatible APIs, SSE, WebSocket, gRPC, REST, OAuth 2.0, SSO/MFA.\\
+\textbf{Languages \& data:} Python (Django/DRF, FastAPI, asyncio), Go, TypeScript/Node.js/Bun, Rust, C\#/.NET, Java/Spring Boot, C/C++; PostgreSQL, Redis/Celery, SQLite.\\
+\textbf{Deploy \& operations:} Docker/Podman, Kubernetes, Helm, KEDA, Ansible, GitHub Actions, Azure, GCP, Linux; OpenTelemetry/Jaeger/Loki/Grafana.
+
+\section*{\textcolor{red}{Experience}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{Capital Dynamics (Shanghai) | AI and Full-Stack Development Engineer} \hfill 2026.05 -- 2026.11
+
+Own the company's AI Agent infrastructure and applications, and lead the Hong Kong investor-portal re-platforming; about 6 months: 1,388 commits and 122 MRs (105 merged).
+\begin{itemize}
+	\item \textbf{Agent Memory and RAG:} built an \textbf{LLM Wiki and a shared mem0-based memory store}; designed a dual-memory architecture covering storage, retrieval, management, and evolution (Honcho for long-term profile and preferences, Hindsight for an entity/event graph that resolves omitted references); shipped a Thunderbird mail add-on to \textbf{all staff} with a hand-built \textbf{RAG retrieval and context-construction pipeline} (query planning $\rightarrow$ candidate-mail recall $\rightarrow$ LLM semantic rerank to answer), plus summaries, reply drafts, and deadline extraction; drafts only, no send permission requested.
+	\item \textbf{Agent Skills and research desk:} built an investment research desk on the official Hermes Agent container; a Node WebUI proxies the OpenAI-compatible API server-side so the browser never sees keys; research state is a hierarchical knowledge graph that records the source of every change (user/AI); AI cannot overwrite user content and may only add items or suggest changes; wrote a graph Skill contract (persistence only through the backend API) and combined Hermes built-in skills, memory, and session history for \textbf{registration, retrieval, orchestration, and reuse}; data persisted to disk; Given/When/Then behaviour tests.
+	\item \textbf{AI gateway, observability, and cost constraints:} proposed a shared AI access layer and got an MVP boundary approved (gateway base + one local route + one approved cloud route), with data classification, audit, and GPU-capacity constraints; implemented an \textbf{APISIX gateway with reversible privacy filtering} (replace sensitive data before sending, restore it on the streamed response); deployed OpenTelemetry + Jaeger + Loki + Grafana, with the data plane on the internal network and the control plane isolated behind a WAF.
+	\item \textbf{Engineering governance review:} as a reviewer, diagnosed a delayed recruiting platform as missing a governance loop rather than development capacity; recommended a black-box regression baseline before refactoring, and rolled out repo-level AGENTS.md plus shared AI-coding guidelines (to support team Vibe Coding).
+	\item \textbf{Portal re-platforming:} containerized the legacy PHP + MySQL system and added behavioural regression tests as a baseline, then migrated to \textbf{React + Django/DRF} (PostgreSQL, Redis/Celery, SSO, API gateway); shipped login, holdings, trading, and the document center in phases and owned ongoing maintenance of the production release; wrote data-validation, cut-over, and rollback plans.
+	\item \textbf{Data and authorization:} holdings-import approval uses transactions, row locks, and content fingerprints for idempotent imports; approval is bound to the data version the reviewer saw so stale data cannot be approved; end-to-end reconciliation tests from source files to reports; split SSO token issuance, MFA, and service authorization, and fixed account-ownership checks to prevent object-ID privilege escalation; dual-review publishing in the document center, with authenticated downloads from private storage.
+\end{itemize}
+
+\textbf{Klavis AI | Full-Stack Engineer / MCP Platform Architect} \hfill 2025.07 -- 2026.01
+\begin{itemize}
+	\item Led the \textbf{Strata engine}, turning OpenAPI v2/v3 specs into agent-callable MCP tools/Skills and exposing them as platform services to the business; a prebuilt object cache plus reference-resolution optimizations cut complex-spec load time from \textbf{15 minutes $\rightarrow$ 3 seconds}.
+	\item Built and maintained \textbf{20+ third-party integrations} (Google Workspace, PayPal, Sentry, and others) with OAuth authorization and token refresh; moved Playwright sessions into separate processes with timeout cleanup; fixed concurrent HTTP-client reuse in Google Calendar.
+	\item Kubernetes/Helm private deployment; KEDA starts services on request and scales idle ones to zero, running hundreds of tool services on a $\sim$\textbf{4GB-RAM VPS} (cost and elasticity); GitHub Actions builds, scans, and ships multi-arch images.
+\end{itemize}
+
+\textbf{Microsoft Office 365 Interoperability and Compliance Project | Full-Stack Engineer} \hfill 2023.10 -- 2025.07
+\begin{itemize}
+	\item Python Word-compatibility test platform (Windows APIs, OCR, VM scheduling) running \textbf{800+ cases weekly}, cutting manual testing time by about 50\%; tested 400 Microsoft Graph API endpoints in 20 days with Copilot and MCP tools.
+	\item A GB-standard compliance document checker that edits Word Open XML directly, cutting per-person review-and-fix time from \textbf{2.5 hours $\rightarrow$ 5 minutes}.
+	\item Refactored the document-publishing tool onto Azure Pipelines, processing 30GB/400k files weekly and saving about \textbf{3 person-days} per release; switched to Azure Managed Identity.
+	\item Migrated scheduled jobs from a .NET Framework monolith to containerized .NET services, cutting Azure cost by \textbf{85\%} and scheduling time by \textbf{50\%}; added CodeQL to the pipeline.
+\end{itemize}
+
+\textbf{Talkweb Information | Java Backend Developer} \hfill 2022.06 -- 2023.09
+\begin{itemize}
+	\item Backend for China Unicom's A-share portal and ticketing system; refactored Spring Boot microservices, Kubernetes auto-deploy and scaling, and IPFS-based file storage.
+\end{itemize}
+
+\section*{\textcolor{red}{Personal Open Source}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{\href{https://github.com/xz-dev/pi}{Pi downstream and plugins} | coding agent, downstream maintainer} \hfill 2026.06 -- present
+\begin{itemize}
+	\item \textbf{Context engineering:} moved context compaction to before the request is sent so user input and compaction records keep a correct save order; \href{https://github.com/xz-dev/pi-continuity}{task continuity and structured compaction} plugin; after a failed request, continue from the last protocol-complete point on a new branch, keep the failure record, and mark unreturned tool calls as ``unknown effect''.
+	\item \textbf{Agent loop / runtime:} async tools support background execution, cancellation, and result retrieval; fixed sessions hanging after Esc; added PTY and tool-batch regression tests; model-catalog refresh has a timeout and falls back to a local snapshot.
+	\item \textbf{Skill / plugin ecosystem:} \href{https://github.com/xz-dev/pi-extension-utils}{cross-process collaboration library} (HMAC handshake, message acknowledgement), \href{https://github.com/xz-dev/pi-retry}{retry} (do not retry quota/billing errors), \href{https://github.com/xz-dev/pi-notify}{notify}; Bun-packed cross-platform single binary, self-update with verification and atomic replace after backup; patches on independent branches, with CI tracking upstream.
+\end{itemize}
+
+\textbf{\href{https://github.com/xz-dev/AI-gateway}{AI-gateway} | multi-model gateway, independently designed and built} \hfill 2026.08 -- present
+\begin{itemize}
+	\item Ingress, auth/billing, and model invocation use existing components (APISIX and others); I wrote the Go/Rust/Lua services in between: a Go model catalog and a Rust sync tool that collect upstream models and capabilities; APISIX Lua \textbf{filters the model list by user permission} (multi-tenant isolation) while keeping full metadata.
+	\item Go streaming proxy: keep-alive during long reasoning in each of OpenAI/Anthropic's SSE formats, proxy WebSocket, and report handshake failures and mid-stream errors back to the client; session IDs are passed to the routing layer for sticky routing and are used only for routing, not authorization.
+	\item Inter-container and egress networks allow only necessary targets; Ansible plus pinned image digests for deploys; tests for permission filtering, streaming errors, session routing, and network boundaries.
+\end{itemize}
+
+\textbf{\href{https://github.com/DUpdateSystem/UpgradeAll}{UpgradeAll} | Android app-update manager, project founder} \hfill 2019.04 -- present
+\begin{itemize}
+	\item Led a six-person team aggregating update sources such as GitHub and F-Droid (\textcolor{red}{1.3k+ stars}); owned the Kotlin client, Rust update core, and the early Python server (gRPC/REST, Redis, Docker); in 2026 completed the AGP 9/Gradle 9 migration, unified Kotlin--Rust calls over WebSocket JSON-RPC, and landed upstream fix \href{https://github.com/MatrixDev/GradleAndroidRustPlugin/pull/14}{PR\#14}.
+\end{itemize}
+
+\section*{\textcolor{red}{Education \& Certifications}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{North China University of Science and Technology | B.Eng., Computer Science and Technology} \hfill 2023.06\\
+Red Hat Certified Engineer RHCE (285/300); RHCSA (full marks); RISC-V Foundational Associate (RVFA). ASC18 Student Supercomputer Challenge, second prize; selected for the Linux Foundation talent incentive program.
+\end{document}
