@@ -4,6 +4,7 @@ import { satteri } from '@astrojs/markdown-satteri';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
+import buildCv from './src/integrations/build-cv';
 import localized404 from './src/integrations/localized-404';
 import { getCopyPaths } from './src/lib/copy-pages';
 import translate from './src/integrations/translate';
@@ -20,6 +21,8 @@ const isOutOfSitemap = (path) =>
 export default defineConfig({
   site: 'https://xzos.net',
   integrations: [
+    // Résumé PDFs are compiled from cv/*.tex before the site is emitted.
+    buildCv(),
     // 翻译集成：在 build 开始前自动翻译博客文章
     // 通过本机 pi CLI 翻译（无 pi 时跳过）；可选 PI_TRANSLATE_MODEL / PI_TRANSLATE_EXTENSIONS / PI_TRANSLATE_BIN
     translate({

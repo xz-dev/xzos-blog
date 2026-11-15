@@ -1,0 +1,123 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=1.4cm, right=1.4cm, top=1.2cm, bottom=1.4cm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setmainfont{Noto Sans}
+\setCJKmainfont{LXGW WenKai}[BoldFont={LXGW WenKai Medium}]
+\usepackage{xcolor}
+\usepackage[pdfborder={0 0 0}, colorlinks=true, urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+% 手改模板常用 4pt itemsep；这里用 3pt，否则教育与认证会落到第三页。
+\setlist[itemize]{leftmargin=1.3em, topsep=3pt, itemsep=3pt, parsep=0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{\footnotesize 曾祥哲\quad\thepage}
+\setlength{\footskip}{18pt}
+\raggedbottom
+\hypersetup{pdftitle={曾祥哲 - AI Agent 平台研发工程师}, pdfauthor={曾祥哲}}
+
+\begin{document}
+\begin{center}
+	{\LARGE\textbf{曾祥哲}}\\[4pt]
+	{\large AI Agent 平台研发工程师（Memory · RAG · Skill · Agent 运行时）}\\[5pt]
+	\small
+	\href{mailto:xz@xzos.net}{xz@xzos.net}\quad |\quad +86 15530859511\quad |\quad
+	\href{https://github.com/xz-dev}{github.com/xz-dev}\quad |\quad
+	\href{https://xzos.net}{xzos.net}
+\end{center}
+
+\section*{\textcolor{red}{个人简介}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+4 年后端/全栈经验，现在 Capital Dynamics 负责公司 \textbf{AI Agent 基础设施}：设计并落地 \textbf{Memory/RAG/Skill} 体系与模型网关，并把能力以服务形式开放给业务；此前在 Klavis AI 主导 MCP 工具平台（Strata 引擎，能力注册与编排）。日常以 \textbf{Vibe Coding} 重度使用编码 Agent，维护 Pi 下游分支及 Memory/续接/重试插件，对 \textbf{Hermes Agent、Claude Code} 类系统的 Agent Loop、Memory 与 Skill 有源码级实践，并向上游持续贡献（见开源成就）。\\
+\textbf{工程方法：}\textbf{先建基线再迁移}（旧系统先容器化＋回归测试再重构）；\textbf{结果不确定时不假设成功}（工具调用无返回标为“效果未知”，不自动重跑）；\textbf{边界与权限显式化}（按用户过滤模型、会话标识只路由不鉴权、网络只放行必要目标）；\textbf{修在根因并回馈上游}（问题先在自己系统复现，再提交到上游）。
+
+\section*{\textcolor{red}{开源成就}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\begin{itemize}
+	\item \textbf{Agent Memory：}\href{https://github.com/chandra447/pi-hermes-memory/pulls?q=author\%3Axz-dev+is\%3Amerged}{pi-hermes-memory}（Pi 的 Hermes 式记忆插件）合并 \textbf{7 个 PR}，含\href{https://github.com/chandra447/pi-hermes-memory/pull/142}{原子化应用记忆合并计划}；\href{https://github.com/plastic-labs/honcho/pull/689}{Honcho}（\textcolor{red}{7.9k Stars}，Agent 记忆框架）合并 deriver 启动健康检查修复。
+	\item \textbf{Agent 运行时/子 Agent：}\href{https://github.com/nicobailon/pi-subagents/pulls?q=author\%3Axz-dev+is\%3Amerged}{pi-subagents}（\textcolor{red}{4.1k Stars}）合并 \textbf{7 个 PR}，涵盖异步完成结果持久取回、分支子会话隔离、MCP 请求头缓存；\href{https://github.com/earendil-works/pi}{Pi 编码 Agent}（\textcolor{red}{119k Stars}）合并 \href{https://github.com/earendil-works/pi/pull/6764}{\#6764}、\href{https://github.com/earendil-works/pi/pull/6697}{\#6697}。
+	\item \textbf{MCP/Skill 工具平台：}\href{https://github.com/Klavis-AI/klavis/pulls?q=author\%3Axz-dev+is\%3Amerged}{Klavis-AI/klavis}（\textcolor{red}{5.8k Stars}）合并 \textbf{34 个 PR}，Strata 引擎与 20+ 第三方 MCP 集成（能力注册、检索与编排）。
+	\item \textbf{模型网关：}\href{https://github.com/cheaper-inference/OmniRoute/pulls?q=author\%3Axz-dev+is\%3Amerged}{OmniRoute}（\textcolor{red}{84k Stars}）提交 57 个 PR、\textbf{合并 50 个}，覆盖过载控制、模型权限、配额回退、推理流；\href{https://github.com/api7/aisix/pull/1387}{APISIX AISIX} 合并 2 个代理性能 PR；\href{https://github.com/Wei-Shaw/sub2api/pull/7215}{Sub2API}（\textcolor{red}{45k Stars}）合并 2 个模型清单 PR。
+	\item \textbf{Agent 前端：}\href{https://github.com/nesquena/hermes-webui}{Hermes WebUI}（\textcolor{red}{19k Stars}）合并 2 个 PR（会话用量计量、推理卡片状态）。
+	\item \textbf{运行时基础：}\href{https://github.com/denoland/deno/pull/36644}{Deno}（\textcolor{red}{108k Stars}）子进程信号修复、\href{https://github.com/youki-dev/youki/pull/3867}{youki}（Rust OCI 运行时）均已合并；\href{https://github.com/virtio-win/kvm-guest-drivers-windows/pulls?q=is\%3Apr+author\%3Axz-dev+is\%3Amerged}{virtio-win} 合并 4 个 PR（含 RHEL-149886）；\href{https://github.com/ansible/ansible-runner/pull/1306}{ansible-runner} \#1306。
+	\item \textbf{自有项目：}\href{https://github.com/DUpdateSystem/UpgradeAll}{UpgradeAll} 发起人（\textbf{\textcolor{red}{1.3k+ Stars}}）；\href{https://github.com/xz-dev/AI-gateway}{AI-gateway} \textcolor{red}{31 Stars}；\href{https://github.com/xz-dev/pi}{Pi 下游分支} \textcolor{red}{16 Stars}。
+	\item \textbf{总计：}2018 年起向他人仓库\textbf{合并 PR 368 个}（GitHub 搜索，2026-11），GitHub \textbf{200+ 公开仓库}。
+\end{itemize}
+
+\section*{\textcolor{red}{专业技能}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{Agent 与 LLM：}Agent Loop/工具调用、\textbf{Context Engineering}（上下文压缩与续接）、Agent Memory（存储/检索/管理/演化：mem0、Honcho、Hindsight、Hermes 风格记忆）、RAG 检索与上下文构建（召回＋语义重排）、Skill/插件注册与编排、子 Agent、MCP；Hermes Agent/Pi/Claude Code \textbf{重度使用（Vibe Coding）}。\\
+\textbf{网关与协议：}APISIX（Lua）、OpenAI/Anthropic 兼容 API、SSE、WebSocket、gRPC、REST、OAuth 2.0、SSO/MFA。\\
+\textbf{语言与数据：}Python（Django/DRF、FastAPI、asyncio）、Go、TypeScript/Node.js/Bun、Rust、C\#/.NET、Java/Spring Boot、C/C++；PostgreSQL、Redis/Celery、SQLite。\\
+\textbf{部署与运维：}Docker/Podman、Kubernetes、Helm、KEDA、Ansible、GitHub Actions、Azure、GCP、Linux；OpenTelemetry/Jaeger/Loki/Grafana。
+
+\section*{\textcolor{red}{工作经历}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{Capital Dynamics（上海）｜AI 与全栈开发工程师} \hfill 2026.05 -- 2026.11
+
+负责公司 AI Agent 基础设施与应用，牵头香港投资人门户重构；约 6 个月提交 1388 commits、122 个 MR（105 合并）。
+\begin{itemize}
+	\item \textbf{Agent Memory 与 RAG：}搭建 \textbf{LLM Wiki 与基于 mem0 的共享记忆库}，设计双记忆架构覆盖记忆的存储、检索、管理与演化（Honcho 管长期画像与偏好、Hindsight 管实体/事件关系图谱，补全省略指代）；为\textbf{全体员工}部署 Thunderbird 邮件插件，手写 \textbf{RAG 检索与上下文构建链路}（查询规划 $\rightarrow$ 候选邮件召回 $\rightarrow$ LLM 语义重排作答），另有摘要、回复草稿与截止事项提取，只写草稿、不申请发送权限。
+	\item \textbf{Agent Skill 与研究工作台：}基于官方 Hermes Agent 容器搭建投资研究台，Node WebUI 服务端代理 OpenAI 兼容 API，浏览器不接触密钥；研究状态建模为分层知识图谱并记录每次修改来源（用户/AI），AI 不可覆盖用户内容、只能新增或提建议；编写图谱 Skill 契约（持久化只走后端 API），结合 Hermes 内置 Skill、记忆与历史会话，实现能力的\textbf{注册、检索、编排与复用}，数据落卷持久化，Given/When/Then 行为测试覆盖。
+	\item \textbf{AI 网关、可观测性与成本约束：}提出共享 AI 接入层并获批 MVP 边界（网关基座＋一条本地路由＋一条批准云路由），定下数据分级、审计与 GPU 容量约束；实现 \textbf{APISIX 网关与可逆隐私过滤}（发出前替换敏感信息、流式返回时还原）；搭建 OpenTelemetry + Jaeger + Loki + Grafana，数据面内网直连、控制面经 WAF 隔离。
+	\item \textbf{工程治理审查：}以审查者身份诊断招聘平台延期根因——缺的是治理闭环而非开发量；建议先建黑盒回归基线再重构，并推行仓库级 AGENTS.md 与共享 AI 编码规范（支撑团队 Vibe Coding）。
+	\item \textbf{门户重构：}旧 PHP + MySQL 先容器化并补行为回归测试作基线，再迁到 \textbf{React + Django/DRF}（PostgreSQL、Redis/Celery、SSO、API 网关）；登录、持仓、交易、文档中心分阶段上线，并负责正式版本的持续维护；制定数据校验、切换和回滚方案。
+	\item \textbf{数据与权限：}金融持仓数据导入审批用事务、行锁、内容指纹实现幂等导入，审批绑定所见数据版本防止批准过期数据，写源文件到报表的端到端对账测试；拆分 SSO 令牌签发、MFA 与服务授权，修正账户归属校验，防止凭对象 ID 越权；文档中心双人复核发布、私有存储鉴权下载。
+\end{itemize}
+
+\textbf{Klavis AI｜全栈工程师/MCP 平台架构师} \hfill 2025.07 -- 2026.01
+\begin{itemize}
+	\item 主导 \textbf{Strata 引擎}，把 OpenAPI v2/v3 规范转成 Agent 可调用的 MCP 工具/Skill，并以平台服务形式对业务开放；预构建对象缓存＋引用解析优化，复杂规范加载 \textbf{15 分钟 $\rightarrow$ 3 秒}。
+	\item 开发维护 \textbf{20+ 第三方集成}（Google Workspace、PayPal、Sentry 等），实现 OAuth 授权与令牌刷新；Playwright 会话放入独立进程并加超时清理，修复 Google Calendar 并发复用 HTTP client 的问题。
+	\item Kubernetes/Helm 私有化部署，KEDA 按请求启动、空闲缩到零，使约 \textbf{4GB 内存 VPS} 按需运行数百个工具服务（成本与弹性优化）；GitHub Actions 构建、扫描、分发多架构镜像。
+\end{itemize}
+
+\textbf{微软 Office 365 互操作性与合规项目｜全栈工程师} \hfill 2023.10 -- 2025.07
+\begin{itemize}
+	\item Python Word 兼容性测试平台（Windows API、OCR、虚拟机调度），每周自动执行 \textbf{800+ 用例}，人工测试时间减少约 50\%；用 Copilot 与 MCP 工具 20 天内测试 400 个 Microsoft Graph API 接口。
+	\item 国标（GB）合规文档校验工具直接修改 Word Open XML，人均校验修正时间 \textbf{2.5 小时 $\rightarrow$ 5 分钟}。
+	\item 文档发布工具重构并接入 Azure Pipeline，每周处理 30GB/40 万文件，每次发布节省约 \textbf{3 人天}；改用 Azure Managed Identity。
+	\item 调度任务从 .NET Framework 单体迁到容器化 .NET 服务，Azure 费用降低 \textbf{85\%}、调度耗时减少 \textbf{50\%}，流水线接入 CodeQL。
+\end{itemize}
+
+\textbf{拓维信息｜Java 后端开发} \hfill 2022.06 -- 2023.09
+\begin{itemize}
+	\item 联通 A 股门户与工单系统后端；Spring Boot 重构微服务，Kubernetes 自动部署扩缩容，实现基于 IPFS 的文件存储。
+\end{itemize}
+
+\section*{\textcolor{red}{个人开源项目}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{\href{https://github.com/xz-dev/pi}{Pi 下游分支与插件}｜编码 Agent，下游维护者} \hfill 2026.06 -- 至今
+\begin{itemize}
+	\item \textbf{Context Engineering：}上下文压缩挪到请求发出前，保证用户输入与压缩记录的保存顺序；\href{https://github.com/xz-dev/pi-continuity}{任务续接与结构化压缩}插件；请求失败后从最后一个协议完整位置开新分支续跑，保留失败记录，未返回的工具调用标为“效果未知”。
+	\item \textbf{Agent Loop/运行时：}异步工具支持后台执行、取消与取回结果，修复 Esc 后会话挂起，补伪终端与工具批次回归测试；模型目录刷新加超时并回退本地快照。
+	\item \textbf{Skill/插件生态：}\href{https://github.com/xz-dev/pi-extension-utils}{跨进程协作库}（HMAC 握手、消息确认）、\href{https://github.com/xz-dev/pi-retry}{重试}（配额/计费类错误不重试）、\href{https://github.com/xz-dev/pi-notify}{通知}；Bun 打包跨平台单文件，自更新校验、备份后原子替换；补丁独立分支，CI 跟进上游。
+\end{itemize}
+
+\textbf{\href{https://github.com/xz-dev/AI-gateway}{AI-gateway}｜多模型网关，独立设计与开发} \hfill 2026.08 -- 至今
+\begin{itemize}
+	\item 入口、认证计费、模型调用用现成组件（APISIX 等），自写其间的 Go/Rust/Lua 服务：Go 模型目录、Rust 同步工具汇总上游模型与能力；APISIX Lua \textbf{按用户权限过滤模型列表}（多租户隔离）并保留完整元数据。
+	\item Go 流式代理：长推理时按 OpenAI/Anthropic 各自 SSE 格式保活，代理 WebSocket，握手失败与中途出错回传客户端；会话标识带到路由层做粘性路由，只路由不鉴权。
+	\item 容器间与出口网络只放行必要目标；Ansible＋固定镜像摘要部署，为权限过滤、流式错误、会话路由、网络边界写测试。
+\end{itemize}
+
+\textbf{\href{https://github.com/DUpdateSystem/UpgradeAll}{UpgradeAll}｜Android 应用更新管理器，项目发起人} \hfill 2019.04 -- 至今
+\begin{itemize}
+	\item 带六人团队，聚合 GitHub、F-Droid 等更新源（\textcolor{red}{1.3k+ Stars}）；负责 Kotlin 客户端、Rust 更新核心与早期 Python 服务端（gRPC/REST、Redis、Docker）；2026 年完成 AGP 9/Gradle 9 迁移，Kotlin–Rust 调用统一为 WebSocket JSON-RPC，上游修复 \href{https://github.com/MatrixDev/GradleAndroidRustPlugin/pull/14}{PR\#14} 已合并。
+\end{itemize}
+
+\section*{\textcolor{red}{教育与认证}}
+\vspace*{-4ex}
+\noindent\textcolor{red}{\rule{\linewidth}{0.4pt}}
+\textbf{华北理工大学｜计算机科学与技术，本科} \hfill 2023.06\\
+红帽认证工程师 RHCE（285/300）；RHCSA（满分）；RISC-V Foundational Associate（RVFA）。ASC18 世界大学生超级计算机竞赛二等奖；入选 Linux 基金会人才激励计划。
+\end{document}

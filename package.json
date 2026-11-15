@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "test": "node --test tests/*.test.ts",
     "redirects": "node scripts/write-redirects.ts",
-    "build": "astro build",
+    "cv": "node scripts/build-cv.mjs",
+    "build": "node scripts/build-cv.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

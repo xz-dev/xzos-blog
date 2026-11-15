@@ -1,5 +1,20 @@
 # build output
 dist/
+
+# résumé PDFs are compiled from cv/*.tex (scripts/build-cv.mjs)
+public/cv/*.pdf
+
+# TeX intermediates
+cv/*.aux
+cv/*.log
+cv/*.out
+cv/*.xdv
+cv/*.fls
+cv/*.fdb_latexmk
+cv/*.synctex.gz
+
+# Tectonic bundle and CV fonts downloaded by the build
+.cache/
 # generated types
 .astro/
 
