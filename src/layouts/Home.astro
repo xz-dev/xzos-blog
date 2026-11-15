@@ -293,10 +293,11 @@ const recent = posts.slice(0, LS);
 
 		<script>
 			// Animates the ring at RING_FPS while it is on screen, the tab is
-			// visible, motion is allowed and the reader has not paused it. Frame 0
-			// is the server-rendered one; reduced motion keeps it and hides the
-			// pause control.
-			import { RING_FPS, ringHtml } from '../lib/ascii-ring';
+			// visible, motion is allowed and the reader has not paused it. The
+			// server renders tumble's frame 0; the script plays a random variant and
+			// moves to another every RING_SWITCH seconds of animation. Reduced motion
+			// keeps the server frame and hides the pause control.
+			import { RING_FPS, RING_VARIANTS, ringHtml } from '../lib/ascii-ring';
 			import { formatUptime } from '../lib/uptime';
 
 			// The build-time uptime goes stale; recount it now and every minute.
@@ -315,6 +316,15 @@ const recent = posts.slice(0, LS);
 				const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 				const shown = new Set<HTMLElement>();
 				let paused = false;
+				// Seconds per variant. The clock runs only while the ring moves, so a
+				// paused or hidden ring keeps its variant.
+				const RING_SWITCH = 20;
+				// A random index other than `not`: skip it by shifting the ones above it down.
+				const pick = (not: number) => {
+					const index = Math.floor(Math.random() * (RING_VARIANTS.length - 1));
+					return index >= not ? index + 1 : index;
+				};
+				let variant = Math.floor(Math.random() * RING_VARIANTS.length);
 				let time = 0;
 				let last = 0;
 				let frame = 0;
@@ -326,8 +336,13 @@ const recent = posts.slice(0, LS);
 					// A long gap (a stalled tab) advances one frame, not a jump.
 					if (last) time += Math.min(now - last, 250) / 1000;
 					last = now;
+					// Each variant starts from t = 0, so the looping ones begin at their first step.
+					if (time >= RING_SWITCH) {
+						variant = pick(variant);
+						time = 0;
+					}
 					for (const art of shown) {
-						art.innerHTML = ringHtml(time, { cols: Number(art.dataset.cols), rows: Number(art.dataset.rows) });
+						art.innerHTML = ringHtml(time, { cols: Number(art.dataset.cols), rows: Number(art.dataset.rows) }, variant);
 					}
 				};
 				const main = root.closest('main');
