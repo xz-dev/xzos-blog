@@ -6,7 +6,7 @@
 npm run cv
 ```
 
-The build downloads a static Tectonic binary and the fonts the sources name: Noto Sans, plus LXGW WenKai Regular and Medium (Medium is the bold face fontconfig returns for this family). XeTeX only. There is no test suite for the `.tex`; compile and read the PDF.
+The build downloads a static Tectonic binary and the fonts the sources name: Noto Sans, plus LXGW WenKai Regular and Medium. `\setCJKmainfont{LXGW WenKai}[BoldFont={LXGW WenKai Medium}]` uses Medium for bold Chinese. XeTeX only. There is no test suite for the `.tex`; compile and read the PDF.
 
 ## LaTeX style
 
