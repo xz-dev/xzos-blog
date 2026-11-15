@@ -317,18 +317,40 @@ info; below that the art stacks above the info.
   8 × 24 (one character on a body line), so x is scaled three times y to
   keep the ring round, and the box never changes size. The dashes are a flat band (half-width 0.17 across the ring,
   0.08 along its axis, dash 42% of each 1/16 arc) with back faces culled, so
-  the gaps stay empty; the ramp ` -=+*#%@` has no light marks. The ring
-  leans back 14°–26° and swings up to 26° about the vertical axis, so the
-  drawing keeps all but one or two rows. Bright marks use `--accent`, dim marks
-  `--secondary`, the rest `--foreground`. The build renders frame 0; the
-  page script animates it at 12 fps while it is on screen and the tab is
-  visible. The art is `aria-hidden` with a visually hidden text alternative.
+  the gaps stay empty; the ramp ` -=+*#%@` has no light marks. Bright marks
+  use `--accent`, dim marks `--secondary`, the rest `--foreground`. Eight
+  variants (`RING_VARIANTS`) animate it, all on the same grids:
+  - `tumble`: the dashes run round while the ring leans back 14°–26° and
+    swings up to 26° about the vertical axis, so the drawing keeps all but
+    one or two rows;
+  - `spinner`: face on, a bright head steps round the dashes with a fading
+    tail;
+  - `coin`: a full turn about the vertical axis, a thin line when edge on;
+  - `boot`: the dashes fly in one by one, the logo turns, then they drop
+    out (8 s loop);
+  - `decode`: noise settles cell by cell into the still logo and scrambles
+    again (6 s loop);
+  - `gyro`: the logo's ring outside a thin plain ring turning about another
+    axis;
+  - `wave`: a wave runs round and pushes the dashes it passes outwards and
+    brighter;
+  - `slide`: a fixed lean, only the dashes sliding slowly round.
+
+  The build renders `tumble`'s frame 0. The page script plays a variant
+  chosen at random at 12 fps while it is on screen and the tab is visible,
+  and every 20 s of animation moves to a different random one, starting it
+  from t = 0; both grids always show the same variant. The art is
+  `aria-hidden` with a visually hidden text alternative.
 - **Pause:** `[pause]` is a plain menu item at the bottom right of the boot
   block, on the last palette row's line, so it takes no line of its own. It has
   `aria-pressed` and a constant accessible name, and the page script
   unhides it; without script the page has no motion to stop. Pressed (paused) is marked like the status
   line's current entry: `--accent` and a trailing `*`, never inverted. It
-  stops the logo and the cursor (`data-paused` on the frame).
+  stops the logo, its variant clock and the cursor (`data-paused` on the frame).
+- **Next:** `[next]` sits left of `[pause]`, one cell gap apart, the same
+  plain menu item. It switches to another random variant from its first step;
+  while paused it shows that step and stays paused. Reduced motion hides it
+  with the pause control.
 - **Info block:** fastfetch's layout: `xz@xzos` (names in `--accent`, `@`
   plain), a rule of as many dashes, then `Key: value` lines with no column
   alignment, keys in `--accent` and `:` and values in `--foreground`. Keys
@@ -350,8 +372,8 @@ info; below that the art stacks above the info.
   prompt's place and prints its login message above its prompt: the
   localized help hint (`shell.hint`) in `--secondary`. `clear` wipes it.
 - **Motion:** the logo and the cursor are the site's only motion, in both
-  themes. `prefers-reduced-motion: reduce` keeps frame 0, hides the pause
-  control and stops the blink. The cursor blinks only while the script has
+  themes. `prefers-reduced-motion: reduce` keeps `tumble`'s frame 0, with no
+  variant switching, hides the next and pause controls and stops the blink. The cursor blinks only while the script has
   shown the pause control (`data-pausable`), so without script it is
   steady. The ring rewrites its `innerHTML` 12 times a second; at 4× CPU
   throttling on `/` (1440px, day) five seconds of animation produced no long
