@@ -1,8 +1,9 @@
 # Design language
 
 One layout and one font in both themes; night only recolours. Day
-(`data-theme="solarized"`) is Solarized Light and night (`data-theme="tty"`) is
-Solarized Dark, both with an orange accent. Switching theme never moves or resizes anything, and no
+(`data-theme="solarized"`, an attribute that keeps its old name) is Termius Light
+with a green accent and night (`data-theme="tty"`) is Aura Dark with a purple accent.
+The two themes have different accents. Switching theme never moves or resizes anything, and no
 frame, fill or bevel exists in one theme but not the other.
 
 ## Tokens
@@ -35,42 +36,45 @@ block redefines colours and the role tokens only.
 
 ### Palette
 
-Solarized supplies the paper and dark fields. The orange accent and semantic
-hues are adjusted for readable text. Every text role reaches 4.5:1 on both
-fields; structural borders reach 3:1. Decorative borders do not convey state.
+Termius Light supplies the day fields and Aura Dark the night fields; each
+theme keeps its own accent, green by day and purple by night. Every text role
+reaches 4.5:1 on both fields; structural borders reach 3:1. Decorative borders
+do not convey state.
 
 | Token | Light | Dark |
 |---|---|---|
-| `--background` | `#fdf6e3` | `#002b36` |
-| `--surface` | `#eee8d5` | `#073642` |
-| `--foreground` | `#073642` | `#93a1a1` |
-| `--emphasized` | `#073642` | `#eee8d5` |
-| `--secondary` | `#566a71` | `#8b9b9d` |
-| `--accent` | `#b04010` | `#ee7d47` |
-| `--border-strong` | `#778888` | `#647e86` |
-| `--border-color` | `#eee8d5` | `#586e75` |
+| `--background` | `#e9ecf0` | `#15141b` |
+| `--surface` | `#dde1e7` | `#1f1d27` |
+| `--foreground` | `#2b3040` | `#edecee` |
+| `--emphasized` | `#141824` | `#ffffff` |
+| `--secondary` | `#555d70` | `#a19fad` |
+| `--accent` | `#117140` | `#a277ff` |
+| `--border-strong` | `#768097` | `#6a677b` |
+| `--border-color` | `#cfd5de` | `#4f4a74` |
 
-Structural borders are the nearest passing 8-bit colours found by moving
-Solarized base1 (light) and base01 (dark) along HSL lightness, preserving hue
-and saturation before rounding. The minimum contrast across both fields is
-3.027:1 for light and 3.015:1 for dark. Dark secondary text similarly moves
-base0 to `#8b9b9d` (4.502:1 on the surface). The dark decorative border is
-2.416:1 against its surface. Selection and `mark` use the accent as their
-background and the page background as their foreground.
+Aura Dark's own colours already reach 4.5:1, so night needs no lightness
+adjustment. Structural borders are chosen to reach 3:1 against both fields
+(light 3.016:1 on the surface, dark 3.039:1 on the surface). The night
+decorative border is 2.03:1 against its surface. Selection and `mark` use the
+accent as their background and the page background as their foreground.
 
-Shiki uses the Solarized Light/Dark scopes in `src/lib/syntax-day.ts`.
-Only failing foregrounds change along HSL lightness; all scope order and
-other settings stay intact. Each declared syntax foreground reaches 4.5:1
-on its code surface. Inline code uses the page foreground. The 16 home
-swatches retain Solarized's standard terminal order; they are decorative.
-`docs/theme/tty-dark.json` retains only the night favicon's foreground; a
-test checks it against the CSS token. OG cards use the fixed night palette, titles in the emphasized colour.
+Shiki uses two custom themes in `src/lib/syntax-day.ts`, since Shiki bundles
+neither palette. Their keyword, string, function, type, constant and comment
+colours come from each palette: night keeps Aura's token colours except the
+comment grey, lifted to `#858585` for 4.5:1 on the code surface; day uses
+Termius Light's hues on `#dde1e7`. Every token reaches 4.5:1 on its code
+surface (day 4.514:1 at the lowest, night 4.505:1). Inline code uses the page
+foreground. The 16 home swatches are Aura's ANSI colours, the same in both
+themes; they are decorative.
+`docs/theme/tty-dark.json` retains only the night favicon's foreground
+(`#edecee`); a test checks it against the CSS token. OG cards use the fixed
+night palette (Aura Dark), titles in the emphasized colour.
 
 ### Semantic colours
 
 Like a shell's prompt and `LS_COLORS`, colour in terminal output says what a
-thing is. Each role is a Solarized hue with only its lightness moved, so it
-reaches 4.5:1 on `--background` and `--surface` in both themes. Colour only:
+thing is. Day roles use Termius Light's hues and night roles Aura Dark's own colours, so each
+reaches 4.5:1 on `--background` and `--surface` in its theme. Colour only:
 Unifont has one weight, so nothing is bold, boxed or filled.
 
 | Role | Token | Where |
@@ -336,7 +340,7 @@ info; below that the art stacks above the info.
   `*`), never inverted. Links are values with a dotted 1px underline, solid
   on hover and focus: `Locale:` in `--foreground`, the external `Links:` in
   `--term-link`. After one blank line come 16 decorative
-  swatches in Solarized's standard ANSI terminal order, shared by both
+  swatches in Aura's ANSI colours, shared by both
   themes. The shell's errors use `--error` (see Semantic colours).
 - **Recent posts:** one blank line (`--space-4`) after the fetch output, a
   `$ ls -t ~/blog | head -5` prompt over a list of `YYYY-MM-DD  Title` rows

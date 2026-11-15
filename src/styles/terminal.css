@@ -75,7 +75,7 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   text-rendering: optimizeLegibility;
-  /* Shared effect token; both Solarized themes keep text sharp. */
+  /* Shared effect token; both themes keep text sharp. */
   text-shadow: var(--text-glow);
   -webkit-overflow-scrolling: touch;
   -webkit-text-size-adjust: 100%;
@@ -83,7 +83,7 @@ body {
   padding: 0;
 }
 
-/* Shared overlay hook; Solarized leaves it empty in both themes. */
+/* Shared overlay hook; both themes leave it empty. */
 body::after {
   content: "";
   position: fixed;
