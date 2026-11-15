@@ -1,47 +1,33 @@
-import light from '@shikijs/themes/solarized-light';
-import dark from '@shikijs/themes/solarized-dark';
+// Syntax colours as Shiki themes (Shiki bundles neither palette). Night keeps
+// Aura Dark's token colours, only the comment grey is lifted to 4.5:1 on the
+// code surface; day uses Termius Light's hues on its grey paper.
+type Syntax = { fg: string; comment: string; keyword: string; string: string; func: string; type: string; constant: string };
 
-// Preserve Solarized scopes and passing colours; adjust only failing foregrounds
-// along their HSL lightness axis for the site's code surfaces.
-const lightOverrides: Record<string, string> = {
-  '#268BD2': '#1e6da5',
-  '#2AA198': '#1e746e',
-  '#586E75': '#576c73',
-  '#657B83': '#586c73',
-  '#6C71C4': '#5a5fbd',
-  '#859900': '#616f00',
-  '#93A1A1': '#5e6b6b',
-  '#B58900': '#846400',
-  '#CB4B16': '#b64314',
-  '#D33682': '#bf2a72',
-  '#DC322F': '#ca2522'
-};
-
-const darkOverrides: Record<string, string> = {
-  '#268BD2': '#469fde',
-  '#2AA198': '#2ca99f',
-  '#586E75': '#859ca3',
-  '#6C71C4': '#8f93d2',
-  '#839496': '#8b9b9d',
-  '#859900': '#8ca200',
-  '#B58900': '#c09100',
-  '#CB4B16': '#eb7848',
-  '#D33682': '#e174a9',
-  '#DC322F': '#e87673'
-};
-
-function accessibleTheme(theme: typeof light, background: string, overrides: Record<string, string>) {
-  const foreground = (color: string) => overrides[color] ?? color;
+function syntaxTheme(name: string, type: 'light' | 'dark', background: string, c: Syntax) {
   return {
-    ...theme,
-    name: `${theme.name}-aa`,
-    colors: { ...theme.colors, 'editor.background': background, 'editor.foreground': foreground(theme.colors!['editor.foreground']) },
-    tokenColors: theme.tokenColors!.map(rule => ({
-      ...rule,
-      settings: { ...rule.settings, ...(rule.settings.foreground ? { foreground: foreground(rule.settings.foreground) } : {}) },
-    })),
+    name,
+    type,
+    colors: { 'editor.background': background, 'editor.foreground': c.fg },
+    tokenColors: [
+      { settings: { foreground: c.fg, background } },
+      { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: c.comment, fontStyle: 'italic' } },
+      { scope: ['keyword', 'storage', 'storage.type', 'storage.modifier', 'keyword.operator.new', 'keyword.control'], settings: { foreground: c.keyword } },
+      { scope: ['string', 'string.quoted', 'string.template', 'punctuation.definition.string', 'markup.inline.raw'], settings: { foreground: c.string } },
+      { scope: ['entity.name.function', 'support.function', 'meta.function-call entity.name.function', 'entity.name.tag'], settings: { foreground: c.func } },
+      { scope: ['entity.name.type', 'entity.name.class', 'support.type', 'support.class', 'entity.other.inherited-class', 'entity.other.attribute-name'], settings: { foreground: c.type } },
+      { scope: ['constant', 'constant.numeric', 'constant.language', 'constant.character', 'variable.other.constant', 'support.constant'], settings: { foreground: c.constant } },
+      { scope: ['variable.parameter', 'variable.language'], settings: { foreground: c.func } },
+      { scope: ['keyword.operator', 'punctuation', 'meta.brace'], settings: { foreground: c.fg } },
+      { scope: ['markup.heading', 'markup.bold'], settings: { foreground: c.keyword, fontStyle: 'bold' } },
+      { scope: ['markup.inserted'], settings: { foreground: c.string } },
+      { scope: ['markup.deleted', 'invalid'], settings: { foreground: c.constant } },
+    ],
   };
 }
 
-export const daySyntaxTheme = accessibleTheme(light, '#eee8d5', lightOverrides);
-export const nightSyntaxTheme = accessibleTheme(dark, '#073642', darkOverrides);
+export const daySyntaxTheme = syntaxTheme('termius-light', 'light', '#dde1e7', {
+  fg: '#2b3040', comment: '#5c6376', keyword: '#8a3fa0', string: '#117140', func: '#865c00', type: '#1d67a5', constant: '#106f6f',
+});
+export const nightSyntaxTheme = syntaxTheme('aura-dark', 'dark', '#1f1d27', {
+  fg: '#edecee', comment: '#858585', keyword: '#a277ff', string: '#61ffca', func: '#ffca85', type: '#82e2ff', constant: '#f694ff',
+});

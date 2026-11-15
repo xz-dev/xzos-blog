@@ -12,13 +12,13 @@ export const OG_IMAGE_HEIGHT = 630;
 // as a terminal screen in every feed. Titles take the emphasized colour, as
 // on the site.
 export const OG_PALETTE = {
-	background: '#002b36',
-	surface: '#073642',
-	foreground: '#93a1a1',
-	emphasized: '#eee8d5',
-	secondary: '#8b9b9d',
-	accent: '#ee7d47',
-	borderStrong: '#647e86',
+	background: '#15141b',
+	surface: '#1f1d27',
+	foreground: '#edecee',
+	emphasized: '#ffffff',
+	secondary: '#a19fad',
+	accent: '#a277ff',
+	borderStrong: '#6a677b',
 } as const;
 
 export interface OgImageContent {

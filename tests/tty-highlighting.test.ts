@@ -11,27 +11,16 @@ const luminance = (hex: string) => hex.match(/[\da-f]{2}/gi)!.reduce((sum, v, i)
 }, 0);
 const contrast = (a: string, b: string) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
 
-test('both syntax themes preserve Solarized scopes and every token reaches AA on its painted field', async () => {
+test('both syntax themes paint the code surface and every token reaches AA on it', async () => {
   const { daySyntaxTheme, nightSyntaxTheme } = await import('../src/lib/syntax-day.ts');
-  const { default: light } = await import('@shikijs/themes/solarized-light');
-  const { default: dark } = await import('@shikijs/themes/solarized-dark');
   const tokens = read('../src/styles/tokens.css');
   const blocks = [tokens.match(/:root\s*\{([^}]+)\}/)![1], tokens.match(/:root\[data-theme="tty"\]\s*\{([^}]+)\}/)![1]];
   for (const [i, theme] of [daySyntaxTheme, nightSyntaxTheme].entries()) {
-    const original = [light, dark][i];
     const surface = blocks[i].match(/--surface:\s*(#[\da-f]{6});/i)![1];
     assert.equal(theme.colors['editor.background'], surface);
-    assert.deepEqual(theme.tokenColors.map(r => r.scope), original.tokenColors!.map(r => r.scope));
     const used = new Set([theme.colors['editor.foreground']]);
-    for (const [index, rule] of theme.tokenColors.entries()) {
-      const before = original.tokenColors![index];
-      assert.deepEqual({ ...rule.settings, foreground: undefined }, { ...before.settings, foreground: undefined });
-      if (rule.settings.foreground) {
-        used.add(rule.settings.foreground);
-        if (contrast(before.settings.foreground!, surface) >= 4.5) assert.equal(rule.settings.foreground, before.settings.foreground);
-      }
-    }
-    assert.ok(used.size >= 8, 'retain distinct Solarized syntax colours');
+    for (const rule of theme.tokenColors) if (rule.settings.foreground) used.add(rule.settings.foreground);
+    assert.ok(used.size >= 7, 'comment, keyword, string, function, type, constant and text stay distinct');
     for (const color of used) assert.ok(contrast(color, surface) >= 4.5, `${theme.name} ${color}: ${contrast(color, surface).toFixed(3)}`);
   }
   assert.match(config, /light:\s*daySyntaxTheme/);
@@ -63,7 +52,7 @@ test('Shiki renders representative code with the accessible dual-theme colours',
   });
   assert.ok(result.flat().length > 10);
   for (const token of result.flat()) {
-    for (const [mode, surface] of [['light', '#eee8d5'], ['dark', '#073642']] as const) {
+    for (const [mode, surface] of [['light', '#dde1e7'], ['dark', '#1f1d27']] as const) {
       const color = token.variants[mode].color!;
       assert.ok(contrast(color, surface) >= 4.5, `${mode} ${token.content}: ${color}`);
     }

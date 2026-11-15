@@ -10,9 +10,9 @@ const colors = Object.fromEntries([...nightTokens.matchAll(/(--[\w-]+):\s*(#[\da
 const luminance = (hex: string) => hex.match(/[\da-f]{2}/gi)!.map((c) => parseInt(c, 16) / 255).reduce((sum, c, i) => sum + (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][i], 0);
 const contrast = (a: string, b: string) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
 
-test('the dark field and raised surface preserve Solarized hue and separation', () => {
-  assert.equal(colors['--background'], '#002b36');
-  assert.equal(colors['--surface'], '#073642');
+test('the dark field and raised surface keep Aura Dark and its separation', () => {
+  assert.equal(colors['--background'], '#15141b');
+  assert.equal(colors['--surface'], '#1f1d27');
   assert.ok(luminance(colors['--background']) < luminance(colors['--surface']));
   assert.ok(luminance(colors['--surface']) < 0.04);
   for (const field of ['--background', '--surface']) {

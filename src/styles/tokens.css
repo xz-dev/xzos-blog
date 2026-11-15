@@ -6,18 +6,18 @@
  * express. One font serves both themes, and no frame, fill or bevel exists in
  * one theme but not the other. */
 
-/* Solarized Light with an orange accent. Text reaches 4.5:1 on both fields;
+/* Termius Light with its green accent. Text reaches 4.5:1 on both fields;
  * structural borders reach 3:1. Soft borders are decorative only. */
 :root {
   color-scheme: light;
-  --background: #fdf6e3;
-  --surface: #eee8d5;
-  --foreground: #073642;
-  --accent: #b04010;
-  --secondary: #566a71;
-  --emphasized: #073642;
-  --border-color: #eee8d5;        /* decorative separators: hr, list rules, image frames */
-  --border-strong: #778888;       /* structural: tables, code, quotes, header edge */
+  --background: #e9ecf0;
+  --surface: #dde1e7;
+  --foreground: #2b3040;
+  --accent: #117140;
+  --secondary: #555d70;
+  --emphasized: #141824;
+  --border-color: #cfd5de;        /* decorative separators: hr, list rules, image frames */
+  --border-strong: #768097;       /* structural: tables, code, quotes, header edge */
 
   /* Role tokens that differ between the themes in colour or effect only;
    * the night block redefines them, so no element rule depends on the theme. */
@@ -28,15 +28,14 @@
   --field-overlay: none;          /* fixed layer painted behind the content */
 
   /* Semantic terminal colours: what a thing is, as a shell's prompt and
-   * LS_COLORS would say it. Solarized hues with only the lightness moved so
-   * each one reaches 4.5:1 on the page and the surface in both themes
+   * LS_COLORS would say it. Termius Light's hues, so each one reaches 4.5:1 on the page and the surface in both themes
    * (docs/theme/design-language.md, "Semantic colours"). */
-  --term-prompt: #5f6d00;         /* green: the prompt's `$`, command names in `help` */
-  --term-path: #1d6ca2;           /* blue: paths in prompt commands */
-  --term-link: #1e736c;           /* cyan: external links in command output */
-  --term-date: #826200;           /* yellow: dates in listings and post meta */
-  --term-tag: #bd2971;            /* magenta: categories and tags */
-  --error: #c72421;               /* red: shell errors (xzsh's "command not found") */
+  --term-prompt: #117140;         /* green: the prompt's `$`, command names in `help` */
+  --term-path: #1d67a5;           /* blue: paths in prompt commands */
+  --term-link: #106f6f;           /* cyan: external links in command output */
+  --term-date: #865c00;           /* yellow: dates in listings and post meta */
+  --term-tag: #8a3fa0;            /* magenta: categories and tags */
+  --error: #be2626;               /* red: shell errors (xzsh's "command not found") */
 
   /* Size, spacing, width and font system shared by both themes. The night
    * block changes colour and effects only, so switching theme never moves or
@@ -98,25 +97,25 @@
 
 :root[data-theme="tty"] {
   color-scheme: dark;
-  --background: #002b36;
-  --surface: #073642;
-  --foreground: #93a1a1;
-  --emphasized: #eee8d5;
-  --accent: #ee7d47;
-  --secondary: #8b9b9d;
-  --border-color: #586e75;
-  --border-strong: #647e86;
-  --code-foreground: #93a1a1;
+  --background: #15141b;
+  --surface: #1f1d27;
+  --foreground: #edecee;
+  --emphasized: #ffffff;
+  --accent: #a277ff;
+  --secondary: #a19fad;
+  --border-color: #4f4a74;
+  --border-strong: #6a677b;
+  --code-foreground: #edecee;
   --code-color: var(--code-foreground);
   --selection-bg: var(--accent);  /* reverse video, like mark */
   --selection-fg: var(--background);
-  /* Semantic terminal colours: the same hues, lighter for the dark field. */
-  --term-prompt: #8fa400;
-  --term-path: #4aa1de;
-  --term-link: #2daba1;
-  --term-date: #c29300;
-  --term-tag: #e178ab;
-  --error: #e87977;
+  /* Aura Dark: the theme's own colours, all above 4.5:1 as they are. */
+  --term-prompt: #61ffca;
+  --term-path: #82e2ff;
+  --term-link: #61ffca;
+  --term-date: #ffca85;
+  --term-tag: #f694ff;
+  --error: #ff6767;
   --text-glow: none;
   --field-overlay: none;
 }

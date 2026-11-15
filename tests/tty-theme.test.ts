@@ -33,10 +33,10 @@ function contrast(a: string, b: string) {
 	return (values[0] + 0.05) / (values[1] + 0.05);
 }
 
-test('night keeps the Solarized dark field and orange accent', () => {
-  assert.equal(palette['--background'], '#002b36');
-  assert.equal(palette['--surface'], '#073642');
-  assert.equal(palette['--accent'], '#ee7d47');
+test('night keeps the Aura Dark field and purple accent', () => {
+  assert.equal(palette['--background'], '#15141b');
+  assert.equal(palette['--surface'], '#1f1d27');
+  assert.equal(palette['--accent'], '#a277ff');
   assert.ok(luminance(palette['--background']) < 0.03);
 });
 
@@ -86,10 +86,10 @@ test('typography is self-hosted for both themes, with real WOFF2 files and its l
 	assert.ok(!existsSync(new URL('../scripts/build-day-font.py', import.meta.url)));
 });
 
-test('day palette keeps Solarized paper and the orange accent', () => {
-  assert.equal(day['--background'], '#fdf6e3');
-  assert.equal(day['--surface'], '#eee8d5');
-  assert.equal(day['--accent'], '#b04010');
+test('day palette keeps Termius Light paper and the green accent', () => {
+  assert.equal(day['--background'], '#e9ecf0');
+  assert.equal(day['--surface'], '#dde1e7');
+  assert.equal(day['--accent'], '#117140');
 	// Code and inline code sit on the surface.
 	assert.match(base, /pre\s*\{[^}]*background:\s*var\(--surface\)/);
 	assert.match(read('../src/components/BaseHead.astro'), /import '\.\.\/styles\/tty\.css';/);

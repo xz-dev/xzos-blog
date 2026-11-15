@@ -46,11 +46,10 @@ const rule = '-'.repeat(`${user}@${host}`.length);
 // Every value is real: the Astro that built the page, the post count, the font manifest.
 const kernel = Astro.generator.replace(/^Astro v/, 'Astro ');
 // The terminal's 16 ANSI colours as fastfetch prints them: 0-7, then the
-// bright 8-15, in Solarized's standard terminal mapping (the same in both
-// themes).
+// bright 8-15, in Aura's terminal mapping (the same in both themes).
 const palette = [
-	'#073642', '#dc322f', '#859900', '#b58900', '#268bd2', '#d33682', '#2aa198', '#eee8d5',
-	'#002b36', '#cb4b16', '#586e75', '#657b83', '#839496', '#6c71c4', '#93a1a1', '#fdf6e3',
+	'#1f1d27', '#ff6767', '#61ffca', '#ffca85', '#a277ff', '#f694ff', '#82e2ff', '#edecee',
+	'#6d6d6d', '#ff6767', '#61ffca', '#ffca85', '#a277ff', '#f694ff', '#82e2ff', '#ffffff',
 ];
 // `→ 全部文章`: the arrow is drawn apart from the label so it stays off the underline.
 const allPosts = t('home.allPosts').replace(/^→\s*/, '');

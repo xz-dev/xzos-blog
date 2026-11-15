@@ -34,19 +34,12 @@ function hue(hex: string) {
 	return h * 60;
 }
 
-// Each role and the Solarized accent it is drawn from.
-const roles = {
-	'--term-prompt': '#859900', // green
-	'--term-path': '#268bd2', // blue
-	'--term-link': '#2aa198', // cyan
-	'--term-date': '#b58900', // yellow
-	'--term-tag': '#d33682', // magenta
-	'--error': '#dc322f', // red
-};
+// The semantic roles; each theme draws them from its own ANSI colours.
+const roles = ['--term-prompt', '--term-path', '--term-link', '--term-date', '--term-tag', '--error'];
 
 test('every semantic colour reads as text on the page and the surface in both themes', () => {
 	for (const [theme, colors] of Object.entries(themes)) {
-		for (const role of Object.keys(roles)) {
+		for (const role of roles) {
 			assert.ok(colors[role], `${theme} defines ${role}`);
 			for (const field of ['--background', '--surface']) {
 				const ratio = contrast(colors[role], colors[field]);
@@ -56,11 +49,12 @@ test('every semantic colour reads as text on the page and the surface in both th
 	}
 });
 
-test('semantic colours keep their Solarized hue; only the lightness moves', () => {
+test('prompt, path, date, tag and error stay distinct hues in each theme', () => {
 	for (const [theme, colors] of Object.entries(themes)) {
-		for (const [role, base] of Object.entries(roles)) {
-			const delta = Math.abs(hue(colors[role]) - hue(base));
-			assert.ok(Math.min(delta, 360 - delta) <= 2, `${theme} ${role}: hue ${hue(colors[role]).toFixed(1)} vs ${hue(base).toFixed(1)}`);
+		const hues = ['--term-prompt', '--term-path', '--term-date', '--term-tag', '--error'].map((role) => hue(colors[role]));
+		for (const [i, a] of hues.entries()) for (const b of hues.slice(i + 1)) {
+			const delta = Math.abs(a - b);
+			assert.ok(Math.min(delta, 360 - delta) >= 20, `${theme}: hues ${a.toFixed(1)} and ${b.toFixed(1)}`);
 		}
 	}
 });
