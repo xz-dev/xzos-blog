@@ -77,8 +77,11 @@ const tree = buildTocTree(headings);
 		display: none;
 	}
 
-	/* `tree` output: one row per heading, the branch prefix in --secondary and
-	 * kept as typed (white-space: pre); a wrapped title hangs under its text. */
+	/* `tree` output, drawn apart from the titles: each item paints only its own
+	 * 3ch column, `├─` or `└─` on its first line and, unless it is the last
+	 * sibling, `│` on every line below it, beside its title and its children.
+	 * A wrapped title hangs under its text and the column keeps going. The
+	 * column takes no height of its own (contain: size) and clips at the item's. */
 	.toc :global(ul) {
 		list-style: none;
 		margin: 0;
@@ -88,18 +91,32 @@ const tree = buildTocTree(headings);
 		margin-block-start: var(--space-2);
 	}
 
-	.toc :global(.toc-row) {
-		display: flex;
+	.toc :global(li) {
+		display: grid;
+		grid-template-columns: 3ch minmax(0, 1fr);
 	}
 
-	.toc :global(.toc-branch) {
-		flex: none;
+	.toc :global(li)::before {
+		/* shortcut: 99 `│` lines per item; raise it if one section's title and children ever run longer. */
+		content: "├─\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│\A│" / "";
+		grid-column: 1;
+		grid-row: 1 / span 2;
 		color: var(--secondary);
 		white-space: pre;
+		overflow: hidden;
+		contain: size;
+	}
+
+	.toc :global(li:last-child)::before {
+		content: "└─" / "";
+	}
+
+	.toc :global(li > *) {
+		grid-column: 2;
 	}
 
 	.toc :global(a) {
-		min-width: 0;
+		justify-self: start;
 	}
 
 	/* The section in view: accent and a trailing `*`, as the status line marks
