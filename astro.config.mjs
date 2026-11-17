@@ -7,6 +7,7 @@ import { defineConfig } from 'astro/config';
 import buildCv from './src/integrations/build-cv';
 import localized404 from './src/integrations/localized-404';
 import { getCopyPaths } from './src/lib/copy-pages';
+import { getPostLastmods, withLastmod } from './src/lib/sitemap-lastmod';
 import translate from './src/integrations/translate';
 import { daySyntaxTheme, nightSyntaxTheme } from './src/lib/syntax-day';
 import { tableScroll } from './src/lib/table-scroll';
@@ -16,6 +17,8 @@ import { tableScroll } from './src/lib/table-scroll';
 let copyPaths;
 const isOutOfSitemap = (path) =>
   /\/(?:page\/1|404)\/$/.test(path) || (copyPaths ??= getCopyPaths(new URL('./src/content/', import.meta.url))).has(path);
+let postLastmods;
+const addLastmod = (item) => withLastmod(item, (postLastmods ??= getPostLastmods(new URL('./src/content/', import.meta.url))));
 
 // https://astro.build/config
 export default defineConfig({
@@ -33,7 +36,8 @@ export default defineConfig({
     // The sitemap lists canonical URLs only: /page/1/ redirects to /blog/
     // (public/_redirects), 404 pages are not content, and a locale's copy of
     // a root original points its canonical at the original (src/i18n/seo.ts).
-    sitemap({ filter: (page) => !isOutOfSitemap(new URL(page).pathname) }),
+    // Post URLs carry lastmod: updatedDate, else pubDate (src/lib/sitemap-lastmod.ts).
+    sitemap({ filter: (page) => !isOutOfSitemap(new URL(page).pathname), serialize: addLastmod }),
     localized404(['en', 'zh-CN']),
   ],
 

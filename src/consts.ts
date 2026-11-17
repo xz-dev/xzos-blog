@@ -4,6 +4,8 @@
 export const SITE_TITLE = 'xzOS';
 export const SITE_FULL_TITLE = 'xzOS - For Coding Life';
 export const SITE_DESCRIPTION = "xzOS - xzdev's blog home";
+/** The site author, as the footer and the posts' `author` field name him. */
+export const SITE_AUTHOR = 'xz-dev';
 
 // Home page boot screen (layouts/Home.astro).
 export const SITE_HOST = 'xzos.net';
