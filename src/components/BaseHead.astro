@@ -6,8 +6,9 @@ import '../styles/terminal.css';
 import '../styles/tty.css';
 import type { ImageMetadata } from 'astro';
 import { SITE_TITLE } from '../consts';
-import { getAlternates, getCanonicalPath, splitLocalePath, type PageVersions } from '../i18n/seo';
+import { getAlternates, getCanonicalPath, getLangTag, splitLocalePath, type PageVersions } from '../i18n/seo';
 import { getKnownSocialImageMetadata } from '../lib/social-preview';
+import { blogPosting, serializeJsonLd, webSite } from '../lib/structured-data';
 
 interface Props {
 	title: string;
@@ -17,11 +18,13 @@ interface Props {
 	versions?: PageVersions;
 	/** An error page: noindex, with no canonical and no alternates. */
 	noindex?: boolean;
-	/** A post's dates: og:type becomes article. */
-	article?: { published: Date; modified?: Date };
+	/** A post's dates and author: og:type becomes article, with BlogPosting structured data. */
+	article?: { published: Date; modified?: Date; author?: string };
+	/** A home page: WebSite and Person structured data. */
+	website?: boolean;
 }
 
-const { title, description, image = '/og/default.png', versions, noindex = false, article } = Astro.props;
+const { title, description, image = '/og/default.png', versions, noindex = false, article, website = false } = Astro.props;
 const { lang: currentLang, path } = splitLocalePath(Astro.url.pathname);
 const canonicalURL = noindex ? undefined : new URL(getCanonicalPath(currentLang, path, versions), Astro.site);
 const alternates = noindex ? [] : getAlternates(path, versions).map(({ hreflang, path: href }) => ({
@@ -32,6 +35,17 @@ const isImageMetadata = typeof image !== 'string';
 const imageSrc = isImageMetadata ? image.src : image;
 const imageURL = new URL(imageSrc, Astro.site || Astro.url);
 const imageMetadata = getKnownSocialImageMetadata(image);
+// schema.org JSON-LD (lib/structured-data.ts). inLanguage is the page's
+// hreflang, so a root post written in English is en.
+const site = Astro.site ?? Astro.url;
+const inLanguage = getLangTag(currentLang, versions?.source);
+const structuredData = !canonicalURL
+	? undefined
+	: article
+		? blogPosting({ title, description, published: article.published, modified: article.modified, lang: inLanguage, url: canonicalURL, image: imageURL, author: article.author, site })
+		: website
+			? webSite({ description, lang: inLanguage, url: canonicalURL, site })
+			: undefined;
 ---
 
 <!-- Global Metadata -->
@@ -91,6 +105,9 @@ const imageMetadata = getKnownSocialImageMetadata(image);
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageURL} />
 <meta name="twitter:image:alt" content={title} />
+
+<!-- Structured data -->
+{structuredData && <script is:inline type="application/ld+json" set:html={serializeJsonLd(structuredData)} />}
 
 <!-- Theme Detection Script (runs before page renders to prevent flash) -->
 <script is:inline>

@@ -1,0 +1,8 @@
+# Cloudflare Pages response headers.
+# Assets whose names change with their content are cached for a year:
+# Vite's hashed bundles, and the fonts, which carry the Unifont version.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*.woff2
+  Cache-Control: public, max-age=31536000, immutable

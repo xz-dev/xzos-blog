@@ -25,7 +25,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	slug?: string;
 };
 
-const { title, description, pubDate, updatedDate, pubDateSource, updatedDateSource, heroImage, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
+const { title, description, pubDate, updatedDate, pubDateSource, updatedDateSource, heroImage, author, headings = [], ogImage, lang = 'zh', slug } = Astro.props;
 const postSlug = slug || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
 const t = useTranslations(lang);
 
@@ -51,7 +51,7 @@ const contentLang = lang === defaultLang && source === 'en' ? 'en' : undefined;
 <!doctype html>
 <html lang={htmlLang}>
 	<head>
-		<BaseHead title={title} description={description} image={ogImage} versions={versions} article={{ published: pubDate, modified: updatedDate }} />
+		<BaseHead title={title} description={description} image={ogImage} versions={versions} article={{ published: pubDate, modified: updatedDate, author }} />
 		<style>
 			.hero-image {
 				margin: 0 auto var(--space-4);

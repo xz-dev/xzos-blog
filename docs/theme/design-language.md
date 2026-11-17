@@ -272,7 +272,13 @@ line and one above the next title, so it belongs to the entry above it.
 
 Every internal link ends with a slash (`/about/`, `/en/blog/<slug>/`,
 `/link-exchange/`), the shape the build writes, so no click costs a 308.
-Canonical and hreflang follow `src/i18n/seo.ts`. The 56 addresses of the
+Canonical and hreflang follow `src/i18n/seo.ts`. Posts carry a schema.org
+`BlogPosting` and the home pages a `WebSite` with the author's `Person`, as
+JSON-LD built in `src/lib/structured-data.ts`. Sitemap post URLs carry
+`lastmod` (updatedDate, else pubDate; `src/lib/sitemap-lastmod.ts`); other
+pages have none. `public/_headers` caches `/_astro/*` and `/fonts/*.woff2`
+for a year as immutable: their names change with their content (Vite's hash,
+the Unifont version). The 56 addresses of the
 old WordPress site are 301s in `public/_redirects`, generated from
 `src/lib/legacy-redirects.ts` by `npm run redirects`.
 
