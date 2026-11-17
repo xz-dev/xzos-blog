@@ -13,26 +13,16 @@ const ruleFor = (selector: string) => cssRulesFor(rules, selector);
 
 const h = (depth: number, text: string) => ({ depth, slug: text.toLowerCase(), text });
 
-test('the contents tree draws `tree` prefixes nested by heading depth', () => {
+type Tree = ReturnType<typeof buildTocTree>;
+const shape = (nodes: Tree): unknown[] => nodes.map((node) => (node.children.length ? [node.text, shape(node.children)] : node.text));
+
+test('the contents tree nests h3 under h2 and leaves h4 out', () => {
 	const tree = buildTocTree([h(2, 'A'), h(3, 'A1'), h(3, 'A2'), h(2, 'B'), h(3, 'B1'), h(4, 'B1x'), h(2, 'C')]);
-	const rows: string[] = [];
-	const walk = (nodes: typeof tree) => nodes.forEach((node) => { rows.push(node.prefix + node.text); walk(node.children); });
-	walk(tree);
-	assert.deepEqual(rows, [
-		'├─ A',
-		'│  ├─ A1',
-		'│  └─ A2',
-		'├─ B',
-		'│  └─ B1',
-		'└─ C',
-	]);
-	assert.deepEqual(tree.map((node) => node.children.length), [2, 1, 0]);
+	assert.deepEqual(shape(tree), [['A', ['A1', 'A2']], ['B', ['B1']], 'C']);
 });
 
-test('the last top-level section closes its column, and a leading h3 stands at the top level', () => {
-	const tree = buildTocTree([h(3, 'Intro'), h(2, 'A'), h(3, 'A1')]);
-	assert.deepEqual(tree.map((node) => node.prefix + node.text), ['├─ Intro', '└─ A']);
-	assert.equal(tree[1].children[0].prefix, '   └─ ');
+test('a leading h3 stands at the top level', () => {
+	assert.deepEqual(shape(buildTocTree([h(3, 'Intro'), h(2, 'A'), h(3, 'A1')])), ['Intro', ['A', ['A1']]]);
 });
 
 test('posts with fewer than two h2/h3 headings get no contents', () => {
@@ -48,10 +38,20 @@ test('the contents are a real nested list with decorative prefixes and a current
 	assert.match(toc, /const tree = buildTocTree\(headings\);/);
 	assert.match(toc, /\{tree\.length > 0 && \(/);
 	assert.match(toc, /<nav class="toc" aria-labelledby="xz-toc-label">\s*<details open>/);
-	// Nested <ul>s for assistive technology; the branch drawing is hidden from it.
-	assert.match(list, /<ul>[\s\S]*<li>[\s\S]*<span class="toc-branch" aria-hidden="true">\{node\.prefix\}<\/span><a href=\{`#\$\{node\.slug\}`\}>/);
+	// Nested <ul>s of bare links; the `tree` lines are not in the content.
+	assert.match(list, /<ul>[\s\S]*<li>\s*<a href=\{`#\$\{node\.slug\}`\}>\{node\.text\}<\/a>/);
 	assert.match(list, /<Astro\.self nodes=\{node\.children\} \/>/);
-	assert.match(toc, /\.toc :global\(\.toc-branch\)\s*\{[^}]*color:\s*var\(--secondary\);[^}]*white-space:\s*pre;/);
+	assert.doesNotMatch(list, /prefix|aria-hidden/);
+	// Each item draws its own column beside its title and children, so a
+	// wrapped title keeps the line: `├─` then `│` per line, clipped to the
+	// item; the last sibling ends with `└─`. Empty alt text keeps it unread.
+	assert.match(toc, /\.toc :global\(li\)\s*\{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*3ch minmax\(0, 1fr\);/);
+	const column = toc.match(/\.toc :global\(li\)::before\s*\{([^}]*)\}/)?.[1] ?? '';
+	assert.match(column, /content:\s*"├─(?:\\A│){99}" \/ "";/);
+	assert.match(column, /grid-column:\s*1;[^]*grid-row:\s*1 \/ span 2;/);
+	assert.match(column, /color:\s*var\(--secondary\);[^]*white-space:\s*pre;[^]*overflow:\s*hidden;[^]*contain:\s*size;/);
+	assert.match(toc, /\.toc :global\(li:last-child\)::before\s*\{\s*content:\s*"└─" \/ "";\s*\}/);
+	assert.match(toc, /\.toc :global\(li > \*\)\s*\{\s*grid-column:\s*2;\s*\}/);
 	// The section in view: aria-current="location", the accent and a trailing `*`
 	// whose cell every link reserves; set by an IntersectionObserver.
 	// The script lives in a child rendered only inside the tree-non-empty branch,

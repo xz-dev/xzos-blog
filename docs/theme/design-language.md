@@ -223,8 +223,10 @@ columns (head and body, then the contents) when it has contents:
    (`blog.comments`), then Remark42.
 
 **Contents.** A post with two or more h2/h3 headings gets a contents box
-drawn like `tree` output: `├─ `, `└─ ` and `│  ` prefixes in
-`--secondary`, `aria-hidden`, while the entries stay a nested `<ul>` of
+drawn like `tree` output, the lines apart from the titles: each `<li>`
+paints its own 3ch column in `--secondary` from CSS (`├─`, or `└─` for
+the last sibling, then `│` down the rest of a non-last item, empty alt text),
+so a wrapped title keeps its line, while the entries stay a nested `<ul>` of
 links. The label line is `▾ 目录` (`blog.toc`) in a `<details open>`.
 Below 1280px the box follows the head block. From 1280px it leaves the flow
 for a sticky right column (`--toc-width`, 320px) that starts beside the head
