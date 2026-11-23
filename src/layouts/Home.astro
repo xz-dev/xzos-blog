@@ -390,10 +390,10 @@ const recent = posts.slice(0, LS);
 					main?.toggleAttribute('data-paused', paused);
 					update();
 				});
-				// Another variant now, from its first step; while paused it shows that
-				// step and stays there.
+				// Advance in order from the current variant; while paused, show only
+				// the first step of the next one.
 				next.addEventListener('click', () => {
-					variant = pick(variant);
+					variant = (variant + 1) % RING_VARIANTS.length;
 					time = 0;
 					paint();
 				});
